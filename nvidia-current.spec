@@ -16,7 +16,7 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version		256.35
+%define version		256.44
 %define rel		1
 %endif
 
@@ -130,8 +130,6 @@ Patch0:		nvidia-settings-format-string.patch
 Patch1:		nvidia-settings-enable-dyntwinview-mdv.patch
 # include xf86vmproto for X_XF86VidModeGetGammaRampSize, fixes build on cooker
 Patch3:		nvidia-settings-include-xf86vmproto.patch
-# fix parameter ordering in acpi_walk_namespace (http://bugs.gentoo.org/show_bug.cgi?id=301318#c9)
-Patch4:		0001-Fix-parameter-ordering-in-acpi_walk_namespace-shim-o.patch
 %endif
 License:	Freeware
 BuildRoot:	%{_tmppath}/%{name}-buildroot
@@ -265,12 +263,6 @@ cd nvidia-settings-%{version}
 cd ..
 %endif
 sh %{nsource} --extract-only
-
-%if !%simple
-pushd %{pkgname}
-%patch4 -p1
-popd
-%endif
 
 rm -rf %{pkgname}/usr/src/nv/precompiled
 
