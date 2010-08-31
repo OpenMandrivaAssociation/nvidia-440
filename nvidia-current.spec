@@ -16,7 +16,7 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version		256.52
+%define version		256.53
 %define rel		1
 %endif
 
