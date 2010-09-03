@@ -44,12 +44,11 @@
 # cooker ldetect-lst should be up-to-date
 %define ldetect_cards_name	%nil
 
-
 # NVIDIA cards not listed in main ldetect-lst pcitable are not likely
 # to be supported by nv which is from the same time period. Therefore
 # mark them as not working with nv. (main pcitable entries override
 # our entries)
-%if %{mdkversion} <= 201010
+%if %{mdkversion} <= 201010 || %simple
 # nvidia/vesa
 %define ldetect_cards_name	NVIDIA GeForce 400 series and later
 %endif
