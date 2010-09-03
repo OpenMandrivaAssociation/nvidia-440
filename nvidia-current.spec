@@ -768,7 +768,7 @@ cat README.txt | while read line; do
 		continue
 	fi
 	echo "$line" | grep -Pq "^\s*-+[\s-]+$" && continue
-	id=$(echo "$line" | sed -nre 's,^\s*.+\s+0x(....).*$,\1,p' | tr '[:upper:]' '[:lower:]')
+	id=$(echo "$line" | sed -nre 's,^\s*.+?\s+0x(....).*$,\1,p' | tr '[:upper:]' '[:lower:]')
 	echo "0x10de	0x$id	\"Card:%{ldetect_cards_name}\""
 done | sort -u > pcitable.nvidia.lst
 set -x
