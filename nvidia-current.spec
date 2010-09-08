@@ -16,7 +16,7 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version		256.53
+%define version		260.19.04
 %define rel		1
 %endif
 
@@ -470,11 +470,11 @@ cat .manifest | tail -n +9 | while read line; do
 		;;
 	NVCUVID_LIB)
 		parseparams arch
-		install_file nvidia $nvidia_libdir
+		install_file nvidia-cuda $nvidia_libdir
 		;;
 	NVCUVID_LIB_SYMLINK)
 		parseparams arch dest
-		install_lib_symlink nvidia $nvidia_libdir
+		install_lib_symlink nvidia-cuda $nvidia_libdir
 		;;
 	OPENGL_LIB)
 		parseparams arch
@@ -1028,11 +1028,11 @@ rm -rf %{buildroot}
 %files -n %{drivername}-devel -f %pkgname/nvidia-devel.files
 %defattr(-,root,root)
 %if !%simple
-%{_includedir}/%{drivername}
 %{nvidia_libdir}/libXvMCNVIDIA.a
 %{nvidia_libdir}/libXvMCNVIDIA_dynamic.so
 %{nvidia_libdir}/libGL.so
 %{nvidia_libdir}/libcuda.so
+%{nvidia_libdir}/libnvcuvid.so
 %{nvidia_libdir}/libnvidia-cfg.so
 %{nvidia_libdir}/libOpenCL.so
 %if %{mdkversion} <= 200810
@@ -1063,6 +1063,8 @@ rm -rf %{buildroot}
 %{nvidia_libdir}/libOpenCL.so.1.0.0
 %{nvidia_libdir}/libOpenCL.so.1.0
 %{nvidia_libdir}/libOpenCL.so.1
+%{nvidia_libdir}/libnvcuvid.so.%{version}
+%{nvidia_libdir}/libnvcuvid.so.1
 %{nvidia_libdir}/libnvidia-compiler.so.%{version}
 %{nvidia_libdir}/libcuda.so.%{version}
 %{nvidia_libdir}/libcuda.so.1
