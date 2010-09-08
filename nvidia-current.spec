@@ -408,9 +408,6 @@ install_lib_symlink() {
 	local pkg="$1"
 	local dir="$2"
 	case "$file" in
-	libnvidia-compiler.so)
-		# referenced in libcuda.so.1 => not put into -devel
-		;;
 	libvdpau_*.so)
 		# vdpau drivers => not put into -devel
 		;;
@@ -1044,6 +1041,7 @@ rm -rf %{buildroot}
 %ifarch %{biarches}
 %{nvidia_libdir32}/libGL.so
 %{nvidia_libdir32}/libcuda.so
+%{nvidia_libdir32}/libnvidia-compiler.so
 %{nvidia_libdir32}/libOpenCL.so
 %if %{mdkversion} <= 200810
 %{nvidia_libdir32}/libvdpau.so
