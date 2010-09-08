@@ -471,6 +471,14 @@ cat .manifest | tail -n +9 | while read line; do
 		parseparams arch subdir dest
 		install_lib_symlink nvidia-cuda $nvidia_libdir/$subdir
 		;;
+	NVCUVID_LIB)
+		parseparams arch
+		install_file nvidia $nvidia_libdir
+		;;
+	NVCUVID_LIB_SYMLINK)
+		parseparams arch dest
+		install_lib_symlink nvidia $nvidia_libdir
+		;;
 	OPENGL_LIB)
 		parseparams arch
 		install_file nvidia $nvidia_libdir
@@ -647,6 +655,7 @@ find %{buildroot}%{_libdir} %{buildroot}%{_prefix}/lib -type d | while read dir;
 	dir=${dir#%{buildroot}}
 	echo "$dir" | grep -q nvidia && echo "%%dir $dir" >> nvidia.files
 done
+[ -d %{buildroot}%{_includedir}/%{drivername} ] && echo "%{_includedir}/%{drivername}" >> nvidia-devel.files
 %endif
 
 %if !%simple
@@ -1021,8 +1030,8 @@ rm -rf %{buildroot}
 
 %files -n %{drivername}-devel -f %pkgname/nvidia-devel.files
 %defattr(-,root,root)
-%{_includedir}/%{drivername}
 %if !%simple
+%{_includedir}/%{drivername}
 %{nvidia_libdir}/libXvMCNVIDIA.a
 %{nvidia_libdir}/libXvMCNVIDIA_dynamic.so
 %{nvidia_libdir}/libGL.so
