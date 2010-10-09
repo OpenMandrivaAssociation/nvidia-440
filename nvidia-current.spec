@@ -17,7 +17,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version		260.19.06
-%define rel		1
+%define rel		2
 %endif
 
 %define priority	9700
@@ -129,6 +129,8 @@ Patch0:		nvidia-settings-format-string.patch
 Patch1:		nvidia-settings-enable-dyntwinview-mdv.patch
 # include xf86vmproto for X_XF86VidModeGetGammaRampSize, fixes build on cooker
 Patch3:		nvidia-settings-include-xf86vmproto.patch
+# fix build with -rt patched 2.6.33+
+Patch4:		nvidia-rt-2.6.33.patch
 %endif
 License:	Freeware
 BuildRoot:	%{_tmppath}/%{name}-buildroot
@@ -262,6 +264,12 @@ cd nvidia-settings-%{version}
 cd ..
 %endif
 sh %{nsource} --extract-only
+
+%if !%simple
+cd %{pkgname}
+%patch4 -p1
+cd ..
+%endif
 
 rm -rf %{pkgname}/usr/src/nv/precompiled
 
