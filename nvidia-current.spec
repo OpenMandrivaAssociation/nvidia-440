@@ -16,8 +16,8 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version		260.19.06
-%define rel		2
+%define version		260.19.12
+%define rel		1
 %endif
 
 %define priority	9700
@@ -1076,6 +1076,7 @@ rm -rf %{buildroot}
 %{nvidia_libdir}/libnvidia-compiler.so.%{version}
 %{nvidia_libdir}/libcuda.so.%{version}
 %{nvidia_libdir}/libcuda.so.1
+%exclude %{_includedir}/%{drivername}
 %ifarch %{biarches}
 %{nvidia_libdir32}/libOpenCL.so.1.0.0
 %{nvidia_libdir32}/libOpenCL.so.1.0
