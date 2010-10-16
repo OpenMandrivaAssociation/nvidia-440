@@ -661,7 +661,11 @@ find %{buildroot}%{_libdir} %{buildroot}%{_prefix}/lib -type d | while read dir;
 	echo "$dir" | grep -q nvidia && echo "%%dir $dir" >> nvidia.files
 done
 [ -d %{buildroot}%{_includedir}/%{drivername} ] && echo "%{_includedir}/%{drivername}" >> nvidia-devel.files
+%else
+rm -rf %{buildroot}%{_includedir}/%{drivername}
 %endif
+
+
 
 %if !%simple
 # confirm SONAME; if something else than libvdpau_nvidia.so or libvdpau_nvidia.so.1, adapt .spec as needed:
@@ -1076,7 +1080,6 @@ rm -rf %{buildroot}
 %{nvidia_libdir}/libnvidia-compiler.so.%{version}
 %{nvidia_libdir}/libcuda.so.%{version}
 %{nvidia_libdir}/libcuda.so.1
-%exclude %{_includedir}/%{drivername}
 %ifarch %{biarches}
 %{nvidia_libdir32}/libOpenCL.so.1.0.0
 %{nvidia_libdir32}/libOpenCL.so.1.0
