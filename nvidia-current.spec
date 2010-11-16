@@ -18,6 +18,8 @@
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version		260.19.21
 %define rel		2
+# the highest supported videodrv abi
+%define videodrv_abi	8
 %endif
 
 %define priority	9700
@@ -156,7 +158,7 @@ Summary:	NVIDIA proprietary X.org driver and libraries for %cards
 Group: 		System/Kernel and hardware
 Requires(post): update-alternatives >= 1.9.0
 Requires(postun): update-alternatives >= 1.9.0
-Requires: x11-server-common %(xserver-sdk-abi-requires videodrv)
+Requires:	x11-server-common
 # Proprietary driver handling rework:
 Conflicts:	harddrake < 10.4.163
 Conflicts:	drakx-kbd-mouse-x11 < 0.21
@@ -176,6 +178,12 @@ Requires:	%{_lib}vdpau1
 %endif
 %if %{mdkversion} >= 200910
 Conflicts:	x11-server-common < 1.6.0-11
+%endif
+%if %{mdkversion} >= 201100 && !%simple
+# Conflict with the next videodrv ABI break.
+# The NVIDIA driver supports the previous ABI versions as well and therefore
+# a strict version-specific requirement would not be enough.
+Conflicts:	xserver-abi(videodrv-%(echo $((%{videodrv_abi} + 1))))
 %endif
 # Obsoletes for naming changes:
 Obsoletes:	nvidia < 1:%{version}-%{release}
