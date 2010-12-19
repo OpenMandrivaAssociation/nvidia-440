@@ -17,7 +17,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version		260.19.29
-%define rel		1
+%define rel		2
 # the highest supported videodrv abi
 %define videodrv_abi	8
 %endif
@@ -50,7 +50,7 @@
 # to be supported by nv which is from the same time period. Therefore
 # mark them as not working with nv. (main pcitable entries override
 # our entries)
-%if %{mdkversion} <= 201010 || %simple
+%if %{mdkversion} <= 201020 || %simple
 # nvidia/vesa
 %define ldetect_cards_name	NVIDIA GeForce 400 series and later
 %endif
