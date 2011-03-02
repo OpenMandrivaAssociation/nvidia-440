@@ -16,10 +16,10 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version		260.19.36
+%define version		270.29
 %define rel		1
 # the highest supported videodrv abi
-%define videodrv_abi	8
+%define videodrv_abi	9
 %endif
 
 %define priority	9700
@@ -966,6 +966,7 @@ rm -rf %{buildroot}
 %{nvidia_libdir}/libnvidia-glcore.so.%{version}
 %{nvidia_libdir}/libXvMCNVIDIA.so.%{version}
 %{nvidia_libdir}/libnvidia-cfg.so.%{version}
+%{nvidia_libdir}/libnvidia-ml.so.%{version}
 %{nvidia_libdir}/libnvidia-tls.so.%{version}
 %{nvidia_libdir}/vdpau/libvdpau_nvidia.so.%{version}
 %if %{mdkversion} <= 200810
@@ -975,6 +976,7 @@ rm -rf %{buildroot}
 %{nvidia_libdir}/libGL.so.1
 %{nvidia_libdir}/libXvMCNVIDIA_dynamic.so.1
 %{nvidia_libdir}/libnvidia-cfg.so.1
+%{nvidia_libdir}/libnvidia-ml.so.1
 %{nvidia_libdir}/libvdpau_nvidia.so
 %if %{mdkversion} <= 200810
 %{nvidia_libdir}/libvdpau.so.1
@@ -1052,6 +1054,7 @@ rm -rf %{buildroot}
 %{nvidia_libdir}/libcuda.so
 %{nvidia_libdir}/libnvcuvid.so
 %{nvidia_libdir}/libnvidia-cfg.so
+%{nvidia_libdir}/libnvidia-ml.so
 %{nvidia_libdir}/libOpenCL.so
 %if %{mdkversion} <= 200810
 %{nvidia_libdir}/libvdpau.so
@@ -1059,7 +1062,6 @@ rm -rf %{buildroot}
 %ifarch %{biarches}
 %{nvidia_libdir32}/libGL.so
 %{nvidia_libdir32}/libcuda.so
-%{nvidia_libdir32}/libnvidia-compiler.so
 %{nvidia_libdir32}/libOpenCL.so
 %if %{mdkversion} <= 200810
 %{nvidia_libdir32}/libvdpau.so
@@ -1091,8 +1093,6 @@ rm -rf %{buildroot}
 %{nvidia_libdir32}/libOpenCL.so.1.0
 %{nvidia_libdir32}/libOpenCL.so.1
 %{nvidia_libdir32}/libnvidia-compiler.so.%{version}
-%{nvidia_libdir32}/libnvidia-compiler.so.1
-%{nvidia_libdir32}/libnvidia-compiler.so
 %{nvidia_libdir32}/libcuda.so.%{version}
 %{nvidia_libdir32}/libcuda.so.1
 %endif
