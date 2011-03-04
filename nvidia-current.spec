@@ -743,7 +743,7 @@ touch				%{buildroot}%{_sysconfdir}/ld.so.conf.d/GL.conf
 
 # modprobe.conf
 install -d -m755			%{buildroot}%{_sysconfdir}/modprobe.d
-touch					%{buildroot}%{_sysconfdir}/modprobe.d/display-driver
+touch					%{buildroot}%{_sysconfdir}/modprobe.d/display-driver.conf
 echo "alias nvidia %{modulename}" 	>  %{buildroot}%{_sysconfdir}/%{drivername}/modprobe.conf
 echo "blacklist nouveau"		>> %{buildroot}%{_sysconfdir}/%{drivername}/modprobe.conf
 
@@ -826,7 +826,7 @@ mkdir -p %{_libdir}/vdpau
 	--slave %{_sysconfdir}/X11/XvMCConfig xvmcconfig %{_sysconfdir}/%{drivername}/XvMCConfig \
 	--slave %{_sysconfdir}/X11/xinit.d/nvidia-settings.xinit nvidia-settings.xinit %{_sysconfdir}/%{drivername}/nvidia-settings.xinit \
 	--slave %{_libdir}/vdpau/libvdpau_nvidia.so.1 %{_lib}vdpau_nvidia.so.1 %{nvidia_libdir}/vdpau/libvdpau_nvidia.so.%{version} \
-	--slave %{_sysconfdir}/modprobe.d/display-driver display-driver.modconf %{_sysconfdir}/%{drivername}/modprobe.conf \
+	--slave %{_sysconfdir}/modprobe.d/display-driver.conf display-driver.conf %{_sysconfdir}/%{drivername}/modprobe.conf \
 	--slave %{_sysconfdir}/modprobe.preload.d/display-driver display-driver.preload %{_sysconfdir}/%{drivername}/modprobe.preload \
 	--slave %{_sysconfdir}/OpenCL/vendors/nvidia.icd nvidia.icd %{_sysconfdir}/%{drivername}/nvidia.icd \
 %ifarch %{biarches}
@@ -909,7 +909,7 @@ rm -rf %{buildroot}
 # ld.so.conf, modprobe.conf, xvmcconfig, xinit
 %ghost %{_sysconfdir}/ld.so.conf.d/GL.conf
 %ghost %{_sysconfdir}/X11/xinit.d/nvidia-settings.xinit
-%ghost %{_sysconfdir}/modprobe.d/display-driver
+%ghost %{_sysconfdir}/modprobe.d/display-driver.conf
 %ghost %{_sysconfdir}/modprobe.preload.d/display-driver
 %dir %{_sysconfdir}/%{drivername}
 %{_sysconfdir}/%{drivername}/modprobe.conf
