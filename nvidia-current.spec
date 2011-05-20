@@ -17,7 +17,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version		270.41.06
-%define rel		2
+%define rel		3
 # the highest supported videodrv abi
 %define videodrv_abi	10
 %endif
@@ -900,6 +900,13 @@ rmmod nvidia > /dev/null 2>&1 || true
 
 # rmmod any old driver if present and not in use (e.g. by X)
 rmmod nvidia > /dev/null 2>&1 || true
+
+# Make sure that ldconfig is run after installing/uninstalling cuda/opencl libs (#62116)
+%post -n %{drivername}-cuda-opencl 
+/sbin/ldconfig
+
+%postun -n %{drivername}-cuda-opencl
+/sbin/ldconfig
 
 %clean
 rm -rf %{buildroot}
