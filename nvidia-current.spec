@@ -16,7 +16,7 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version		270.41.19
+%define version		275.09.07
 %define rel		1
 # the highest supported videodrv abi
 %define videodrv_abi	10
@@ -131,8 +131,6 @@ Patch0:		nvidia-settings-format-string.patch
 Patch1:		nvidia-settings-enable-dyntwinview-mdv.patch
 # include xf86vmproto for X_XF86VidModeGetGammaRampSize, fixes build on cooker
 Patch3:		nvidia-settings-include-xf86vmproto.patch
-# fix build with -rt patched 2.6.33+
-Patch4:		nvidia-rt-2.6.33.patch
 %endif
 License:	Freeware
 BuildRoot:	%{_tmppath}/%{name}-buildroot
@@ -279,7 +277,6 @@ sh %{nsource} --extract-only
 
 %if !%simple
 cd %{pkgname}
-%patch4 -p1
 cd ..
 %endif
 
