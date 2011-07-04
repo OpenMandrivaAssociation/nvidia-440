@@ -17,7 +17,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version		280.04
-%define rel		2
+%define rel		3
 # the highest supported videodrv abi
 %define videodrv_abi	10
 %endif
@@ -143,6 +143,9 @@ BuildRequires:	gtk+2-devel
 BuildRequires:	libxv-devel
 BuildRequires:	MesaGL-devel
 BuildRequires:	libxxf86vm-devel
+%endif
+%if %{mdkversion} >= 201100
+BuildRequires:	rpm-build >= 1:5.3.12
 %endif
 
 %description
