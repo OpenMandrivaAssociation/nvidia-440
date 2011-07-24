@@ -984,6 +984,9 @@ rm -rf %{buildroot}
 %{nvidia_libdir}/libnvidia-glcore.so.%{version}
 %{nvidia_libdir}/libXvMCNVIDIA.so.%{version}
 %{nvidia_libdir}/libnvidia-cfg.so.%{version}
+%ifarch %{x86_64}
+%{nvidia_libdir32}/libnvidia-ml.so.%{version}
+%endif
 %{nvidia_libdir}/libnvidia-ml.so.%{version}
 %{nvidia_libdir}/libnvidia-tls.so.%{version}
 %{nvidia_libdir}/vdpau/libvdpau_nvidia.so.%{version}
@@ -994,6 +997,9 @@ rm -rf %{buildroot}
 %{nvidia_libdir}/libGL.so.1
 %{nvidia_libdir}/libXvMCNVIDIA_dynamic.so.1
 %{nvidia_libdir}/libnvidia-cfg.so.1
+%ifarch %{x86_64}
+%{nvidia_libdir32}/libnvidia-ml.so.1
+%endif
 %{nvidia_libdir}/libnvidia-ml.so.1
 %{nvidia_libdir}/libvdpau_nvidia.so
 %if %{mdkversion} <= 200810
@@ -1072,6 +1078,9 @@ rm -rf %{buildroot}
 %{nvidia_libdir}/libcuda.so
 %{nvidia_libdir}/libnvcuvid.so
 %{nvidia_libdir}/libnvidia-cfg.so
+%ifarch %{x86_64}
+%{nvidia_libdir32}/libnvidia-ml.so
+%endif
 %{nvidia_libdir}/libnvidia-ml.so
 %{nvidia_libdir}/libOpenCL.so
 %if %{mdkversion} <= 200810
