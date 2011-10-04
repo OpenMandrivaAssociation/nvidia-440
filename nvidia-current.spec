@@ -632,7 +632,7 @@ cat .manifest | tail -n +9 | while read line; do
 			continue
 %endif
 			;;
-		*nvidia-smi|*nvidia-bug-report.sh)
+		*nvidia-smi|*nvidia-bug-report.sh|*nvidia-debugdump)
 			# ok
 			;;
 		*)
@@ -700,6 +700,7 @@ install -m755 ../nvidia-xconfig-%{version}/_out/*/nvidia-xconfig %{buildroot}%{n
 install -d -m755			%{buildroot}%{_bindir}
 touch					%{buildroot}%{_bindir}/nvidia-settings
 touch					%{buildroot}%{_bindir}/nvidia-smi
+touch					%{buildroot}%{_bindir}/nvidia-debugdump
 touch					%{buildroot}%{_bindir}/nvidia-xconfig
 touch					%{buildroot}%{_bindir}/nvidia-bug-report.sh
 # rpmlint:
@@ -826,6 +827,7 @@ mkdir -p %{_libdir}/vdpau
 	--slave %{_datadir}/applications/mandriva-nvidia-settings.desktop nvidia_desktop %{_datadir}/%{drivername}/mandriva-nvidia-settings.desktop \
 	--slave %{_bindir}/nvidia-settings nvidia_settings %{nvidia_bindir}/nvidia-settings \
 	--slave %{_bindir}/nvidia-smi nvidia_smi %{nvidia_bindir}/nvidia-smi \
+	--slave %{_bindir}/nvidia-debugdump nvidia_debugdump %{nvidia_bindir}/nvidia-debugdump \
 	--slave %{_bindir}/nvidia-xconfig nvidia_xconfig %{nvidia_bindir}/nvidia-xconfig \
 	--slave %{_bindir}/nvidia-bug-report.sh nvidia_bug_report %{nvidia_bindir}/nvidia-bug-report.sh \
 	--slave %{_sysconfdir}/X11/XvMCConfig xvmcconfig %{_sysconfdir}/%{drivername}/XvMCConfig \
@@ -945,12 +947,14 @@ rm -rf %{buildroot}
 
 %ghost %{_bindir}/nvidia-settings
 %ghost %{_bindir}/nvidia-smi
+%ghost %{_bindir}/nvidia-debugdump
 %ghost %{_bindir}/nvidia-xconfig
 %ghost %{_bindir}/nvidia-bug-report.sh
 %if !%simple
 %dir %{nvidia_bindir}
 %{nvidia_bindir}/nvidia-settings
 %{nvidia_bindir}/nvidia-smi
+%{nvidia_bindir}/nvidia-debugdump
 %{nvidia_bindir}/nvidia-xconfig
 %{nvidia_bindir}/nvidia-bug-report.sh
 %endif
