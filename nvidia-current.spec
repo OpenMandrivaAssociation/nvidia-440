@@ -141,7 +141,11 @@ ExclusiveArch:	%{ix86} x86_64
 BuildRequires:	ImageMagick
 BuildRequires:	gtk+2-devel
 BuildRequires:	libxv-devel
+%if %mdkver >= 201200
+BuildRequires:	GL-devel
+%else
 BuildRequires:	MesaGL-devel
+%endif
 BuildRequires:	libxxf86vm-devel
 %endif
 %if %{mdkversion} >= 201100
