@@ -138,7 +138,7 @@ URL:		http://www.nvidia.com/object/unix.html
 Group: 		System/Kernel and hardware
 ExclusiveArch:	%{ix86} x86_64
 %if !%simple
-BuildRequires:	ImageMagick
+BuildRequires:	imagemagick
 BuildRequires:	gtk+2-devel
 BuildRequires:	libxv-devel
 %if %mdkver >= 201200
