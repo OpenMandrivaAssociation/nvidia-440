@@ -661,6 +661,12 @@ cat .manifest | tail -n +9 | while read line; do
 		# as this avoids one broken symlink and it is small enough to not cause space issues
 		install_file nvidia %{_sysconfdir}/%{drivername}
 		;;
+	GLX_MODULE_SHARED_LIB)
+		install_file nvidia %{nvidia_extensionsdir}
+		;;
+	GLX_MODULE_SYMLINK)
+		install_symlink nvidia %{nvidia_extensionsdir}
+		;;
 	DOT_DESKTOP)
 		# we provide our own for now
 		;;
@@ -793,7 +799,7 @@ set +x
 cat README.txt | while read line; do
 	[ $section -gt 3 ] && break
 	if [ $((section %% 2)) -eq 0 ]; then
-		echo "$line" | grep -Pq "^\s*NVIDIA GPU product\s+Device PCI ID" && section=$((section+1))
+		echo "$line" | grep -Pq "^\s*NVIDIA GPU product\s+Device PCI ID.*" && section=$((section+1))
 		continue
 	fi
 	if echo "$line" | grep -Pq "^\s*$"; then
@@ -908,7 +914,7 @@ rmmod nvidia > /dev/null 2>&1 || true
 rmmod nvidia > /dev/null 2>&1 || true
 
 # Make sure that ldconfig is run after installing/uninstalling cuda/opencl libs (#62116)
-%post -n %{drivername}-cuda-opencl 
+%post -n %{drivername}-cuda-opencl
 /sbin/ldconfig
 
 %postun -n %{drivername}-cuda-opencl
