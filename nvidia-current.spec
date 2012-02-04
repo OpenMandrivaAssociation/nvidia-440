@@ -17,7 +17,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version		295.17
-%define rel		1
+%define rel		2
 # the highest supported videodrv abi
 %define videodrv_abi	10
 %endif
@@ -321,9 +321,14 @@ EOF
 rm nvidia-settings-%{version}/src/*/*.a
 
 %build
-export CFLAGS="%optflags"
+%if %mdkversion >= 201000
+%setup_compile_flags
+%else
+export CFLAGS="%{optflags}"
 export CXXFLAGS="$CFLAGS"
 export LDFLAGS="%{?ldflags}"
+%endif
+
 %make -C nvidia-settings-%{version}/src/libXNVCtrl
 %make -C nvidia-settings-%{version} STRIP_CMD=true
 %make -C nvidia-xconfig-%{version} STRIP_CMD=true
@@ -662,10 +667,12 @@ cat .manifest | tail -n +9 | while read line; do
 		install_file nvidia %{_sysconfdir}/%{drivername}
 		;;
 	GLX_MODULE_SHARED_LIB)
-		install_file nvidia %{nvidia_extensionsdir}
+		parseparams subdir
+		install_file nvidia $(get_module_dir $subdir)
 		;;
 	GLX_MODULE_SYMLINK)
-		install_symlink nvidia %{nvidia_extensionsdir}
+		parseparams subdir dest
+		install_symlink nvidia $(get_module_dir $subdir)
 		;;
 	DOT_DESKTOP)
 		# we provide our own for now
