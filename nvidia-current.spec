@@ -143,14 +143,14 @@ ExclusiveArch:	%{ix86} x86_64
 BuildRequires:	imagemagick
 BuildRequires:	gtk+2-devel
 BuildRequires:	libxv-devel
-%if %mdkver >= 201200
+%if %mdkversion >= 201200
 BuildRequires:	GL-devel
 %else
-BuildRequires:	MesaGL-devel
+BuildRequires:	mesagl-devel
 %endif
 BuildRequires:	libxxf86vm-devel
 %endif
-%if %{mdkversion} >= 201100
+%if %mdkversion >= 201100
 BuildRequires:	rpm-build >= 1:5.3.12
 %endif
 
