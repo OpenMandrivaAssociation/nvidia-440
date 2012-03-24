@@ -16,7 +16,7 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version		295.20
+%define version		295.33
 %define rel		1
 # the highest supported videodrv abi
 %define videodrv_abi	10
@@ -563,7 +563,7 @@ cat .manifest | tail -n +9 | while read line; do
 	LIBGL_LA)
 		# (Anssi) we don't install .la files
 		;;
-	XMODULE_SHARED_LIB)
+	XMODULE_SHARED_LIB|GLX_MODULE_SHARED_LIB)
 		parseparams subdir
 		install_file nvidia $(get_module_dir $subdir)
 		;;
@@ -584,7 +584,7 @@ cat .manifest | tail -n +9 | while read line; do
 		parseparams subdir dest
 		install_symlink nvidia $(get_module_dir $subdir)
 		;;
-	XMODULE_SYMLINK)
+	XMODULE_SYMLINK|GLX_MODULE_SYMLINK)
 		parseparams subdir dest
 		install_symlink nvidia $(get_module_dir $subdir)
 		;;
@@ -671,14 +671,6 @@ cat .manifest | tail -n +9 | while read line; do
 		# in theory this should go to the cuda subpackage, but it goes into the main package
 		# as this avoids one broken symlink and it is small enough to not cause space issues
 		install_file nvidia %{_sysconfdir}/%{drivername}
-		;;
-	GLX_MODULE_SHARED_LIB)
-		parseparams subdir
-		install_file nvidia $(get_module_dir $subdir)
-		;;
-	GLX_MODULE_SYMLINK)
-		parseparams subdir dest
-		install_symlink nvidia $(get_module_dir $subdir)
 		;;
 	DOT_DESKTOP)
 		# we provide our own for now
