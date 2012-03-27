@@ -19,7 +19,7 @@
 %define version		295.33
 %define rel		1
 # the highest supported videodrv abi
-%define videodrv_abi	10
+%define videodrv_abi	12
 %endif
 
 %define priority	9700
@@ -100,7 +100,7 @@
 
 # Other packages should not require any NVIDIA libraries, and this package
 # should not be pulled in when libGL.so.1 is required
-%define _provides_exceptions \\.so
+%define __noautoprov '\\.so'
 %define common_requires_exceptions libGLcore\\.so\\|libnvidia.*\\.so
 
 %ifarch %{biarches}
@@ -108,9 +108,9 @@
 # of 32-bit libraries are not satisfied. If a 32-bit package that requires
 # libGL.so.1 is installed, the 32-bit mesa libs are pulled in and that will
 # pull the dependencies of 32-bit nvidia libraries in as well.
-%define _requires_exceptions %common_requires_exceptions\\|lib.*so\\.[^(]\\+\\(([^)]\\+)\\)\\?$
+%define __noautoreq '%common_requires_exceptions\\|lib.*so\\.[^(]\\+\\(([^)]\\+)\\)\\?$'
 %else
-%define _requires_exceptions %common_requires_exceptions
+%define __noautoreq '%common_requires_exceptions'
 %endif
 
 Summary:	NVIDIA proprietary X.org driver and libraries, current driver series
@@ -125,17 +125,15 @@ Source2:	ftp://download.nvidia.com/XFree86/nvidia-settings/nvidia-settings-%{ver
 Source3:	ftp://download.nvidia.com/XFree86/nvidia-xconfig/nvidia-xconfig-%{version}.tar.bz2
 # Script for building rpms of arbitrary nvidia installers (needs this .spec appended)
 Source4:	nvidia-mdvbuild-skel
+Source100:	nvidia-current.rpmlintrc
 # -Werror=format-string
 Patch0:		nvidia-settings-format-string.patch
 # https://qa.mandriva.com/show_bug.cgi?id=39921
 Patch1:		nvidia-settings-enable-dyntwinview-mdv.patch
 # include xf86vmproto for X_XF86VidModeGetGammaRampSize, fixes build on cooker
 Patch3:		nvidia-settings-include-xf86vmproto.patch
-# http://www.nvnews.net/vbulletin/showthread.php?t=172490
-Patch4:		nvidia-linux-3.2.x.diff
 %endif
 License:	Freeware
-BuildRoot:	%{_tmppath}/%{name}-buildroot
 URL:		http://www.nvidia.com/object/unix.html
 Group: 		System/Kernel and hardware
 ExclusiveArch:	%{ix86} x86_64
@@ -288,10 +286,6 @@ sh %{nsource} --extract-only
 cd %{pkgname}
 cd ..
 %endif
-
-cd %{pkgname}
-%patch4 -p0
-cd ..
 
 rm -rf %{pkgname}/usr/src/nv/precompiled
 
