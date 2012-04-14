@@ -140,11 +140,11 @@ URL:		http://www.nvidia.com/object/unix.html
 Group: 		System/Kernel and hardware
 ExclusiveArch:	%{ix86} x86_64
 %if !%simple
-BuildRequires:	imagemagick
+BuildRequires:	imagemagick libxrender-devel
 BuildRequires:	gtk+2-devel
 BuildRequires:	libxv-devel
 %if %mdkversion >= 201200
-BuildRequires:	GL-devel libxrender-devel
+BuildRequires:	GL-devel
 %else
 BuildRequires:	mesagl-devel
 %endif
