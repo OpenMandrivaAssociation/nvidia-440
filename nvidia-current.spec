@@ -144,7 +144,7 @@ BuildRequires:	imagemagick
 BuildRequires:	gtk+2-devel
 BuildRequires:	libxv-devel
 %if %mdkversion >= 201200
-BuildRequires:	GL-devel
+BuildRequires:	GL-devel libxrender-devel
 %else
 BuildRequires:	mesagl-devel
 %endif
