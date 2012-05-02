@@ -1,6 +1,3 @@
-# (tpg) disable interall rpm dependency generator
-%define _use_internal_dependency_generator 0
-
 # I love OpenSource :-(
 
 ## NOTE: When modifying this .spec, you do not necessarily need to care about
@@ -19,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version		295.40
-%define rel		2
+%define rel		3
 # the highest supported videodrv abi
 %define videodrv_abi	12
 %endif
@@ -102,17 +99,30 @@
 
 # Other packages should not require any NVIDIA libraries, and this package
 # should not be pulled in when libGL.so.1 is required
+%if %{_use_internal_dependency_generator}
 %define __noautoprov '\\.so'
+%define common_requires_exceptions libGLcore\\.so|libnvidia.*\\.so
+%else
+%define _provides_exceptions \\.so
 %define common_requires_exceptions libGLcore\\.so\\|libnvidia.*\\.so
+%endif
 
 %ifarch %{biarches}
 # (anssi) Allow installing of 64-bit package if the runtime dependencies
 # of 32-bit libraries are not satisfied. If a 32-bit package that requires
 # libGL.so.1 is installed, the 32-bit mesa libs are pulled in and that will
 # pull the dependencies of 32-bit nvidia libraries in as well.
-%define __noautoreq '%common_requires_exceptions\\|lib.*so\\.[^(]\\+\\(([^)]\\+)\\)\\?$'
+%if %{_use_internal_dependency_generator}
+%define __noautoreq '%{common_requires_exceptions}|lib.*so\\.[^(]+(\\([^)]+\\))?$'
 %else
-%define __noautoreq '%common_requires_exceptions'
+%define __noautoreq %{common_requires_exceptions}\\|lib.*so\\.[^(]\\+\\(([^)]\\+)\\)\\?$
+%endif
+%else
+%if %{_use_internal_dependency_generator}
+%define __noautoreq '%{common_requires_exceptions}'
+%else
+%define __noautoreq %{common_requires_exceptions}
+%endif
 %endif
 
 Summary:	NVIDIA proprietary X.org driver and libraries, current driver series
