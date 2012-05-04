@@ -138,8 +138,6 @@ Source3:	ftp://download.nvidia.com/XFree86/nvidia-xconfig/nvidia-xconfig-%{versi
 # Script for building rpms of arbitrary nvidia installers (needs this .spec appended)
 Source4:	nvidia-mdvbuild-skel
 Source100:	nvidia-current.rpmlintrc
-# -Werror=format-string
-Patch0:		nvidia-settings-format-string.patch
 # https://qa.mandriva.com/show_bug.cgi?id=39921
 Patch1:		nvidia-settings-enable-dyntwinview-mdv.patch
 # include xf86vmproto for X_XF86VidModeGetGammaRampSize, fixes build on cooker
@@ -287,7 +285,6 @@ HTML version of the README.txt file provided in package
 %else
 %setup -q -c -T -a 2 -a 3
 cd nvidia-settings-%{version}
-%patch0 -p1
 %patch1 -p1
 %patch3 -p1
 cd ..
@@ -714,7 +711,7 @@ touch %{buildroot}%{_prefix}/lib/vdpau/libvdpau_nvidia.so.1
 
 %if !%simple
 # self-built binaries
-install -m755 ../nvidia-settings-%{version}/_out/*/nvidia-settings %{buildroot}%{nvidia_bindir}
+install -m755 ../nvidia-settings-%{version}/src/_out/*/nvidia-settings %{buildroot}%{nvidia_bindir}
 install -m755 ../nvidia-xconfig-%{version}/_out/*/nvidia-xconfig %{buildroot}%{nvidia_bindir}
 %endif
 # binary alternatives
@@ -737,7 +734,7 @@ touch %{buildroot}%{_libdir}/xorg/modules/extensions/libglx.so
 
 %if !%simple
 # install man pages
-install -m755 ../nvidia-settings-%{version}/_out/*/nvidia-settings.1 %{buildroot}%{_mandir}/man1
+install -m755 ../nvidia-settings-%{version}/doc/_out/*/nvidia-settings.1 %{buildroot}%{_mandir}/man1
 install -m755 ../nvidia-xconfig-%{version}/_out/*/nvidia-xconfig.1 %{buildroot}%{_mandir}/man1
 %endif
 # bug #41638 - whatis entries of nvidia man pages appear wrong
