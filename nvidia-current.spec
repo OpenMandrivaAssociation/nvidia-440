@@ -544,6 +544,12 @@ cat .manifest | tail -n +9 | while read line; do
 		parseparams dest
 		install_lib_symlink nvidia %{nvidia_libdir}
 		;;
+	UTILITY_BINARY)
+		install_file nvidia-cuda %{nvidia_bindir}
+		;;
+	MANPAGE)
+		install_file nvidia-cuda %{_mandir}/man1
+		;;
 	VDPAU_LIB)
 		parseparams arch subdir
 %if %{mdkversion} >= 200900
@@ -991,6 +997,7 @@ rm -rf %{buildroot}
 %{_mandir}/man1/alt-%{drivername}-xconfig.1*
 %{_mandir}/man1/alt-%{drivername}-settings.1*
 %{_mandir}/man1/alt-%{drivername}-smi.1*
+%{_mandir}/man1/alt-%{drivername}-installer.1.*
 %else
 %{_mandir}/man1/alt-%{drivername}-*
 %endif
@@ -1130,6 +1137,9 @@ rm -rf %{buildroot}
 %files -n %{drivername}-cuda-opencl -f %pkgname/nvidia-cuda.files
 %defattr(-,root,root)
 %if !%simple
+%{nvidia_bindir}/nvidia-cuda-proxy-*
+%{_mandir}/man1/alt-nvidia-current-cuda-proxy-control.1.*
+
 %{nvidia_libdir}/libOpenCL.so.1.0.0
 %{nvidia_libdir}/libOpenCL.so.1.0
 %{nvidia_libdir}/libOpenCL.so.1
