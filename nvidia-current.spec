@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version		304.32
-%define rel		1
+%define rel		2
 # the highest supported videodrv abi
 %define videodrv_abi	12
 %endif
@@ -142,6 +142,7 @@ Source100:	nvidia-current.rpmlintrc
 Patch1:		nvidia-settings-enable-dyntwinview-mdv.patch
 # include xf86vmproto for X_XF86VidModeGetGammaRampSize, fixes build on cooker
 Patch3:		nvidia-settings-include-xf86vmproto.patch
+Patch4:		nvidia-current-304.32-dkms.conf-unique-module-name.patch
 %endif
 License:	Freeware
 URL:		http://www.nvidia.com/object/unix.html
@@ -292,8 +293,7 @@ cd ..
 sh %{nsource} --extract-only
 
 %if !%simple
-cd %{pkgname}
-cd ..
+%patch4 -p1 -b .uniq~
 %endif
 
 rm -rf %{pkgname}/usr/src/nv/precompiled
@@ -358,16 +358,6 @@ cd %{pkgname}
 
 # dkms
 install -d -m755 %{buildroot}%{_usrsrc}/%{drivername}-%{version}-%{release}
-cat > %{buildroot}%{_usrsrc}/%{drivername}-%{version}-%{release}/dkms.conf <<EOF
-PACKAGE_NAME="%{drivername}"
-PACKAGE_VERSION="%{version}-%{release}"
-BUILT_MODULE_NAME[0]="nvidia"
-DEST_MODULE_LOCATION[0]="/kernel/drivers/char/drm"
-DEST_MODULE_NAME[0]="%{modulename}"
-MAKE[0]="make SYSSRC=\${kernel_source_dir} module"
-CLEAN="make -f Makefile.kbuild clean"
-AUTOINSTALL="yes"
-EOF
 
 # menu entry
 install -d -m755 %{buildroot}%{_datadir}/%{drivername}
