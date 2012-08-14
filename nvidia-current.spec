@@ -149,7 +149,9 @@ URL:		http://www.nvidia.com/object/unix.html
 Group: 		System/Kernel and hardware
 ExclusiveArch:	%{ix86} x86_64
 %if !%simple
-BuildRequires:	imagemagick libxrender-devel
+BuildRequires:	imagemagick
+BuildRequires:	libxrender-devel
+BuildRequires:	libX11-devel
 BuildRequires:	gtk+2-devel
 BuildRequires:	libxv-devel
 %if %mdkversion >= 201200
@@ -293,7 +295,9 @@ cd ..
 sh %{nsource} --extract-only
 
 %if !%simple
-%patch4 -p1 -b .uniq~
+cd %{pkgname}
+%patch4 -p0 -b .uniq~
+cd ..
 %endif
 
 rm -rf %{pkgname}/usr/src/nv/precompiled
