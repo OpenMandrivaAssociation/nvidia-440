@@ -151,7 +151,6 @@ ExclusiveArch:	%{ix86} x86_64
 %if !%simple
 BuildRequires:	imagemagick
 BuildRequires:	libxrender-devel
-BuildRequires:	libX11-devel
 BuildRequires:	gtk+2-devel
 BuildRequires:	libxv-devel
 %if %mdkversion >= 201200
