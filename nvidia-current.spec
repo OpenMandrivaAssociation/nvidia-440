@@ -15,7 +15,7 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version		304.48
+%define version		304.51
 %define rel		1
 # the highest supported videodrv abi
 %define videodrv_abi	12
@@ -345,7 +345,7 @@ export LDFLAGS="%{?ldflags}"
 # (tpg) simple workaround for https://qa.mandriva.com/show_bug.cgi?id=65616
 # nvidia module can't be linked with ld.gold which for mdv2001200 is default
 # Please remove this if bug will be fixed.
-sed -i -e 's#LD ?=.*#LD = ld.bfd##' %{pkgname}/kernel/Makefile.*i*
+#sed -i -e 's#LD ?=.*#LD = ld.bfd##' %{pkgname}/kernel/Makefile.*i*
 %endif
 
 %make -C nvidia-settings-%{version}/src/libXNVCtrl
