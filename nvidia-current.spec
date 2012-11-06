@@ -507,7 +507,7 @@ cat .manifest | tail -n +9 | while read line; do
 		install_lib_symlink nvidia-cuda $nvidia_libdir/$subdir
 		;;
 	NVCUVID_LIB)
-		parseparams arch
+		parseparams arch dest
 		install_file nvidia-cuda $nvidia_libdir
 		;;
 	NVCUVID_LIB_SYMLINK)
