@@ -604,12 +604,10 @@ cat .manifest | tail -n +9 | while read line; do
 		install_file_only nvidia-devel %{_includedir}/%{drivername}/$subdir
 		;;
 	ENCODEAPI_LIB)
-		parseparams arch
-		install_file nvidia-cuda $nvidia_libdir
+		install_file nvidia %{nvidia_libdir}
 		;;
 	ENCODEAPI_LIB_SYMLINK)
-		parseparams arch dest
-		install_lib_symlink nvidia-cuda $nvidia_libdir
+		install_lib_symlink nvidia %{nvidia_libdir}
 		;;
 	DOCUMENTATION)
 		parseparams subdir
