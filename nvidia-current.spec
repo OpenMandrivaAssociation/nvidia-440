@@ -15,8 +15,8 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version		310.14
-%define rel		1
+%define version		310.19
+%define rel			1
 # the highest supported videodrv abi
 %define videodrv_abi	12
 %endif
@@ -146,7 +146,7 @@ Patch4:		nvidia-current-304.32-dkms.conf-unique-module-name.patch
 %endif
 License:	Freeware
 URL:		http://www.nvidia.com/object/unix.html
-Group: 		System/Kernel and hardware
+Group:		System/Kernel and hardware
 ExclusiveArch:	%{ix86} x86_64
 %if !%simple
 BuildRequires:	imagemagick
@@ -172,9 +172,9 @@ and earlier.
 
 %package -n %{driverpkgname}
 Summary:	NVIDIA proprietary X.org driver and libraries for %cards
-Group: 		System/Kernel and hardware
-Requires(post): update-alternatives >= 1.9.0
-Requires(postun): update-alternatives >= 1.9.0
+Group:		System/Kernel and hardware
+Requires(post):	update-alternatives >= 1.9.0
+Requires(postun):	update-alternatives >= 1.9.0
 Requires:	x11-server-common
 # Proprietary driver handling rework:
 Conflicts:	harddrake < 10.4.163
@@ -227,7 +227,7 @@ Summary:	NVIDIA kernel module for %cards
 Group:		System/Kernel and hardware
 Requires:	dkms
 Requires(post):	dkms
-Requires(preun): dkms
+Requires(preun):	dkms
 Obsoletes:	dkms-nvidia < 1:%{version}-%{release}
 Provides:	dkms-nvidia = 1:%{version}-%{release}
 Obsoletes:	dkms-nvidia97xx < %{version}-%{release}
