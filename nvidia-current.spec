@@ -1096,7 +1096,6 @@ rm -rf %{buildroot}
 %{nvidia_libdir}/libGL.so
 %{nvidia_libdir}/libcuda.so
 %{nvidia_libdir}/libnvcuvid.so
-%{nvidia_libdir}/libnvidia-encode.so
 %{nvidia_libdir}/libnvidia-cfg.so
 %{nvidia_libdir}/libnvidia-ml.so
 %{nvidia_libdir}/libOpenCL.so
