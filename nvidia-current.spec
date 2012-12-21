@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version		313.09
-%define rel		1
+%define rel			2
 # the highest supported videodrv abi
 %define videodrv_abi	12
 %endif
@@ -124,6 +124,9 @@
 %define __noautoreq %{common_requires_exceptions}
 %endif
 %endif
+
+# https://devtalk.nvidia.com/default/topic/523762/libnvidia-encode-so-310-19-has-dependency-on-missing-library/
+%define _exclude_files_from_autoreq libnvidia-encode.so.%version
 
 Summary:	NVIDIA proprietary X.org driver and libraries, current driver series
 Name:		%{name}
@@ -508,7 +511,7 @@ cat .manifest | tail -n +9 | while read line; do
 		;;
 	NVCUVID_LIB)
 		parseparams arch subdir
-		install_file nvidia $nvidia_libdir
+        install_file nvidia-cuda $nvidia_libdir/$subdir
 		;;
 	NVCUVID_LIB_SYMLINK)
 		parseparams arch dest
@@ -605,7 +608,7 @@ cat .manifest | tail -n +9 | while read line; do
 		;;
 	ENCODEAPI_LIB)
 		parseparams arch subdir
-		install_file nvidia $nvidia_libdir
+        install_file nvidia $nvidia_libdir/$subdir
 		;;
 	ENCODEAPI_LIB_SYMLINK)
 		parseparams arch dest
@@ -1010,10 +1013,6 @@ rm -rf %{buildroot}
 %{nvidia_libdir}/libnvidia-ml.so.%{version}
 %{nvidia_libdir}/libnvidia-tls.so.%{version}
 %{nvidia_libdir}/vdpau/libvdpau_nvidia.so.%{version}
-%{nvidia_libdir}/libnvcuvid.so.%{version}
-%{nvidia_libdir}/libnvcuvid.so.1
-%{nvidia_libdir}/libnvidia-encode.so.%{version}
-%{nvidia_libdir}/libnvidia-encode.so.1
 %if %{mdkversion} <= 200810
 %{nvidia_libdir}/vdpau/libvdpau_trace.so.%{version}
 %{nvidia_libdir}/libvdpau.so.%{version}
@@ -1035,10 +1034,6 @@ rm -rf %{buildroot}
 %{nvidia_libdir32}/libnvidia-tls.so.%{version}
 %{nvidia_libdir32}/libvdpau_nvidia.so
 %{nvidia_libdir32}/vdpau/libvdpau_nvidia.so.%{version}
-%{nvidia_libdir32}/libnvcuvid.so.%{version}
-%{nvidia_libdir32}/libnvcuvid.so.1
-%{nvidia_libdir32}/libnvidia-encode.so.%{version}
-%{nvidia_libdir32}/libnvidia-encode.so.1
 %{nvidia_libdir32}/libnvidia-ml.so.%{version}
 %{nvidia_libdir32}/libnvidia-ml.so.1
 %if %{mdkversion} <= 200810
@@ -1105,6 +1100,7 @@ rm -rf %{buildroot}
 %{nvidia_libdir}/libnvidia-cfg.so
 %{nvidia_libdir}/libnvidia-ml.so
 %{nvidia_libdir}/libOpenCL.so
+%{nvidia_libdir}/libnvidia-encode.so
 %if %{mdkversion} <= 200810
 %{nvidia_libdir}/libvdpau.so
 %endif
@@ -1140,6 +1136,10 @@ rm -rf %{buildroot}
 %{nvidia_libdir}/libcuda.so.1
 %{nvidia_libdir}/libnvidia-opencl.so.%{version}
 %{nvidia_libdir}/libnvidia-opencl.so.1
+%{nvidia_libdir}/libnvidia-encode.so.%{version}
+%{nvidia_libdir}/libnvidia-encode.so.1
+%{nvidia_libdir}/libnvcuvid.so.%{version}
+%{nvidia_libdir}/libnvcuvid.so.1
 %ifarch %{biarches}
 %{nvidia_libdir32}/libOpenCL.so.1.0.0
 %{nvidia_libdir32}/libOpenCL.so.1.0
@@ -1147,6 +1147,10 @@ rm -rf %{buildroot}
 %{nvidia_libdir32}/libnvidia-compiler.so.%{version}
 %{nvidia_libdir32}/libnvidia-opencl.so.%{version}
 %{nvidia_libdir32}/libnvidia-opencl.so.1
+%{nvidia_libdir32}/libnvidia-encode.so.%{version}
+%{nvidia_libdir32}/libnvidia-encode.so.1
+%{nvidia_libdir32}/libnvcuvid.so.%{version}
+%{nvidia_libdir32}/libnvcuvid.so.1
 %{nvidia_libdir32}/libcuda.so.%{version}
 %{nvidia_libdir32}/libcuda.so.1
 %endif
