@@ -267,6 +267,14 @@ Provides:	%{drivername}-cuda = %{version}-%{release}
 Requires:	kmod(%{modulename}) = %{version}
 %endif
 Conflicts:	nvidia < 1:195.36.15-4
+%if "%_lib" == "lib64"
+Provides:	libnvcuvid.so.1()(64bit)
+%ifarch %biarches
+Provides:	libnvcuvid.so.1
+%endif
+%else
+Provides:	libnvcuvid.so.1
+%endif
 
 %description -n %{drivername}-cuda-opencl
 Cuda and OpenCL libraries for NVIDIA proprietary driver. This package is not
