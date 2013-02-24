@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version		313.18
-%define rel			1
+%define rel			2
 # the highest supported videodrv abi
 %define videodrv_abi	12
 %endif
@@ -146,6 +146,7 @@ Patch1:		nvidia-settings-enable-dyntwinview-mdv.patch
 # include xf86vmproto for X_XF86VidModeGetGammaRampSize, fixes build on cooker
 Patch3:		nvidia-settings-include-xf86vmproto.patch
 Patch4:		nvidia-current-304.32-dkms.conf-unique-module-name.patch
+Patch5:		nvidia-current-313.18-dont-check-patchlevel-and-sublevel.patch
 %endif
 License:	Freeware
 URL:		http://www.nvidia.com/object/unix.html
@@ -309,6 +310,7 @@ cd %{pkgname}
 %patch4 -p0 -b .uniq~
 cd ..
 %endif
+%patch5 -p1 -b .all3x~
 
 rm -rf %{pkgname}/usr/src/nv/precompiled
 
