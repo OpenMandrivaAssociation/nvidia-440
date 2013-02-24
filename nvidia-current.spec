@@ -308,9 +308,9 @@ sh %{nsource} --extract-only
 %if !%simple
 cd %{pkgname}
 %patch4 -p0 -b .uniq~
+%patch5 -p2 -b .all3x~
 cd ..
 %endif
-%patch5 -p1 -b .all3x~
 
 rm -rf %{pkgname}/usr/src/nv/precompiled
 
