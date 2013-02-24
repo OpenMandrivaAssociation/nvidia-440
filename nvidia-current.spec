@@ -524,7 +524,7 @@ cat .manifest | tail -n +9 | while read line; do
 		;;
 	NVCUVID_LIB)
 		parseparams arch subdir
-        install_file nvidia-cuda $nvidia_libdir/$subdir
+		install_file nvidia-cuda $nvidia_libdir/$subdir
 		;;
 	NVCUVID_LIB_SYMLINK)
 		parseparams arch dest
@@ -621,7 +621,7 @@ cat .manifest | tail -n +9 | while read line; do
 		;;
 	ENCODEAPI_LIB)
 		parseparams arch subdir
-        install_file nvidia $nvidia_libdir/$subdir
+		install_file nvidia $nvidia_libdir/$subdir
 		;;
 	ENCODEAPI_LIB_SYMLINK)
 		parseparams arch dest
