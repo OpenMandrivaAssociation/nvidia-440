@@ -307,7 +307,7 @@ sh %{nsource} --extract-only
 
 %if !%simple
 cd %{pkgname}
-%patch4 -p0 -b .uniq~
+#patch4 -p0 -b .uniq~
 cd ..
 %endif
 
