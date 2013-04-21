@@ -1,0 +1,35 @@
+diff -Naur nvidia-xconfig-319.12/nvidia-xconfig.c nvidia-xconfig-319.12.tpg/nvidia-xconfig.c
+--- nvidia-xconfig-319.12/nvidia-xconfig.c	2013-04-04 00:35:54.000000000 +0000
++++ nvidia-xconfig-319.12.tpg/nvidia-xconfig.c	2013-04-21 09:50:28.941808588 +0000
+@@ -50,7 +50,7 @@
+ static void print_version(void)
+ {
+     fmtout("");
+-    fmtout(pNV_ID);
++    fmtout("%s", pNV_ID);
+     fmtoutp(TAB, "The NVIDIA X Configuration Tool.");
+     fmtout("");
+     fmtoutp(TAB, "This program is used to manipulate X configuration files, "
+@@ -87,8 +87,8 @@
+ 
+ static void print_help_helper(const char *name, const char *description)
+ {
+-    fmtoutp(TAB, name);
+-    fmtoutp(BIGTAB, description);
++    fmtoutp(TAB, "%s", name);
++    fmtoutp(BIGTAB, "%s", description);
+     fmtout("");
+ }
+ 
+diff -Naur nvidia-xconfig-319.12/util.c nvidia-xconfig-319.12.tpg/util.c
+--- nvidia-xconfig-319.12/util.c	2013-04-04 00:35:54.000000000 +0000
++++ nvidia-xconfig-319.12.tpg/util.c	2013-04-21 09:54:04.048641517 +0000
+@@ -183,7 +183,7 @@
+     }
+     
+     if (newline) fmt(stream, NULL, "");
+-    fmt(stream, prefix, msg);
++    fmt(stream, prefix, msg, "%s");
+     if (newline) fmt(stream, NULL, "");
+     
+ } /* xconfigPrint */

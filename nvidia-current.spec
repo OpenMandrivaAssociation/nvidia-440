@@ -1,4 +1,4 @@
-# I love OpenSource :-(
+## I love OpenSource :-(
 
 ## NOTE: When modifying this .spec, you do not necessarily need to care about
 ##       the %simple stuff. It is fine to break them, I'll fix it when I need them :)
@@ -147,6 +147,8 @@ Patch1:		nvidia-settings-enable-dyntwinview-mdv.patch
 Patch3:		nvidia-settings-include-xf86vmproto.patch
 Patch4:		nvidia-current-304.32-dkms.conf-unique-module-name.patch
 Patch5:		nvidia-current-313.18-dont-check-patchlevel-and-sublevel.patch
+Patch6:		nvidia-settings-319.12-fix-format_not_string.patch
+Patch7:		nvidia-xconfig-319.12-fix-format_not_string.patch
 %endif
 License:	Freeware
 URL:		http://www.nvidia.com/object/unix.html
@@ -154,15 +156,16 @@ Group: 		System/Kernel and hardware
 ExclusiveArch:	%{ix86} x86_64
 %if !%simple
 BuildRequires:	imagemagick
-BuildRequires:	libxrender-devel
-BuildRequires:	gtk+2-devel
-BuildRequires:	libxv-devel
+BuildRequires:	pkgconfig(vdpau)
+BuildRequires:	pkgconfig(xrender)
+BuildRequires:	pkgconfig(gtk+-2.0)
+BuildRequires:	pkgconfig(xv)
 %if %mdkversion >= 201200
-BuildRequires:	GL-devel
+BuildRequires:	pkgconfig(gl)
 %else
 BuildRequires:	mesagl-devel
 %endif
-BuildRequires:	libxxf86vm-devel
+BuildRequires:	pkgconfig(xxf86vm)
 %endif
 %if %mdkversion >= 201100
 BuildRequires:	rpm-build >= 1:5.3.12
@@ -293,6 +296,7 @@ HTML version of the README.txt file provided in package
 %{driverpkgname}.
 
 %prep
+#define _default_patch_fuzz 2
 # No patches applied when %simple is set
 %if %simple
 %setup -q -c -T
@@ -301,13 +305,17 @@ HTML version of the README.txt file provided in package
 cd nvidia-settings-%{version}
 %patch1 -p1
 %patch3 -p1
+%patch6 -p1
+cd ..
+cd nvidia-xconfig-%{version}
+%patch7 -p1
 cd ..
 %endif
 sh %{nsource} --extract-only
 
 %if !%simple
 cd %{pkgname}
-#patch4 -p0 -b .uniq~
+%patch4 -p0 -b .uniq~
 cd ..
 %endif
 
@@ -363,6 +371,14 @@ export LDFLAGS="%{?ldflags}"
 # Please remove this if bug will be fixed.
 #sed -i -e 's#LD ?=.*#LD = ld.bfd##' %{pkgname}/kernel/Makefile.*i*
 %endif
+
+# (tpg) needed for patch 6
+# i couldn't push this to patch 6 because of fuzz error
+# even with fuzz 2 this does not work
+# drop this if upstream will accept patches
+pushd nvidia-settings-%{version}
+sed -i -e 's#nv_warning_msg([^)]*err_str);#nv_warning_msg(*err_str, "%s");#g' src/gtk+-2.x/ctkdisplayconfig-utils.c
+popd
 
 %make -C nvidia-settings-%{version}/src/libXNVCtrl
 %make -C nvidia-settings-%{version} STRIP_CMD=true
@@ -644,7 +660,7 @@ cat .manifest | tail -n +9 | while read line; do
 		esac
 		add_to_list nvidia "%%doc %{pkgname}/$file"
 		;;
-	MANPAGE)
+	MANPAGE|NVIDIA_MODPROBE_MANPAGE)
 		parseparams subdir
 		case "$file" in
 		*nvidia-installer*)
@@ -658,6 +674,9 @@ cat .manifest | tail -n +9 | while read line; do
 %endif
 			;;
 		*nvidia-smi*)
+			# ok
+			;;
+		nvidia-modprobe*)
 			# ok
 			;;
 		*)
@@ -701,6 +720,12 @@ cat .manifest | tail -n +9 | while read line; do
 		;;
 	DOT_DESKTOP)
 		# we provide our own for now
+		;;
+	APPLICATION_PROFILE)
+		install_file nvidia %{_datadir}/nvidia
+		;;
+	NVIDIA_MODPROBE)
+		install_file nvidia %{nvidia_bindir}
 		;;
 	*)
 		error_unhandled "file $(basename $file) of unknown type $type will be skipped"
@@ -993,6 +1018,7 @@ rm -rf %{buildroot}
 %{nvidia_bindir}/nvidia-debugdump
 %{nvidia_bindir}/nvidia-xconfig
 %{nvidia_bindir}/nvidia-bug-report.sh
+%{nvidia_bindir}/nvidia-modprobe
 %endif
 
 %ghost %{_mandir}/man1/nvidia-xconfig.1%{_extension}
@@ -1002,6 +1028,7 @@ rm -rf %{buildroot}
 %{_mandir}/man1/alt-%{drivername}-xconfig.1*
 %{_mandir}/man1/alt-%{drivername}-settings.1*
 %{_mandir}/man1/alt-%{drivername}-smi.1*
+%{_mandir}/man1/alt-%{drivername}-modprobe.1*
 %else
 %{_mandir}/man1/alt-%{drivername}-*
 %endif
@@ -1100,6 +1127,10 @@ rm -rf %{buildroot}
 %endif
 %if !%simple
 %{nvidia_driversdir}/nvidia_drv.so
+%endif
+
+%if %mdvver >= 201300
+%{_datadir}/nvidia/nvidia-application-profiles-*-rc
 %endif
 
 %files -n %{drivername}-devel -f %pkgname/nvidia-devel.files
