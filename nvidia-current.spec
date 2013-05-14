@@ -140,6 +140,8 @@ Source2:	ftp://download.nvidia.com/XFree86/nvidia-settings/nvidia-settings-%{ver
 Source3:	ftp://download.nvidia.com/XFree86/nvidia-xconfig/nvidia-xconfig-%{version}.tar.bz2
 # Script for building rpms of arbitrary nvidia installers (needs this .spec appended)
 Source4:	nvidia-mdvbuild-skel
+Source5:	ftp://download.nvidia.com/XFree86/nvidia-modprobe/nvidia-modprobe-%{version}.tar.bz2
+Source6:	ftp://download.nvidia.com/XFree86/nvidia-persistenced/nvidia-persistenced-%{version}.tar.bz2
 Source100:	nvidia-current.rpmlintrc
 # https://qa.mandriva.com/show_bug.cgi?id=39921
 Patch1:		nvidia-settings-enable-dyntwinview-mdv.patch
@@ -301,7 +303,7 @@ HTML version of the README.txt file provided in package
 %if %simple
 %setup -q -c -T
 %else
-%setup -q -c -T -a 2 -a 3
+%setup -q -c -T -a 2 -a 3 -a 5 -a 6
 cd nvidia-settings-%{version}
 %patch1 -p1
 %patch3 -p1
@@ -383,6 +385,8 @@ popd
 %make -C nvidia-settings-%{version}/src/libXNVCtrl
 %make -C nvidia-settings-%{version} STRIP_CMD=true
 %make -C nvidia-xconfig-%{version} STRIP_CMD=true
+%make -C nvidia-modprobe-%{version} STRIP_CMD=true
+%make -C nvidia-persistenced-%{version} STRIP_CMD=true
 
 # %simple
 %endif
@@ -667,16 +671,13 @@ cat .manifest | tail -n +9 | while read line; do
 			# not installed
 			continue
 			;;
-		*nvidia-settings*|*nvidia-xconfig*|*nvidia-cuda*)
+		*nvidia-settings*|*nvidia-xconfig*|*nvidia-modprobe*|*nvidia-persistenced*)
 %if !%simple
 			# installed separately below
 			continue
 %endif
 			;;
-		*nvidia-smi*)
-			# ok
-			;;
-		nvidia-modprobe*)
+		*nvidia-smi*|*nvidia-cuda-mps-control*)
 			# ok
 			;;
 		*)
@@ -687,13 +688,16 @@ cat .manifest | tail -n +9 | while read line; do
 		;;
 	UTILITY_BINARY)
 		case "$file" in
-		*nvidia-settings|*nvidia-xconfig|*nvidia-cuda*)
+		*nvidia-settings|*nvidia-xconfig|*nvidia-persistenced)
 %if !%simple
 			# not installed, we install our own copy
 			continue
 %endif
 			;;
 		*nvidia-smi|*nvidia-bug-report.sh|*nvidia-debugdump)
+       	    #ok
+        	;;
+        *nvidia-cuda-mps-control|*nvidia-cuda-mps-server)
 			# ok
 			;;
 		*)
@@ -707,6 +711,19 @@ cat .manifest | tail -n +9 | while read line; do
 		parseparams dest
 		install_symlink nvidia %{nvidia_bindir}
 		;;
+    NVIDIA_MODPROBE)
+    # A suid-root tool (GPLv2) used as fallback for loading the module and
+	# creating the device nodes in case the driver component is running a
+	# a non-root user (e.g. a CUDA application). While the module is automatically
+	# loaded by udev rules, the device nodes are not automatically created
+	# like with regular drivers and therefore this tool is installed on
+	# distro as well, at least for now.
+	  	 
+	# We install our self-compiled version in non-simple mode
+%if %simple
+	install_file nvidia %{nvidia_bindir}
+%endif
+		;;    
 	INSTALLER_BINARY)
 		# not installed
 		;;
@@ -718,11 +735,14 @@ cat .manifest | tail -n +9 | while read line; do
 		# as this avoids one broken symlink and it is small enough to not cause space issues
 		install_file nvidia %{_sysconfdir}/%{drivername}
 		;;
+    APPLICATION_PROFILE)
+    	parseparams subdir
+        # application profile filenames are versioned, we can use a common
+        # non-alternativesized directory
+        install_file nvidia %{_datadir}/nvidia/$subdir
+        ;;
 	DOT_DESKTOP)
 		# we provide our own for now
-		;;
-	APPLICATION_PROFILE)
-		install_file nvidia %{_datadir}/nvidia
 		;;
 	NVIDIA_MODPROBE)
 		install_file nvidia %{nvidia_bindir}
@@ -762,6 +782,8 @@ touch %{buildroot}%{_prefix}/lib/vdpau/libvdpau_nvidia.so.1
 # self-built binaries
 install -m755 ../nvidia-settings-%{version}/src/_out/*/nvidia-settings %{buildroot}%{nvidia_bindir}
 install -m755 ../nvidia-xconfig-%{version}/_out/*/nvidia-xconfig %{buildroot}%{nvidia_bindir}
+install -m755 ../nvidia-persistenced-%{version}/_out/*/nvidia-persistenced %{buildroot}%{nvidia_bindir}
+install -m4755 ../nvidia-modprobe-%{version}/_out/*/nvidia-modprobe %{buildroot}%{nvidia_bindir}
 %endif
 # binary alternatives
 install -d -m755			%{buildroot}%{_bindir}
@@ -770,6 +792,10 @@ touch					%{buildroot}%{_bindir}/nvidia-smi
 touch					%{buildroot}%{_bindir}/nvidia-debugdump
 touch					%{buildroot}%{_bindir}/nvidia-xconfig
 touch					%{buildroot}%{_bindir}/nvidia-bug-report.sh
+touch                   %{buildroot}%{_bindir}/nvidia-modprobe
+touch                   %{buildroot}%{_bindir}/nvidia-persistenced
+touch                   %{buildroot}%{_bindir}/nvidia-cuda-mps-control
+touch                   %{buildroot}%{_bindir}/nvidia-cuda-mps-serve
 # rpmlint:
 chmod 0755				%{buildroot}%{_bindir}/*
 
@@ -785,6 +811,8 @@ touch %{buildroot}%{_libdir}/xorg/modules/extensions/libglx.so
 # install man pages
 install -m755 ../nvidia-settings-%{version}/doc/_out/*/nvidia-settings.1 %{buildroot}%{_mandir}/man1
 install -m755 ../nvidia-xconfig-%{version}/_out/*/nvidia-xconfig.1 %{buildroot}%{_mandir}/man1
+install -m644 ../nvidia-modprobe-%{version}/_out/*/nvidia-modprobe.1 %{buildroot}%{_mandir}/man1
+install -m644 ../nvidia-persistenced-%{version}/_out/*/nvidia-persistenced.1 %{buildroot}%{_mandir}/man1
 %endif
 # bug #41638 - whatis entries of nvidia man pages appear wrong
 gunzip %{buildroot}%{_mandir}/man1/*.gz
@@ -794,7 +822,10 @@ rename nvidia alt-%{drivername} *
 cd -
 touch %{buildroot}%{_mandir}/man1/nvidia-xconfig.1%{_extension}
 touch %{buildroot}%{_mandir}/man1/nvidia-settings.1%{_extension}
+touch %{buildroot}%{_mandir}/man1/nvidia-modprobe.1%{_extension}
+touch %{buildroot}%{_mandir}/man1/nvidia-persistenced.1%{_extension}
 touch %{buildroot}%{_mandir}/man1/nvidia-smi.1%{_extension}
+touch %{buildroot}%{_mandir}/man1/nvidia-cuda-mps-control.1%{_extension}
 
 # cuda nvidia.icd
 install -d -m755		%{buildroot}%{_sysconfdir}/OpenCL/vendors
@@ -870,7 +901,7 @@ install -d -m755 %{buildroot}%{_datadir}/ldetect-lst/pcitable.d
 gzip -c pcitable.nvidia.lst > %{buildroot}%{_datadir}/ldetect-lst/pcitable.d/40%{drivername}.lst.gz
 %endif
 
-export EXCLUDE_FROM_STRIP="$(find %{buildroot} -type f \! -name nvidia-settings \! -name nvidia-xconfig)"
+export EXCLUDE_FROM_STRIP="$(find %{buildroot} -type f \! -name nvidia-settings \! -name nvidia-xconfig \! -name nvidia-modprobe \! -name nvidia-persistenced)"
 
 %post -n %{driverpkgname}
 # XFdrake used to generate an nvidia.conf file
@@ -887,12 +918,17 @@ mkdir -p %{_libdir}/vdpau
 	--slave %{_mandir}/man1/nvidia-settings.1%{_extension} man_nvidiasettings%{_extension} %{_mandir}/man1/alt-%{drivername}-settings.1%{_extension} \
 	--slave %{_mandir}/man1/nvidia-xconfig.1%{_extension} man_nvidiaxconfig%{_extension} %{_mandir}/man1/alt-%{drivername}-xconfig.1%{_extension} \
 	--slave %{_mandir}/man1/nvidia-smi.1%{_extension} nvidia-smi.1%{_extension} %{_mandir}/man1/alt-%{drivername}-smi.1%{_extension} \
+    --slave %{_mandir}/man1/nvidia-cuda-mps-control.1%{_extension} nvidia-cuda-mps-control.1%{_extension} %{_mandir}/man1/alt-%{drivername}-cuda-mps-control.1%{_extension} \
 	--slave %{_datadir}/applications/mandriva-nvidia-settings.desktop nvidia_desktop %{_datadir}/%{drivername}/mandriva-nvidia-settings.desktop \
 	--slave %{_bindir}/nvidia-settings nvidia_settings %{nvidia_bindir}/nvidia-settings \
 	--slave %{_bindir}/nvidia-smi nvidia_smi %{nvidia_bindir}/nvidia-smi \
 	--slave %{_bindir}/nvidia-debugdump nvidia_debugdump %{nvidia_bindir}/nvidia-debugdump \
 	--slave %{_bindir}/nvidia-xconfig nvidia_xconfig %{nvidia_bindir}/nvidia-xconfig \
 	--slave %{_bindir}/nvidia-bug-report.sh nvidia_bug_report %{nvidia_bindir}/nvidia-bug-report.sh \
+    --slave %{_bindir}/nvidia-cuda-mps-control nvidia-cuda-mps-control %{nvidia_bindir}/nvidia-cuda-mps-control \
+	--slave %{_bindir}/nvidia-cuda-mps-server nvidia-cuda-mps-server %{nvidia_bindir}/nvidia-cuda-mps-server \
+	--slave %{_bindir}/nvidia-modprobe nvidia-modprobe %{nvidia_bindir}/nvidia-modprobe \
+	--slave %{_bindir}/nvidia-persistenced nvidia-persistenced %{nvidia_bindir}/nvidia-persistenced \
 	--slave %{_sysconfdir}/X11/xinit.d/nvidia-settings.xinit nvidia-settings.xinit %{_sysconfdir}/%{drivername}/nvidia-settings.xinit \
 	--slave %{_libdir}/vdpau/libvdpau_nvidia.so.1 %{_lib}vdpau_nvidia.so.1 %{nvidia_libdir}/vdpau/libvdpau_nvidia.so.%{version} \
 	--slave %{_sysconfdir}/modprobe.d/display-driver.conf display-driver.conf %{_sysconfdir}/%{drivername}/modprobe.conf \
@@ -1000,6 +1036,8 @@ rm -rf %{buildroot}
 %{_sysconfdir}/%{drivername}/nvidia-settings.xinit
 %if !%simple
 %{_sysconfdir}/%{drivername}/nvidia.icd
+%dir %{_datadir}/nvidia
+%{_datadir}/nvidia/nvidia-application-profiles-%{version}-rc
 %endif
 
 %dir %{_sysconfdir}/OpenCL
@@ -1010,25 +1048,38 @@ rm -rf %{buildroot}
 %ghost %{_bindir}/nvidia-smi
 %ghost %{_bindir}/nvidia-debugdump
 %ghost %{_bindir}/nvidia-xconfig
+%ghost %{_bindir}/nvidia-modprobe
+%ghost %{_bindir}/nvidia-persistenced
 %ghost %{_bindir}/nvidia-bug-report.sh
+%ghost %{_bindir}/nvidia-cuda-mps-control
+%ghost %{_bindir}/nvidia-cuda-mps-server
 %if !%simple
 %dir %{nvidia_bindir}
 %{nvidia_bindir}/nvidia-settings
 %{nvidia_bindir}/nvidia-smi
 %{nvidia_bindir}/nvidia-debugdump
 %{nvidia_bindir}/nvidia-xconfig
+%{nvidia_bindir}/nvidia-modprobe
+%{nvidia_bindir}/nvidia-persistenced
 %{nvidia_bindir}/nvidia-bug-report.sh
+%{nvidia_bindir}/nvidia-cuda-mps-control
+%{nvidia_bindir}/nvidia-cuda-mps-server
 %{nvidia_bindir}/nvidia-modprobe
 %endif
 
 %ghost %{_mandir}/man1/nvidia-xconfig.1%{_extension}
 %ghost %{_mandir}/man1/nvidia-settings.1%{_extension}
+%ghost %{_mandir}/man1/nvidia-modprobe.1%{_extension}
+%ghost %{_mandir}/man1/nvidia-persistenced.1%{_extension}
 %ghost %{_mandir}/man1/nvidia-smi.1%{_extension}
+%ghost %{_mandir}/man1/nvidia-cuda-mps-control.1%{_extension}
 %if !%simple
 %{_mandir}/man1/alt-%{drivername}-xconfig.1*
 %{_mandir}/man1/alt-%{drivername}-settings.1*
-%{_mandir}/man1/alt-%{drivername}-smi.1*
 %{_mandir}/man1/alt-%{drivername}-modprobe.1*
+%{_mandir}/man1/alt-%{drivername}-persistenced.1*
+%{_mandir}/man1/alt-%{drivername}-smi.1*
+%{_mandir}/man1/alt-%{drivername}-cuda-mps-control.1*
 %else
 %{_mandir}/man1/alt-%{drivername}-*
 %endif
