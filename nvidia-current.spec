@@ -162,6 +162,7 @@ BuildRequires:	pkgconfig(vdpau)
 BuildRequires:	pkgconfig(xrender)
 BuildRequires:	pkgconfig(gtk+-2.0)
 BuildRequires:	pkgconfig(xv)
+BuildRequires:	pkgconfig(libtirpc)
 %if %mdkversion >= 201200
 BuildRequires:	pkgconfig(gl)
 %else
