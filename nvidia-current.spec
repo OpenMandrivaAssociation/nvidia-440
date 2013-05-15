@@ -360,6 +360,7 @@ EOF
 rm nvidia-settings-%{version}/src/*/*.a
 
 %build
+%define _disable_ld_no_undefined 1
 %if %mdkversion >= 201000
 %setup_compile_flags
 %else
@@ -388,7 +389,6 @@ popd
 %make -C nvidia-xconfig-%{version} STRIP_CMD=true
 # (tpg) need to provide a patch to fix format error
 export CFLAGS="%{optflags} -Wno-error=format-security"
-%define _disable_ld_no_undefined 1
 %make -C nvidia-modprobe-%{version} STRIP_CMD=true
 %make -C nvidia-persistenced-%{version} STRIP_CMD=true
 
@@ -396,7 +396,6 @@ export CFLAGS="%{optflags} -Wno-error=format-security"
 %endif
 
 %install
-rm -rf %{buildroot}
 cd %{pkgname}
 
 # dkms
@@ -1012,8 +1011,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 %postun -n %{drivername}-cuda-opencl
 /sbin/ldconfig
 
-%clean
-rm -rf %{buildroot}
 
 %files -n %{driverpkgname} -f %{pkgname}/nvidia.files
 %defattr(-,root,root)
