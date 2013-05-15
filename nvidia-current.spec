@@ -388,6 +388,7 @@ popd
 %make -C nvidia-xconfig-%{version} STRIP_CMD=true
 # (tpg) need to provide a patch to fix format error
 export CFLAGS="%{optflags} -Wno-error=format-security"
+%define _disable_ld_no_undefined 1
 %make -C nvidia-modprobe-%{version} STRIP_CMD=true
 %make -C nvidia-persistenced-%{version} STRIP_CMD=true
 
