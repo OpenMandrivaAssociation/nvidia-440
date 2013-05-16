@@ -151,6 +151,7 @@ Patch4:		nvidia-current-304.32-dkms.conf-unique-module-name.patch
 Patch5:		nvidia-current-313.18-dont-check-patchlevel-and-sublevel.patch
 Patch6:		nvidia-settings-319.12-fix-format_not_string.patch
 Patch7:		nvidia-xconfig-319.12-fix-format_not_string.patch
+Patch8:		nvidia-persistenced-319.17-add-missing-libtirpc-link.patch
 %endif
 License:	Freeware
 URL:		http://www.nvidia.com/object/unix.html
@@ -313,6 +314,9 @@ cd ..
 cd nvidia-xconfig-%{version}
 %patch7 -p1
 cd ..
+cd nvidia-persistenced-%{version}
+%patch8 -p1
+cd ..
 %endif
 sh %{nsource} --extract-only
 
@@ -360,7 +364,6 @@ EOF
 rm nvidia-settings-%{version}/src/*/*.a
 
 %build
-%define _disable_ld_no_undefined 1
 %if %mdkversion >= 201000
 %setup_compile_flags
 %else
