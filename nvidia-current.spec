@@ -801,7 +801,7 @@ touch					%{buildroot}%{_bindir}/nvidia-bug-report.sh
 touch                   %{buildroot}%{_bindir}/nvidia-modprobe
 touch                   %{buildroot}%{_bindir}/nvidia-persistenced
 touch                   %{buildroot}%{_bindir}/nvidia-cuda-mps-control
-touch                   %{buildroot}%{_bindir}/nvidia-cuda-mps-serve
+touch                   %{buildroot}%{_bindir}/nvidia-cuda-mps-server
 # rpmlint:
 chmod 0755				%{buildroot}%{_bindir}/*
 
