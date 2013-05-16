@@ -1068,7 +1068,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_bindir}/nvidia-bug-report.sh
 %{nvidia_bindir}/nvidia-cuda-mps-control
 %{nvidia_bindir}/nvidia-cuda-mps-server
-%{nvidia_bindir}/nvidia-modprobe
 %endif
 
 %ghost %{_mandir}/man1/nvidia-xconfig.1%{_extension}
@@ -1182,10 +1181,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 %endif
 %if !%simple
 %{nvidia_driversdir}/nvidia_drv.so
-%endif
-
-%if %mdvver >= 201300
-%{_datadir}/nvidia/nvidia-application-profiles-*-rc
 %endif
 
 %files -n %{drivername}-devel -f %pkgname/nvidia-devel.files
