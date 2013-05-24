@@ -1,6 +1,3 @@
 ---
 sources:
-  nvidia-modprobe-319.23.tar.bz2: 0ab90c162149e8b3342a40f7e69a444201bea487
-  nvidia-persistenced-319.23.tar.bz2: e27dc4e977d9f3112cba17829fc65858c355aae0
-  nvidia-settings-319.23.tar.bz2: 776f60444a27920ee8a38e2edcdd3d79cddea908
-  nvidia-xconfig-319.23.tar.bz2: f6974912532ea166ee373d88e6c533b8ca9a7cd6
+
