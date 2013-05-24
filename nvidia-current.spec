@@ -294,10 +294,10 @@ HTML version of the README.txt file provided in package
 cd nvidia-settings-%{version}
 %patch1 -p1
 %patch3 -p1
-%patch6 -p1
+#patch6 -p1
 cd ..
 cd nvidia-xconfig-%{version}
-%patch7 -p1
+#patch7 -p1
 cd ..
 cd nvidia-persistenced-%{version}
 %patch8 -p1
@@ -387,11 +387,12 @@ pushd nvidia-settings-%{version}
 sed -i -e 's#nv_warning_msg([^)]*err_str);#nv_warning_msg(*err_str, "%s");#g' src/gtk+-2.x/ctkdisplayconfig-utils.c
 popd
 
+# (tpg) need to provide a patch to fix format error
+export CFLAGS="%{optflags} -Wno-error=format-security"
+
 %make -C nvidia-settings-%{version}/src/libXNVCtrl
 %make -C nvidia-settings-%{version} STRIP_CMD=true
 %make -C nvidia-xconfig-%{version} STRIP_CMD=true
-# (tpg) need to provide a patch to fix format error
-export CFLAGS="%{optflags} -Wno-error=format-security"
 %make -C nvidia-modprobe-%{version} STRIP_CMD=true
 %make -C nvidia-persistenced-%{version} STRIP_CMD=true
 
