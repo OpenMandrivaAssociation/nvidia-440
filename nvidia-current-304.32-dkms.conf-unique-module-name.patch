@@ -1,7 +1,0 @@
---- kernel/dkms.conf	2013-04-03 22:05:43.000000000 +0000
-+++ kernel/dkms.conf.tpg	2013-04-21 10:45:02.143019309 +0000
-@@ -5,3 +5,4 @@
- MAKE[0]="make module KERNEL_UNAME=${kernelver}"
- CLEAN="make clean"
- AUTOINSTALL="yes"
-+DEST_MODULE_NAME[0]="nvidia-current"

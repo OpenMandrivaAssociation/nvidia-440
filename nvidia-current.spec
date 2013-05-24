@@ -11,14 +11,14 @@
 %{?_without_simple: %global simple 0}
 %{?_with_simple: %global simple 1}
 
-%define name		nvidia-current
+%define name	nvidia-current
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version		319.17
-%define rel			1
+%define version	319.23
+%define rel	1
 # the highest supported videodrv abi
-%define videodrv_abi	12
+%define videodrv_abi	14
 %endif
 
 %define priority	9700
@@ -32,7 +32,7 @@
 %define driverpkgname		x11-driver-video-%{drivername}
 %define modulename		%{drivername}
 # for description and documentation
-%define cards			GeForce 6 and later cards
+%define cards			GeForce 8xxx and later cards
 %define xorg_extra_modules	%{_libdir}/xorg/extra-modules
 %define nvidia_driversdir	%{_libdir}/%{drivername}/xorg
 %define nvidia_extensionsdir	%{_libdir}/%{drivername}/xorg
@@ -99,34 +99,22 @@
 
 # Other packages should not require any NVIDIA libraries, and this package
 # should not be pulled in when libGL.so.1 is required
-%if %{_use_internal_dependency_generator}
-%define __noautoprov '\\.so'
-%define common_requires_exceptions libGLcore\\.so|libnvidia.*\\.so
-%else
 %define _provides_exceptions \\.so
 %define common_requires_exceptions libGLcore\\.so\\|libnvidia.*\\.so
-%endif
 
 %ifarch %{biarches}
 # (anssi) Allow installing of 64-bit package if the runtime dependencies
 # of 32-bit libraries are not satisfied. If a 32-bit package that requires
 # libGL.so.1 is installed, the 32-bit mesa libs are pulled in and that will
 # pull the dependencies of 32-bit nvidia libraries in as well.
-%if %{_use_internal_dependency_generator}
-%define __noautoreq '%{common_requires_exceptions}|lib.*so\\.[^(]+(\\([^)]+\\))?$'
+
+%define _requires_exceptions %common_requires_exceptions\\|lib.*so\\.[^(]\\+\\(([^)]\\+)\\)\\?$
 %else
-%define __noautoreq %{common_requires_exceptions}\\|lib.*so\\.[^(]\\+\\(([^)]\\+)\\)\\?$
-%endif
-%else
-%if %{_use_internal_dependency_generator}
-%define __noautoreq '%{common_requires_exceptions}'
-%else
-%define __noautoreq %{common_requires_exceptions}
-%endif
+%define _requires_exceptions %common_requires_exceptions
 %endif
 
 # https://devtalk.nvidia.com/default/topic/523762/libnvidia-encode-so-310-19-has-dependency-on-missing-library/
-%define _exclude_files_from_autoreq libnvidia-encode.so.%version
+%define _exclude_files_from_autoreq libnvidia-encode.so.%{version}
 
 Summary:	NVIDIA proprietary X.org driver and libraries, current driver series
 Name:		%{name}
@@ -147,7 +135,6 @@ Source100:	nvidia-current.rpmlintrc
 Patch1:		nvidia-settings-enable-dyntwinview-mdv.patch
 # include xf86vmproto for X_XF86VidModeGetGammaRampSize, fixes build on cooker
 Patch3:		nvidia-settings-include-xf86vmproto.patch
-Patch4:		nvidia-current-304.32-dkms.conf-unique-module-name.patch
 Patch5:		nvidia-current-313.18-dont-check-patchlevel-and-sublevel.patch
 Patch6:		nvidia-settings-319.12-fix-format_not_string.patch
 Patch7:		nvidia-xconfig-319.12-fix-format_not_string.patch
@@ -177,9 +164,8 @@ BuildRequires:	rpm-build >= 1:5.3.12
 
 %description
 Source package of the current NVIDIA proprietary driver. Binary
-packages are named x11-driver-video-nvidia-current on Mandriva Linux
-2008 and later, nvidia97xx on Mandriva 2007.1, and nvidia on 2007.0
-and earlier.
+packages are named x11-driver-video-nvidia-current.
+
 
 %package -n %{driverpkgname}
 Summary:	NVIDIA proprietary X.org driver and libraries for %cards
@@ -262,9 +248,8 @@ Requires:	%{_lib}vdpau-devel
 %endif
 
 %description -n %{drivername}-devel
-NVIDIA static development library and OpenGL/CUDA headers for
-%cards. This package is not required for
-normal use.
+NVIDIA OpenGL/CUDA headers for %cards. This package
+is not required for normal use.
 
 %package -n %{drivername}-cuda-opencl
 Summary:	CUDA and OpenCL libraries for NVIDIA proprietary driver
@@ -320,17 +305,32 @@ cd ..
 %endif
 sh %{nsource} --extract-only
 
-%if !%simple
-cd %{pkgname}
-%patch4 -p0 -b .uniq~
-cd ..
-%endif
-
 pushd %{pkgname}
 %patch5 -p2 -b .all3x~
 popd
 
 rm -rf %{pkgname}/usr/src/nv/precompiled
+
+%if %simple
+# for old releases
+mkdir -p %{pkgname}/kernel
+%endif
+
+# (tmb) nuke nVidia provided dkms.conf as we need our own
+rm -rf %{pkgname}/kernel/dkms.conf
+
+# install our own dkms.conf
+cat > %{pkgname}/kernel/dkms.conf <<EOF
+PACKAGE_NAME="%{drivername}"
+PACKAGE_VERSION="%{version}-%{release}"
+BUILT_MODULE_NAME[0]="nvidia"
+DEST_MODULE_LOCATION[0]="/kernel/drivers/char/drm"
+DEST_MODULE_NAME[0]="%{modulename}"
+MAKE[0]="make SYSSRC=\${kernel_source_dir} module"
+CLEAN="make -f Makefile.kbuild clean"
+AUTOINSTALL="yes"
+EOF
+
 
 cat > README.install.urpmi <<EOF
 This driver is for %cards.
@@ -406,7 +406,7 @@ install -d -m755 %{buildroot}%{_usrsrc}/%{drivername}-%{version}-%{release}
 
 # menu entry
 install -d -m755 %{buildroot}%{_datadir}/%{drivername}
-cat > %{buildroot}%{_datadir}/%{drivername}/mandriva-nvidia-settings.desktop <<EOF
+cat > %{buildroot}%{_datadir}/%{drivername}/%{disttag}-nvidia-settings.desktop <<EOF
 [Desktop Entry]
 Name=NVIDIA Display Settings
 Comment=Configure NVIDIA X driver
@@ -414,11 +414,11 @@ Exec=%{_bindir}/nvidia-settings
 Icon=%{drivername}-settings
 Terminal=false
 Type=Application
-Categories=GTK;Settings;HardwareSettings;X-MandrivaLinux-System-Configuration;
+Categories=GTK;Settings;HardwareSettings;
 EOF
 
 install -d -m755	%{buildroot}%{_datadir}/applications
-touch			%{buildroot}%{_datadir}/applications/mandriva-nvidia-settings.desktop
+touch			%{buildroot}%{_datadir}/applications/%{disttag}-nvidia-settings.desktop
 
 # icons
 install -d -m755 %{buildroot}%{_iconsdir}/hicolor/{16x16,32x32,48x48}/apps
@@ -724,12 +724,11 @@ cat .manifest | tail -n +9 | while read line; do
 	# loaded by udev rules, the device nodes are not automatically created
 	# like with regular drivers and therefore this tool is installed on
 	# distro as well, at least for now.
-	  	 
 	# We install our self-compiled version in non-simple mode
 %if %simple
 	install_file nvidia %{nvidia_bindir}
 %endif
-		;;    
+		;;
 	INSTALLER_BINARY)
 		# not installed
 		;;
@@ -766,6 +765,11 @@ find %{buildroot}%{_libdir} %{buildroot}%{_prefix}/lib -type d | while read dir;
 	echo "$dir" | grep -q nvidia && echo "%%dir $dir" >> nvidia.files
 done
 [ -d %{buildroot}%{_includedir}/%{drivername} ] && echo "%{_includedir}/%{drivername}" >> nvidia-devel.files
+
+# for old releases in %%simple mode
+if ! [ -e %{buildroot}%{_usrsrc}/%{drivername}-%{version}-%{release}/dkms.conf ]; then
+	install -m644 kernel/dkms.conf %{buildroot}%{_usrsrc}/%{drivername}-%{version}-%{release}/dkms.conf
+fi
 %endif
 
 %if !%simple
@@ -836,9 +840,6 @@ touch %{buildroot}%{_mandir}/man1/nvidia-cuda-mps-control.1%{_extension}
 # cuda nvidia.icd
 install -d -m755		%{buildroot}%{_sysconfdir}/OpenCL/vendors
 touch				%{buildroot}%{_sysconfdir}/OpenCL/vendors/nvidia.icd
-# override apparently wrong reference to the development symlink name:
-[ "$(cat %{buildroot}%{_sysconfdir}/%{drivername}/nvidia.icd)" = "libcuda.so" ] &&
-	echo libcuda.so.1 > %{buildroot}%{_sysconfdir}/%{drivername}/nvidia.icd
 
 # ld.so.conf
 install -d -m755		%{buildroot}%{_sysconfdir}/%{drivername}
@@ -887,18 +888,26 @@ section=0
 set +x
 [ -e README.txt ] || cp -a usr/share/doc/README.txt .
 cat README.txt | while read line; do
-	[ $section -gt 3 ] && break
-	if [ $((section %% 2)) -eq 0 ]; then
-		echo "$line" | grep -Pq "^\s*NVIDIA GPU product\s+Device PCI ID.*" && section=$((section+1))
+	if [ "$section" = "nothingyet" ] || [ "$section" = "midspace" ]; then
+		if echo "$line" | grep -Pq "^\s*NVIDIA GPU product\s+Device PCI ID"; then
+			section="data"
+		elif [ "$section" = "midspace" ] && echo "$line" | grep -Pq "legacy"; then
+			break
+		fi
 		continue
 	fi
-	if echo "$line" | grep -Pq "^\s*$"; then
-		section=$((section+1))
+
+	if [ "$section" = "data" ] && echo "$line" | grep -Pq "^\s*$"; then
+		section="midspace"
 		continue
 	fi
 	echo "$line" | grep -Pq "^\s*-+[\s-]+$" && continue
-	id=$(echo "$line" | sed -nre 's,^\s*.+?\s+0x(....).*$,\1,p' | tr '[:upper:]' '[:lower:]')
-	echo "0x10de	0x$id	\"Card:%{ldetect_cards_name}\""
+	id=$(echo "$line" | sed -nre 's,^\s*.+?\s\s+0x(....).*$,\1,p' | tr '[:upper:]' '[:lower:]')
+	id2=$(echo "$line" | sed -nre 's,^\s*.+?\s\s+0x(....)\s0x(....).*$,\2,p' | tr '[:upper:]' '[:lower:]')
+	subsysid=
+	# not useful as of 2013-05 -Anssi
+	#[ -n "$id2" ] && subsysid="	0x10de	0x$id2"
+	echo "0x10de	0x$id$subsysid	\"Card:%{ldetect_cards_name}\""
 done | sort -u > pcitable.nvidia.lst
 set -x
 [ $(wc -l pcitable.nvidia.lst | cut -f1 -d" ") -gt 200 ]
@@ -925,7 +934,7 @@ mkdir -p %{_libdir}/vdpau
 	--slave %{_mandir}/man1/nvidia-xconfig.1%{_extension} man_nvidiaxconfig%{_extension} %{_mandir}/man1/alt-%{drivername}-xconfig.1%{_extension} \
 	--slave %{_mandir}/man1/nvidia-smi.1%{_extension} nvidia-smi.1%{_extension} %{_mandir}/man1/alt-%{drivername}-smi.1%{_extension} \
     --slave %{_mandir}/man1/nvidia-cuda-mps-control.1%{_extension} nvidia-cuda-mps-control.1%{_extension} %{_mandir}/man1/alt-%{drivername}-cuda-mps-control.1%{_extension} \
-	--slave %{_datadir}/applications/mandriva-nvidia-settings.desktop nvidia_desktop %{_datadir}/%{drivername}/mandriva-nvidia-settings.desktop \
+	--slave %{_datadir}/applications/%{disttag}-nvidia-settings.desktop nvidia_desktop %{_datadir}/%{drivername}/%{disttag}-nvidia-settings.desktop \
 	--slave %{_bindir}/nvidia-settings nvidia_settings %{nvidia_bindir}/nvidia-settings \
 	--slave %{_bindir}/nvidia-smi nvidia_smi %{nvidia_bindir}/nvidia-smi \
 	--slave %{_bindir}/nvidia-debugdump nvidia_debugdump %{nvidia_bindir}/nvidia-debugdump \
@@ -993,6 +1002,10 @@ fi
 %clean_menus
 %endif
 
+%post -n %{drivername}-cuda-opencl
+# explicit /sbin/ldconfig due to a non-standard library directory
+/sbin/ldconfig -X
+
 %post -n dkms-%{drivername}
 /usr/sbin/dkms --rpm_safe_upgrade add -m %{drivername} -v %{version}-%{release} &&
 /usr/sbin/dkms --rpm_safe_upgrade build -m %{drivername} -v %{version}-%{release} &&
@@ -1006,13 +1019,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 
 # rmmod any old driver if present and not in use (e.g. by X)
 rmmod nvidia > /dev/null 2>&1 || true
-
-# Make sure that ldconfig is run after installing/uninstalling cuda/opencl libs (#62116)
-%post -n %{drivername}-cuda-opencl
-/sbin/ldconfig
-
-%postun -n %{drivername}-cuda-opencl
-/sbin/ldconfig
 
 
 %files -n %{driverpkgname} -f %{pkgname}/nvidia.files
@@ -1087,9 +1093,9 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{_mandir}/man1/alt-%{drivername}-*
 %endif
 
-%ghost %{_datadir}/applications/mandriva-nvidia-settings.desktop
+%ghost %{_datadir}/applications/%{disttag}-nvidia-settings.desktop
 %dir %{_datadir}/%{drivername}
-%{_datadir}/%{drivername}/mandriva-nvidia-settings.desktop
+%{_datadir}/%{drivername}/%{disttag}-nvidia-settings.desktop
 
 %if !%simple
 %{_iconsdir}/hicolor/16x16/apps/%{drivername}-settings.png
