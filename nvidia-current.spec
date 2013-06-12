@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version	319.23
-%define rel	1
+%define rel	2
 # the highest supported videodrv abi
 %define videodrv_abi	14
 %endif
@@ -218,6 +218,13 @@ If you do not want to use XFdrake, see README.manual-setup.
 
 This NVIDIA driver should be used with %cards,
 including the associated Quadro cards.
+
+%package -n %{driverpkgname}-32bit
+Summary:	32-bit compatibility libraries for the NVIDIA proprietary driver
+Group: 		System/Kernel and hardware
+
+%description -n %{driverpkgname}-32bit
+32-bit compatibility libraries for the NVIDIA proprietary driver
 
 %package -n dkms-%{drivername}
 Summary:	NVIDIA kernel module for %cards
@@ -1126,27 +1133,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/libvdpau.so.1
 %endif
 %{nvidia_libdir}/tls/libnvidia-tls.so.%{version}
-%ifarch %{biarches}
-%dir %{nvidia_libdir32}
-%dir %{nvidia_libdir32}/tls
-%dir %{nvidia_libdir32}/vdpau
-%{nvidia_libdir32}/libGL.so.%{version}
-%{nvidia_libdir32}/libnvidia-glcore.so.%{version}
-%{nvidia_libdir32}/libnvidia-tls.so.%{version}
-%{nvidia_libdir32}/libvdpau_nvidia.so
-%{nvidia_libdir32}/vdpau/libvdpau_nvidia.so.%{version}
-%{nvidia_libdir32}/libnvidia-ml.so.%{version}
-%{nvidia_libdir32}/libnvidia-ml.so.1
-%if %{mdkversion} <= 200810
-%{nvidia_libdir32}/vdpau/libvdpau_trace.so.%{version}
-%{nvidia_libdir32}/libvdpau.so.%{version}
-%endif
-%{nvidia_libdir32}/libGL.so.1
-%if %{mdkversion} <= 200810
-%{nvidia_libdir32}/libvdpau.so.1
-%endif
-%{nvidia_libdir32}/tls/libnvidia-tls.so.%{version}
-%endif
 # %simple
 %endif
 
@@ -1188,6 +1174,30 @@ rmmod nvidia > /dev/null 2>&1 || true
 %endif
 %if !%simple
 %{nvidia_driversdir}/nvidia_drv.so
+%endif
+
+
+%ifarch %{biarches}
+%files -n %{driverpkgname}-32bit
+%dir %{nvidia_libdir32}
+%dir %{nvidia_libdir32}/tls
+%dir %{nvidia_libdir32}/vdpau
+%{nvidia_libdir32}/libGL.so.%{version}
+%{nvidia_libdir32}/libnvidia-glcore.so.%{version}
+%{nvidia_libdir32}/libnvidia-tls.so.%{version}
+%{nvidia_libdir32}/libvdpau_nvidia.so
+%{nvidia_libdir32}/vdpau/libvdpau_nvidia.so.%{version}
+%{nvidia_libdir32}/libnvidia-ml.so.%{version}
+%{nvidia_libdir32}/libnvidia-ml.so.1
+%if %{mdkversion} <= 200810
+%{nvidia_libdir32}/vdpau/libvdpau_trace.so.%{version}
+%{nvidia_libdir32}/libvdpau.so.%{version}
+%endif
+%{nvidia_libdir32}/libGL.so.1
+%if %{mdkversion} <= 200810
+%{nvidia_libdir32}/libvdpau.so.1
+%endif
+%{nvidia_libdir32}/tls/libnvidia-tls.so.%{version}
 %endif
 
 %files -n %{drivername}-devel -f %pkgname/nvidia-devel.files
