@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version	319.23
-%define rel	2
+%define rel	3
 # the highest supported videodrv abi
 %define videodrv_abi	14
 %endif
@@ -205,6 +205,9 @@ Obsoletes:	nvidia < 1:%{version}-%{release}
 Provides:	nvidia = 1:%{version}-%{release}
 Obsoletes:	nvidia97xx < %{version}-%{release}
 Provides:	nvidia97xx = %{version}-%{release}
+%ifarch %{biarches}
+Suggests:	%{driverpkgname}-32bit = %{version}-%{release}
+%endif
 
 %description -n %{driverpkgname}
 NVIDIA proprietary X.org graphics driver, related libraries and
@@ -219,12 +222,14 @@ If you do not want to use XFdrake, see README.manual-setup.
 This NVIDIA driver should be used with %cards,
 including the associated Quadro cards.
 
+%ifarch %{biarches}
 %package -n %{driverpkgname}-32bit
 Summary:	32-bit compatibility libraries for the NVIDIA proprietary driver
 Group: 		System/Kernel and hardware
 
 %description -n %{driverpkgname}-32bit
-32-bit compatibility libraries for the NVIDIA proprietary driver
+32-bit compatibility libraries for the NVIDIA proprietary driver.
+%endif
 
 %package -n dkms-%{drivername}
 Summary:	NVIDIA kernel module for %cards
