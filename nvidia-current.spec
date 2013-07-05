@@ -135,7 +135,7 @@ Source100:	nvidia-current.rpmlintrc
 Patch1:		nvidia-settings-enable-dyntwinview-mdv.patch
 # include xf86vmproto for X_XF86VidModeGetGammaRampSize, fixes build on cooker
 Patch3:		nvidia-settings-include-xf86vmproto.patch
-Patch5:		nvidia-current-313.18-dont-check-patchlevel-and-sublevel.patch
+#Patch5:		nvidia-current-313.18-dont-check-patchlevel-and-sublevel.patch
 Patch6:		nvidia-settings-319.12-fix-format_not_string.patch
 Patch7:		nvidia-xconfig-319.12-fix-format_not_string.patch
 Patch8:		nvidia-persistenced-319.17-add-missing-libtirpc-link.patch
@@ -318,7 +318,7 @@ cd ..
 sh %{nsource} --extract-only
 
 pushd %{pkgname}
-%patch5 -p2 -b .all3x~
+#patch5 -p2 -b .all3x~
 popd
 
 rm -rf %{pkgname}/usr/src/nv/precompiled
