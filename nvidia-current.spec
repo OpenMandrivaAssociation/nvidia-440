@@ -376,6 +376,8 @@ EOF
 rm nvidia-settings-%{version}/src/*/*.a
 
 %build
+cat %{pkgname}/.manifest
+exit 1
 %if %mdkversion >= 201000
 %setup_compile_flags
 %else
@@ -408,7 +410,7 @@ export CFLAGS="%{optflags} -Wno-error=format-security"
 %make -C nvidia-modprobe-%{version} STRIP_CMD=true
 %make -C nvidia-persistenced-%{version} STRIP_CMD=true
 
-cat .manifest
+
 
 # %simple
 %endif
