@@ -408,6 +408,8 @@ export CFLAGS="%{optflags} -Wno-error=format-security"
 %make -C nvidia-modprobe-%{version} STRIP_CMD=true
 %make -C nvidia-persistenced-%{version} STRIP_CMD=true
 
+cat .manifest
+
 # %simple
 %endif
 
