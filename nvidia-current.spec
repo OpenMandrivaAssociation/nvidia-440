@@ -376,8 +376,6 @@ EOF
 rm nvidia-settings-%{version}/src/*/*.a
 
 %build
-cat %{pkgname}/.manifest
-exit 1
 %if %mdkversion >= 201000
 %setup_compile_flags
 %else
@@ -573,11 +571,11 @@ cat .manifest | tail -n +9 | while read line; do
 		parseparams arch dest
 		install_lib_symlink nvidia $nvidia_libdir
 		;;
-	OPENGL_LIB)
+	OPENGL_LIB|VGX_LIB)
 		parseparams arch
 		install_file nvidia $nvidia_libdir
 		;;
-	OPENGL_SYMLINK)
+	OPENGL_SYMLINK|VGX_LIB_SYMLINK)
 		parseparams arch dest
 		install_lib_symlink nvidia $nvidia_libdir
 		;;
@@ -1127,6 +1125,7 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/libGL.so.%{version}
 %{nvidia_libdir}/libnvidia-glcore.so.%{version}
 %{nvidia_libdir}/libnvidia-cfg.so.%{version}
+%{nvidia_libdir}/libnvidia-vgxcfg.so.%{version}
 %{nvidia_libdir}/libnvidia-ml.so.%{version}
 %{nvidia_libdir}/libnvidia-tls.so.%{version}
 %{nvidia_libdir}/vdpau/libvdpau_nvidia.so.%{version}
@@ -1217,6 +1216,7 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/libcuda.so
 %{nvidia_libdir}/libnvcuvid.so
 %{nvidia_libdir}/libnvidia-cfg.so
+%{nvidia_libdir}/libnvidia-vgxcfg.so
 %{nvidia_libdir}/libnvidia-ml.so
 %{nvidia_libdir}/libOpenCL.so
 %{nvidia_libdir}/libnvidia-encode.so
