@@ -668,7 +668,7 @@ cat .manifest | tail -n +9 | while read line; do
 	ENCODEAPI_LIB_SYMLINK|NVIFR_LIB_SYMLINK)
 		parseparams arch dest
 		install_lib_symlink nvidia $nvidia_libdir
-		;
+		;;
 	DOCUMENTATION)
 		parseparams subdir
 		case $subdir in
