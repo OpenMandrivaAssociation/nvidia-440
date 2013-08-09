@@ -591,7 +591,7 @@ cat .manifest | tail -n +9 | while read line; do
 	UTILITY_LIB)
 		install_file nvidia %{nvidia_libdir}
 		;;
-	UTILITY_LIB_SYMLINK|VGX_LIB_SYMLINK|NVIFR_LIB_SYMLINK)
+	UTILITY_LIB_SYMLINK|VGX_LIB_SYMLINK
 		parseparams dest
 		install_lib_symlink nvidia %{nvidia_libdir}
 		;;
@@ -665,10 +665,10 @@ cat .manifest | tail -n +9 | while read line; do
 		parseparams arch subdir
 		install_file nvidia $nvidia_libdir/$subdir
 		;;
-	ENCODEAPI_LIB_SYMLINK)
+	ENCODEAPI_LIB_SYMLINK|NVIFR_LIB_SYMLINK)
 		parseparams arch dest
 		install_lib_symlink nvidia $nvidia_libdir
-		;;
+		;
 	DOCUMENTATION)
 		parseparams subdir
 		case $subdir in
