@@ -765,9 +765,6 @@ cat .manifest | tail -n +9 | while read line; do
 	DOT_DESKTOP)
 		# we provide our own for now
 		;;
-	NVIDIA_MODPROBE)
-		install_file nvidia %{nvidia_bindir}
-		;;
 	*)
 		error_unhandled "file $(basename $file) of unknown type $type will be skipped"
 	esac
