@@ -572,7 +572,7 @@ cat .manifest | tail -n +9 | while read line; do
 		parseparams arch dest
 		install_lib_symlink nvidia $nvidia_libdir
 		;;
-	OPENGL_LIB|VGX_LIB|NVIFR_LIB)
+	OPENGL_LIB|VGX_LIB)
 		parseparams arch
 		install_file nvidia $nvidia_libdir
 		;;
@@ -661,7 +661,7 @@ cat .manifest | tail -n +9 | while read line; do
 		parseparams subdir
 		install_file_only nvidia-devel %{_includedir}/%{drivername}/$subdir
 		;;
-	ENCODEAPI_LIB)
+	ENCODEAPI_LIB|NVIFR_LIB)
 		parseparams arch subdir
 		install_file nvidia $nvidia_libdir/$subdir
 		;;
