@@ -1124,7 +1124,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/libnvidia-glcore.so.%{version}
 %{nvidia_libdir}/libnvidia-cfg.so.%{version}
 %{nvidia_libdir}/libnvidia-vgxcfg.so.%{version}
-%{nvidia_libdir}/libnvidia-ifr.so.%{version}
 %{nvidia_libdir}/libnvidia-ml.so.%{version}
 %{nvidia_libdir}/libnvidia-tls.so.%{version}
 %{nvidia_libdir}/vdpau/libvdpau_nvidia.so.%{version}
@@ -1134,7 +1133,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 %endif
 %{nvidia_libdir}/libGL.so.1
 %{nvidia_libdir}/libnvidia-cfg.so.1
-%{nvidia_libdir}/libnvidia-ifr.so.1
 %{nvidia_libdir}/libnvidia-ml.so.1
 %{nvidia_libdir}/libvdpau_nvidia.so
 %if %{mdkversion} <= 200810
@@ -1193,7 +1191,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir32}/libGL.so.%{version}
 %{nvidia_libdir32}/libnvidia-glcore.so.%{version}
 %{nvidia_libdir32}/libnvidia-tls.so.%{version}
-%{nvidia_libdir32}/libnvidia-ifr.so.%{version}
 %{nvidia_libdir32}/libvdpau_nvidia.so
 %{nvidia_libdir32}/vdpau/libvdpau_nvidia.so.%{version}
 %{nvidia_libdir32}/libnvidia-ml.so.%{version}
@@ -1230,6 +1227,7 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir32}/libcuda.so
 %{nvidia_libdir32}/libOpenCL.so
 %{nvidia_libdir32}/libnvidia-ml.so
+%{nvidia_libdir32}/libnvidia-ifr.so
 %{nvidia_libdir32}/libnvcuvid.so
 %{nvidia_libdir32}/libnvidia-encode.so
 %if %{mdkversion} <= 200810
@@ -1259,6 +1257,8 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/libnvidia-opencl.so.1
 %{nvidia_libdir}/libnvidia-encode.so.%{version}
 %{nvidia_libdir}/libnvidia-encode.so.1
+%{nvidia_libdir}/libnvidia-ifr.so.%{version}
+%{nvidia_libdir}/libnvidia-ifr.so.1
 %{nvidia_libdir}/libnvcuvid.so.%{version}
 %{nvidia_libdir}/libnvcuvid.so.1
 %ifarch %{biarches}
