@@ -209,6 +209,7 @@ Provides:	nvidia97xx = %{version}-%{release}
 %ifarch %{biarches}
 Suggests:	%{driverpkgname}-32bit = %{version}-%{release}
 %endif
+Conflicts:	%{drivername}-cuda-opencl <= 325.15-1
 
 %description -n %{driverpkgname}
 NVIDIA proprietary X.org graphics driver, related libraries and
@@ -227,6 +228,7 @@ including the associated Quadro cards.
 %package -n %{driverpkgname}-32bit
 Summary:	32-bit compatibility libraries for the NVIDIA proprietary driver
 Group: 		System/Kernel and hardware
+Conflicts:	%{drivername}-cuda-opencl <= 325.15-1
 
 %description -n %{driverpkgname}-32bit
 32-bit compatibility libraries for the NVIDIA proprietary driver.
@@ -1123,6 +1125,7 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/libGL.so.%{version}
 %{nvidia_libdir}/libnvidia-glcore.so.%{version}
 %{nvidia_libdir}/libnvidia-cfg.so.%{version}
+%{nvidia_libdir}/libnvidia-ifr.so.%{version}
 %{nvidia_libdir}/libnvidia-vgxcfg.so.%{version}
 %{nvidia_libdir}/libnvidia-ml.so.%{version}
 %{nvidia_libdir}/libnvidia-tls.so.%{version}
@@ -1133,6 +1136,7 @@ rmmod nvidia > /dev/null 2>&1 || true
 %endif
 %{nvidia_libdir}/libGL.so.1
 %{nvidia_libdir}/libnvidia-cfg.so.1
+%{nvidia_libdir}/libnvidia-ifr.so.1
 %{nvidia_libdir}/libnvidia-ml.so.1
 %{nvidia_libdir}/libvdpau_nvidia.so
 %if %{mdkversion} <= 200810
@@ -1195,6 +1199,8 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir32}/vdpau/libvdpau_nvidia.so.%{version}
 %{nvidia_libdir32}/libnvidia-ml.so.%{version}
 %{nvidia_libdir32}/libnvidia-ml.so.1
+%{nvidia_libdir32}/libnvidia-ifr.so.%{version}
+%{nvidia_libdir32}/libnvidia-ifr.so.1
 %if %{mdkversion} <= 200810
 %{nvidia_libdir32}/vdpau/libvdpau_trace.so.%{version}
 %{nvidia_libdir32}/libvdpau.so.%{version}
@@ -1257,8 +1263,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/libnvidia-opencl.so.1
 %{nvidia_libdir}/libnvidia-encode.so.%{version}
 %{nvidia_libdir}/libnvidia-encode.so.1
-%{nvidia_libdir}/libnvidia-ifr.so.%{version}
-%{nvidia_libdir}/libnvidia-ifr.so.1
 %{nvidia_libdir}/libnvcuvid.so.%{version}
 %{nvidia_libdir}/libnvcuvid.so.1
 %ifarch %{biarches}
@@ -1270,8 +1274,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir32}/libnvidia-opencl.so.1
 %{nvidia_libdir32}/libnvidia-encode.so.%{version}
 %{nvidia_libdir32}/libnvidia-encode.so.1
-%{nvidia_libdir32}/libnvidia-ifr.so.%{version}
-%{nvidia_libdir32}/libnvidia-ifr.so.1
 %{nvidia_libdir32}/libnvcuvid.so.%{version}
 %{nvidia_libdir32}/libnvcuvid.so.1
 %{nvidia_libdir32}/libcuda.so.%{version}
