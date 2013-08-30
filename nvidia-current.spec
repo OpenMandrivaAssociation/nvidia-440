@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version	325.15
-%define rel	3
+%define rel	4
 # the highest supported videodrv abi
 %define videodrv_abi	14
 %endif
@@ -99,19 +99,30 @@
 
 # Other packages should not require any NVIDIA libraries, and this package
 # should not be pulled in when libGL.so.1 is required
-%define _provides_exceptions \\.so
-%define __noautoprov 'libGL\\.so\\.1(.*)|devel\\(libGL(.*)'
+%if %{_use_internal_dependency_generator}
+%define __noautoprov 'libGL\\.so\\.1(.*)|devel\\(libGL(.*)|\\.so'
 %define common_requires_exceptions libGL\\.so\\|libGLcore\\.so\\|libnvidia.*\\.so
+%else
+%define _provides_exceptions \\.so
+%define common_requires_exceptions libGLcore\\.so\\|libnvidia.*\\.so
+%endif
 
 %ifarch %{biarches}
 # (anssi) Allow installing of 64-bit package if the runtime dependencies
 # of 32-bit libraries are not satisfied. If a 32-bit package that requires
 # libGL.so.1 is installed, the 32-bit mesa libs are pulled in and that will
 # pull the dependencies of 32-bit nvidia libraries in as well.
-
-%define __noautoreq %common_requires_exceptions\\|lib.*so\\.[^(]\\+\\(([^)]\\+)\\)\\?$
+%if %{_use_internal_dependency_generator}
+%define __noautoreq '%{common_requires_exceptions}|lib.*so\\.[^(]+(\\([^)]+\\))?$'
 %else
-%define __noautoreq %common_requires_exceptions
+%define __noautoreq %{common_requires_exceptions}\\|lib.*so\\.[^(]\\+\\(([^)]\\+)\\)\\?$
+%endif
+%else
+%if %{_use_internal_dependency_generator}
+%define __noautoreq '%{common_requires_exceptions}'
+%else
+%define __noautoreq %{common_requires_exceptions}
+%endif
 %endif
 
 # https://devtalk.nvidia.com/default/topic/523762/libnvidia-encode-so-310-19-has-dependency-on-missing-library/
