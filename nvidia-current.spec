@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version	325.15
-%define rel	2
+%define rel	3
 # the highest supported videodrv abi
 %define videodrv_abi	14
 %endif
@@ -101,7 +101,7 @@
 # should not be pulled in when libGL.so.1 is required
 %define _provides_exceptions \\.so
 %define __noautoprov 'libGL\\.so\\.1(.*)|devel\\(libGL(.*)'
-%define common_requires_exceptions libGLcore\\.so\\|libnvidia.*\\.so
+%define common_requires_exceptions libGLcore\\.so\\|libnvidia.*\\.so|libGL\\.so\\.1(.*)
 
 %ifarch %{biarches}
 # (anssi) Allow installing of 64-bit package if the runtime dependencies
@@ -120,7 +120,7 @@
 Summary:	NVIDIA proprietary X.org driver and libraries, current driver series
 Name:		%{name}
 Version:	%{version}
-Release:	%mkrel %{rel}
+Release:	%{rel}
 %if !%simple
 Source0:	ftp://download.nvidia.com/XFree86/Linux-x86/%{version}/%{pkgname32}.run
 Source1:	ftp://download.nvidia.com/XFree86/Linux-x86_64/%{version}/%{pkgname64}.run
