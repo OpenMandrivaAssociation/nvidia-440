@@ -107,7 +107,7 @@
 # of 32-bit libraries are not satisfied. If a 32-bit package that requires
 # libGL.so.1 is installed, the 32-bit mesa libs are pulled in and that will
 # pull the dependencies of 32-bit nvidia libraries in as well.
-%define __noautoreq '%{common_requires_exceptions}\\|lib.*so\\.[^(]+(\\([^)]+\\))?$'
+%define __noautoreq '%common_requires_exceptions\\|lib.*so\\.[^(]\\+\\(([^)]\\+)\\)\\?$'
 %else
 %define __noautoreq '%{common_requires_exceptions}'
 %endif
