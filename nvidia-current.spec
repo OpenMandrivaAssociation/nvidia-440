@@ -109,13 +109,13 @@
 # libGL.so.1 is installed, the 32-bit mesa libs are pulled in and that will
 # pull the dependencies of 32-bit nvidia libraries in as well.
 
-%define _requires_exceptions %common_requires_exceptions\\|lib.*so\\.[^(]\\+\\(([^)]\\+)\\)\\?$
+%define __noautoreq %common_requires_exceptions\\|lib.*so\\.[^(]\\+\\(([^)]\\+)\\)\\?$
 %else
-%define _requires_exceptions %common_requires_exceptions
+%define __noautoreq %common_requires_exceptions
 %endif
 
 # https://devtalk.nvidia.com/default/topic/523762/libnvidia-encode-so-310-19-has-dependency-on-missing-library/
-%define _exclude_files_from_autoreq libnvidia-encode.so.%{version}
+%define __noautoreqfiles libnvidia-encode.so.%{version}
 
 Summary:	NVIDIA proprietary X.org driver and libraries, current driver series
 Name:		%{name}
