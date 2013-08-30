@@ -101,7 +101,7 @@
 # should not be pulled in when libGL.so.1 is required
 %define _provides_exceptions \\.so
 %define __noautoprov 'libGL\\.so\\.1(.*)|devel\\(libGL(.*)'
-%define common_requires_exceptions libGLcore\\.so\\|libnvidia.*\\.so|libGL\\.so\\.1(.*)
+%define common_requires_exceptions libGL\\.so\\|libGLcore\\.so\\|libnvidia.*\\.so
 
 %ifarch %{biarches}
 # (anssi) Allow installing of 64-bit package if the runtime dependencies
