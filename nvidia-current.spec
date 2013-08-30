@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version	325.15
-%define rel	1
+%define rel	3
 # the highest supported videodrv abi
 %define videodrv_abi	14
 %endif
@@ -101,7 +101,7 @@
 # should not be pulled in when libGL.so.1 is required
 %define _provides_exceptions \\.so
 %define __noautoprov 'libGL\\.so\\.1(.*)|devel\\(libGL(.*)'
-%define common_requires_exceptions libGLcore\\.so\\|libnvidia.*\\.so
+%define common_requires_exceptions libGL\\.so\\|libGLcore\\.so\\|libnvidia.*\\.so
 
 %ifarch %{biarches}
 # (anssi) Allow installing of 64-bit package if the runtime dependencies
@@ -109,18 +109,18 @@
 # libGL.so.1 is installed, the 32-bit mesa libs are pulled in and that will
 # pull the dependencies of 32-bit nvidia libraries in as well.
 
-%define _requires_exceptions %common_requires_exceptions\\|lib.*so\\.[^(]\\+\\(([^)]\\+)\\)\\?$
+%define __noautoreq %common_requires_exceptions\\|lib.*so\\.[^(]\\+\\(([^)]\\+)\\)\\?$
 %else
-%define _requires_exceptions %common_requires_exceptions
+%define __noautoreq %common_requires_exceptions
 %endif
 
 # https://devtalk.nvidia.com/default/topic/523762/libnvidia-encode-so-310-19-has-dependency-on-missing-library/
-%define _exclude_files_from_autoreq libnvidia-encode.so.%{version}
+%define __noautoreqfiles libnvidia-encode.so.%{version}
 
 Summary:	NVIDIA proprietary X.org driver and libraries, current driver series
 Name:		%{name}
 Version:	%{version}
-Release:	%mkrel %{rel}
+Release:	%{rel}
 %if !%simple
 Source0:	ftp://download.nvidia.com/XFree86/Linux-x86/%{version}/%{pkgname32}.run
 Source1:	ftp://download.nvidia.com/XFree86/Linux-x86_64/%{version}/%{pkgname64}.run
@@ -209,6 +209,7 @@ Provides:	nvidia97xx = %{version}-%{release}
 %ifarch %{biarches}
 Suggests:	%{driverpkgname}-32bit = %{version}-%{release}
 %endif
+Conflicts:	%{drivername}-cuda-opencl <= 325.15-1
 
 %description -n %{driverpkgname}
 NVIDIA proprietary X.org graphics driver, related libraries and
@@ -227,6 +228,7 @@ including the associated Quadro cards.
 %package -n %{driverpkgname}-32bit
 Summary:	32-bit compatibility libraries for the NVIDIA proprietary driver
 Group: 		System/Kernel and hardware
+Conflicts:	%{drivername}-cuda-opencl <= 325.15-1
 
 %description -n %{driverpkgname}-32bit
 32-bit compatibility libraries for the NVIDIA proprietary driver.
@@ -661,11 +663,11 @@ cat .manifest | tail -n +9 | while read line; do
 		parseparams subdir
 		install_file_only nvidia-devel %{_includedir}/%{drivername}/$subdir
 		;;
-	ENCODEAPI_LIB)
+	ENCODEAPI_LIB|NVIFR_LIB)
 		parseparams arch subdir
 		install_file nvidia $nvidia_libdir/$subdir
 		;;
-	ENCODEAPI_LIB_SYMLINK)
+	ENCODEAPI_LIB_SYMLINK|NVIFR_LIB_SYMLINK)
 		parseparams arch dest
 		install_lib_symlink nvidia $nvidia_libdir
 		;;
@@ -764,9 +766,6 @@ cat .manifest | tail -n +9 | while read line; do
         ;;
 	DOT_DESKTOP)
 		# we provide our own for now
-		;;
-	NVIDIA_MODPROBE)
-		install_file nvidia %{nvidia_bindir}
 		;;
 	*)
 		error_unhandled "file $(basename $file) of unknown type $type will be skipped"
@@ -1126,6 +1125,7 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/libGL.so.%{version}
 %{nvidia_libdir}/libnvidia-glcore.so.%{version}
 %{nvidia_libdir}/libnvidia-cfg.so.%{version}
+%{nvidia_libdir}/libnvidia-ifr.so.%{version}
 %{nvidia_libdir}/libnvidia-vgxcfg.so.%{version}
 %{nvidia_libdir}/libnvidia-ml.so.%{version}
 %{nvidia_libdir}/libnvidia-tls.so.%{version}
@@ -1136,6 +1136,7 @@ rmmod nvidia > /dev/null 2>&1 || true
 %endif
 %{nvidia_libdir}/libGL.so.1
 %{nvidia_libdir}/libnvidia-cfg.so.1
+%{nvidia_libdir}/libnvidia-ifr.so.1
 %{nvidia_libdir}/libnvidia-ml.so.1
 %{nvidia_libdir}/libvdpau_nvidia.so
 %if %{mdkversion} <= 200810
@@ -1198,6 +1199,8 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir32}/vdpau/libvdpau_nvidia.so.%{version}
 %{nvidia_libdir32}/libnvidia-ml.so.%{version}
 %{nvidia_libdir32}/libnvidia-ml.so.1
+%{nvidia_libdir32}/libnvidia-ifr.so.%{version}
+%{nvidia_libdir32}/libnvidia-ifr.so.1
 %if %{mdkversion} <= 200810
 %{nvidia_libdir32}/vdpau/libvdpau_trace.so.%{version}
 %{nvidia_libdir32}/libvdpau.so.%{version}
@@ -1218,6 +1221,7 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/libnvcuvid.so
 %{nvidia_libdir}/libnvidia-cfg.so
 %{nvidia_libdir}/libnvidia-vgxcfg.so
+%{nvidia_libdir}/libnvidia-ifr.so
 %{nvidia_libdir}/libnvidia-ml.so
 %{nvidia_libdir}/libOpenCL.so
 %{nvidia_libdir}/libnvidia-encode.so
@@ -1229,6 +1233,7 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir32}/libcuda.so
 %{nvidia_libdir32}/libOpenCL.so
 %{nvidia_libdir32}/libnvidia-ml.so
+%{nvidia_libdir32}/libnvidia-ifr.so
 %{nvidia_libdir32}/libnvcuvid.so
 %{nvidia_libdir32}/libnvidia-encode.so
 %if %{mdkversion} <= 200810
