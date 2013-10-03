@@ -16,12 +16,12 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version	325.15
-%define rel	4
+%define rel	5
 # the highest supported videodrv abi
 %define videodrv_abi	14
 %endif
 
-%define priority	9700
+%define priority	9710
 
 %define pkgname32	NVIDIA-Linux-x86-%{version}
 %define pkgname64	NVIDIA-Linux-x86_64-%{version}
