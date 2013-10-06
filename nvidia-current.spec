@@ -1116,6 +1116,12 @@ rmmod nvidia > /dev/null 2>&1 || true
 %dir %{nvidia_libdir}/tls
 %dir %{nvidia_libdir}/vdpau
 %{nvidia_libdir}/libGL.so.%{version}
+%ifnarch %{biarches}
+%{nvidia_libdir}/libEGL.so.%{version}
+%{nvidia_libdir}/libGLESv*.%{version}
+%{nvidia_libdir}/libnvidia-eglcore.so.%{version}
+%{nvidia_libdir}/libnvidia-glsi.so.%{version}
+%endif
 %{nvidia_libdir}/libnvidia-glcore.so.%{version}
 %{nvidia_libdir}/libnvidia-cfg.so.%{version}
 %{nvidia_libdir}/libnvidia-fbc.so.%{version}
@@ -1129,6 +1135,11 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/libvdpau.so.%{version}
 %endif
 %{nvidia_libdir}/libGL.so.1
+%ifnarch %{biarches}
+%{nvidia_libdir}/libEGL.so.1
+%{nvidia_libdir}/libGLESv*.so.1
+%{nvidia_libdir}/libGLESv*.so.2
+%endif
 %{nvidia_libdir}/libnvidia-cfg.so.1
 %{nvidia_libdir}/libnvidia-fbc.so.1
 %{nvidia_libdir}/libnvidia-ifr.so.1
@@ -1218,6 +1229,10 @@ rmmod nvidia > /dev/null 2>&1 || true
 %if !%simple
 %{_includedir}/%{drivername}
 %{nvidia_libdir}/libGL.so
+%ifnarch %{biarches}
+%{nvidia_libdir}/libEGL.so
+%{nvidia_libdir}/libGLESv*.so
+%endif
 %{nvidia_libdir}/libcuda.so
 %{nvidia_libdir}/libnvcuvid.so
 %{nvidia_libdir}/libnvidia-cfg.so
