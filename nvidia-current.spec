@@ -15,8 +15,8 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version	325.15
-%define rel	5
+%define version	331.13
+%define rel	1
 # the highest supported videodrv abi
 %define videodrv_abi	14
 %endif
@@ -165,7 +165,6 @@ BuildRequires:	rpm-build >= 1:5.3.12
 Source package of the current NVIDIA proprietary driver. Binary
 packages are named x11-driver-video-nvidia-current.
 
-
 %package -n %{driverpkgname}
 Summary:	NVIDIA proprietary X.org driver and libraries for %cards
 Group: 		System/Kernel and hardware
@@ -305,7 +304,7 @@ HTML version of the README.txt file provided in package
 %else
 %setup -q -c -T -a 2 -a 3 -a 5 -a 6
 cd nvidia-settings-%{version}
-%patch1 -p1
+##%patch1 -p1
 %patch3 -p1
 #patch6 -p1
 cd ..
@@ -340,10 +339,9 @@ BUILT_MODULE_NAME[0]="nvidia"
 DEST_MODULE_LOCATION[0]="/kernel/drivers/char/drm"
 DEST_MODULE_NAME[0]="%{modulename}"
 MAKE[0]="make SYSSRC=\${kernel_source_dir} module"
-CLEAN="make -f Makefile.kbuild clean"
+CLEAN="make clean"
 AUTOINSTALL="yes"
 EOF
-
 
 cat > README.install.urpmi <<EOF
 This driver is for %cards.
@@ -408,8 +406,6 @@ export CFLAGS="%{optflags} -Wno-error=format-security"
 %make -C nvidia-xconfig-%{version} STRIP_CMD=true
 %make -C nvidia-modprobe-%{version} STRIP_CMD=true
 %make -C nvidia-persistenced-%{version} STRIP_CMD=true
-
-
 
 # %simple
 %endif
@@ -595,7 +591,7 @@ cat .manifest | tail -n +9 | while read line; do
 		parseparams dest
 		install_lib_symlink nvidia %{nvidia_libdir}
 		;;
-	VDPAU_LIB)
+	VDPAU_LIB|VDPAU_WRAPPER_LIB)
 		parseparams arch subdir
 %if %{mdkversion} >= 200900
 		# on 2009.0+, only install libvdpau_nvidia.so
@@ -603,7 +599,7 @@ cat .manifest | tail -n +9 | while read line; do
 %endif
 		install_file nvidia $nvidia_libdir/$subdir
 		;;
-	VDPAU_SYMLINK)
+	VDPAU_SYMLINK|VDPAU_WRAPPER_SYMLINK)
 		parseparams arch subdir dest
 %if %{mdkversion} >= 200900
 		# on 2009.0+, only install libvdpau_nvidia.so
@@ -1033,7 +1029,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 # rmmod any old driver if present and not in use (e.g. by X)
 rmmod nvidia > /dev/null 2>&1 || true
 
-
 %files -n %{driverpkgname} -f %{pkgname}/nvidia.files
 %defattr(-,root,root)
 # other documentation files are listed in nvidia.files
@@ -1121,8 +1116,15 @@ rmmod nvidia > /dev/null 2>&1 || true
 %dir %{nvidia_libdir}/tls
 %dir %{nvidia_libdir}/vdpau
 %{nvidia_libdir}/libGL.so.%{version}
+%ifnarch %{biarches}
+%{nvidia_libdir}/libEGL.so.%{version}
+%{nvidia_libdir}/libGLESv*.%{version}
+%{nvidia_libdir}/libnvidia-eglcore.so.%{version}
+%{nvidia_libdir}/libnvidia-glsi.so.%{version}
+%endif
 %{nvidia_libdir}/libnvidia-glcore.so.%{version}
 %{nvidia_libdir}/libnvidia-cfg.so.%{version}
+%{nvidia_libdir}/libnvidia-fbc.so.%{version}
 %{nvidia_libdir}/libnvidia-ifr.so.%{version}
 %{nvidia_libdir}/libnvidia-vgxcfg.so.%{version}
 %{nvidia_libdir}/libnvidia-ml.so.%{version}
@@ -1133,7 +1135,13 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/libvdpau.so.%{version}
 %endif
 %{nvidia_libdir}/libGL.so.1
+%ifnarch %{biarches}
+%{nvidia_libdir}/libEGL.so.1
+%{nvidia_libdir}/libGLESv*.so.1
+%{nvidia_libdir}/libGLESv*.so.2
+%endif
 %{nvidia_libdir}/libnvidia-cfg.so.1
+%{nvidia_libdir}/libnvidia-fbc.so.1
 %{nvidia_libdir}/libnvidia-ifr.so.1
 %{nvidia_libdir}/libnvidia-ml.so.1
 %{nvidia_libdir}/libvdpau_nvidia.so
@@ -1184,14 +1192,17 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_driversdir}/nvidia_drv.so
 %endif
 
-
 %ifarch %{biarches}
 %files -n %{driverpkgname}-32bit
 %dir %{nvidia_libdir32}
 %dir %{nvidia_libdir32}/tls
 %dir %{nvidia_libdir32}/vdpau
 %{nvidia_libdir32}/libGL.so.%{version}
+%{nvidia_libdir32}/libEGL.so.%{version}
+%{nvidia_libdir32}/libGLESv*.%{version}
 %{nvidia_libdir32}/libnvidia-glcore.so.%{version}
+%{nvidia_libdir32}/libnvidia-eglcore.so.%{version}
+%{nvidia_libdir32}/libnvidia-glsi.so.%{version}
 %{nvidia_libdir32}/libnvidia-tls.so.%{version}
 %{nvidia_libdir32}/libvdpau_nvidia.so
 %{nvidia_libdir32}/vdpau/libvdpau_nvidia.so.%{version}
@@ -1204,6 +1215,9 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir32}/libvdpau.so.%{version}
 %endif
 %{nvidia_libdir32}/libGL.so.1
+%{nvidia_libdir32}/libEGL.so.1
+%{nvidia_libdir32}/libGLESv*.so.1
+%{nvidia_libdir32}/libGLESv*.so.2
 %if %{mdkversion} <= 200810
 %{nvidia_libdir32}/libvdpau.so.1
 %endif
@@ -1215,9 +1229,14 @@ rmmod nvidia > /dev/null 2>&1 || true
 %if !%simple
 %{_includedir}/%{drivername}
 %{nvidia_libdir}/libGL.so
+%ifnarch %{biarches}
+%{nvidia_libdir}/libEGL.so
+%{nvidia_libdir}/libGLESv*.so
+%endif
 %{nvidia_libdir}/libcuda.so
 %{nvidia_libdir}/libnvcuvid.so
 %{nvidia_libdir}/libnvidia-cfg.so
+%{nvidia_libdir}/libnvidia-fbc.so
 %{nvidia_libdir}/libnvidia-vgxcfg.so
 %{nvidia_libdir}/libnvidia-ifr.so
 %{nvidia_libdir}/libnvidia-ml.so
@@ -1228,6 +1247,8 @@ rmmod nvidia > /dev/null 2>&1 || true
 %endif
 %ifarch %{biarches}
 %{nvidia_libdir32}/libGL.so
+%{nvidia_libdir32}/libEGL.so
+%{nvidia_libdir32}/libGLESv*.so
 %{nvidia_libdir32}/libcuda.so
 %{nvidia_libdir32}/libOpenCL.so
 %{nvidia_libdir32}/libnvidia-ml.so
