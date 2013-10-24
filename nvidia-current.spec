@@ -568,7 +568,7 @@ cat .manifest | tail -n +9 | while read line; do
 		parseparams arch dest
 		install_lib_symlink nvidia $nvidia_libdir
 		;;
-	OPENGL_LIB|VGX_LIB)
+	OPENGL_LIB)
 		parseparams arch
 		install_file nvidia $nvidia_libdir
 		;;
@@ -587,7 +587,7 @@ cat .manifest | tail -n +9 | while read line; do
 	UTILITY_LIB)
 		install_file nvidia %{nvidia_libdir}
 		;;
-	UTILITY_LIB_SYMLINK|VGX_LIB_SYMLINK)
+	UTILITY_LIB_SYMLINK)
 		parseparams dest
 		install_lib_symlink nvidia %{nvidia_libdir}
 		;;
@@ -1126,7 +1126,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/libnvidia-cfg.so.%{version}
 %{nvidia_libdir}/libnvidia-fbc.so.%{version}
 %{nvidia_libdir}/libnvidia-ifr.so.%{version}
-%{nvidia_libdir}/libnvidia-vgxcfg.so.%{version}
 %{nvidia_libdir}/libnvidia-ml.so.%{version}
 %{nvidia_libdir}/libnvidia-tls.so.%{version}
 %{nvidia_libdir}/vdpau/libvdpau_nvidia.so.%{version}
@@ -1237,7 +1236,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/libnvcuvid.so
 %{nvidia_libdir}/libnvidia-cfg.so
 %{nvidia_libdir}/libnvidia-fbc.so
-%{nvidia_libdir}/libnvidia-vgxcfg.so
 %{nvidia_libdir}/libnvidia-ifr.so
 %{nvidia_libdir}/libnvidia-ml.so
 %{nvidia_libdir}/libOpenCL.so
