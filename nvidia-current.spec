@@ -744,7 +744,7 @@ cat .manifest | tail -n +9 | while read line; do
 	INSTALLER_BINARY)
 		# not installed
 		;;
-	KERNEL_MODULE_SRC)
+	KERNEL_MODULE_SRC|UVM_MODULE_SRC)
 		install_file nvidia-dkms %{_usrsrc}/%{drivername}-%{version}-%{release}
 		;;
 	CUDA_ICD)
