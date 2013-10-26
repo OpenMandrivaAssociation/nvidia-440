@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version	331.13
-%define rel	1
+%define rel	2
 # the highest supported videodrv abi
 %define videodrv_abi	14
 %endif
@@ -138,6 +138,7 @@ Patch3:		nvidia-settings-include-xf86vmproto.patch
 Patch6:		nvidia-settings-319.12-fix-format_not_string.patch
 Patch7:		nvidia-xconfig-319.12-fix-format_not_string.patch
 Patch8:		nvidia-persistenced-319.17-add-missing-libtirpc-link.patch
+Patch9:		nvidia-Linux-3.11.patch
 %endif
 License:	Freeware
 URL:		http://www.nvidia.com/object/unix.html
@@ -319,6 +320,7 @@ sh %{nsource} --extract-only
 
 pushd %{pkgname}
 #patch5 -p2 -b .all3x~
+%patch9 -p1
 popd
 
 rm -rf %{pkgname}/usr/src/nv/precompiled
