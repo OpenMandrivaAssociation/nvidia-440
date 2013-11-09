@@ -15,8 +15,8 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version	331.13
-%define rel	2
+%define version	331.20
+%define rel	1
 # the highest supported videodrv abi
 %define videodrv_abi	14
 %endif
@@ -138,7 +138,6 @@ Patch3:		nvidia-settings-include-xf86vmproto.patch
 Patch6:		nvidia-settings-319.12-fix-format_not_string.patch
 Patch7:		nvidia-xconfig-319.12-fix-format_not_string.patch
 Patch8:		nvidia-persistenced-319.17-add-missing-libtirpc-link.patch
-Patch9:		nvidia-Linux-3.11.patch
 %endif
 License:	Freeware
 URL:		http://www.nvidia.com/object/unix.html
@@ -320,7 +319,6 @@ sh %{nsource} --extract-only
 
 pushd %{pkgname}
 #patch5 -p2 -b .all3x~
-%patch9 -p1
 popd
 
 rm -rf %{pkgname}/usr/src/nv/precompiled
@@ -570,7 +568,7 @@ cat .manifest | tail -n +9 | while read line; do
 		parseparams arch dest
 		install_lib_symlink nvidia $nvidia_libdir
 		;;
-	OPENGL_LIB|VGX_LIB)
+	OPENGL_LIB)
 		parseparams arch
 		install_file nvidia $nvidia_libdir
 		;;
@@ -589,7 +587,7 @@ cat .manifest | tail -n +9 | while read line; do
 	UTILITY_LIB)
 		install_file nvidia %{nvidia_libdir}
 		;;
-	UTILITY_LIB_SYMLINK|VGX_LIB_SYMLINK)
+	UTILITY_LIB_SYMLINK)
 		parseparams dest
 		install_lib_symlink nvidia %{nvidia_libdir}
 		;;
@@ -746,7 +744,7 @@ cat .manifest | tail -n +9 | while read line; do
 	INSTALLER_BINARY)
 		# not installed
 		;;
-	KERNEL_MODULE_SRC)
+	KERNEL_MODULE_SRC|UVM_MODULE_SRC)
 		install_file nvidia-dkms %{_usrsrc}/%{drivername}-%{version}-%{release}
 		;;
 	CUDA_ICD)
@@ -1128,7 +1126,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/libnvidia-cfg.so.%{version}
 %{nvidia_libdir}/libnvidia-fbc.so.%{version}
 %{nvidia_libdir}/libnvidia-ifr.so.%{version}
-%{nvidia_libdir}/libnvidia-vgxcfg.so.%{version}
 %{nvidia_libdir}/libnvidia-ml.so.%{version}
 %{nvidia_libdir}/libnvidia-tls.so.%{version}
 %{nvidia_libdir}/vdpau/libvdpau_nvidia.so.%{version}
@@ -1239,7 +1236,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/libnvcuvid.so
 %{nvidia_libdir}/libnvidia-cfg.so
 %{nvidia_libdir}/libnvidia-fbc.so
-%{nvidia_libdir}/libnvidia-vgxcfg.so
 %{nvidia_libdir}/libnvidia-ifr.so
 %{nvidia_libdir}/libnvidia-ml.so
 %{nvidia_libdir}/libOpenCL.so
