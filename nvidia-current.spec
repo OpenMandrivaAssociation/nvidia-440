@@ -329,18 +329,27 @@ mkdir -p %{pkgname}/kernel
 %endif
 
 # (tmb) nuke nVidia provided dkms.conf as we need our own
-rm -rf %{pkgname}/kernel/dkms.conf
+rm -f %{pkgname}/kernel/dkms.conf
+rm -f %{pkgname}/kernel/uvm/dkms.conf.fragment
 
 # install our own dkms.conf
 cat > %{pkgname}/kernel/dkms.conf <<EOF
 PACKAGE_NAME="%{drivername}"
 PACKAGE_VERSION="%{version}-%{release}"
 BUILT_MODULE_NAME[0]="nvidia"
-DEST_MODULE_LOCATION[0]="/kernel/drivers/char/drm"
+DEST_MODULE_LOCATION[0]="/kernel/drivers/gpu/drm"
 DEST_MODULE_NAME[0]="%{modulename}"
 MAKE[0]="make SYSSRC=\${kernel_source_dir} module"
 CLEAN="make clean"
 AUTOINSTALL="yes"
+
+# WIP! make uvm build work
+#BUILT_MODULE_NAME[1]="nvidia-uvm"
+#BUILT_MODULE_LOCATION[1]="uvm/"
+#DEST_MODULE_LOCATION[1]="/kernel/drivers/gpu/drm"
+#MAKE[0]+="; make SYSSRC=\${kernel_source_dir} -C uvm module KBUILD_EXTMOD=/var/lib/dkms/%{drivername}/%{version}-%{release}/build/uvm"
+#CLEAN+="; make -C uvm clean"
+
 EOF
 
 cat > README.install.urpmi <<EOF
@@ -747,6 +756,9 @@ cat .manifest | tail -n +9 | while read line; do
 	KERNEL_MODULE_SRC|UVM_MODULE_SRC)
 		install_file nvidia-dkms %{_usrsrc}/%{drivername}-%{version}-%{release}
 		;;
+    UVM_MODULE_SRC)
+    	install_file nvidia-dkms %{_usrsrc}/%{drivername}-%{version}-%{release}/uvm
+        ;;
 	CUDA_ICD)
 		# in theory this should go to the cuda subpackage, but it goes into the main package
 		# as this avoids one broken symlink and it is small enough to not cause space issues
