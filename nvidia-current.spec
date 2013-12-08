@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version	331.20
-%define rel	2
+%define rel	3
 # the highest supported videodrv abi
 %define videodrv_abi	14
 %endif
@@ -134,6 +134,7 @@ Source100:	nvidia-current.rpmlintrc
 Patch1:		nvidia-settings-enable-dyntwinview-mdv.patch
 # include xf86vmproto for X_XF86VidModeGetGammaRampSize, fixes build on cooker
 Patch3:		nvidia-settings-include-xf86vmproto.patch
+Patch4:		nvidia-current-331.20-CONFIG_UIDGID_STRICT_TYPE_CHECKS-buildfix.patch
 #Patch5:		nvidia-current-313.18-dont-check-patchlevel-and-sublevel.patch
 Patch6:		nvidia-settings-319.12-fix-format_not_string.patch
 Patch7:		nvidia-xconfig-319.12-fix-format_not_string.patch
@@ -314,12 +315,12 @@ cd ..
 cd nvidia-persistenced-%{version}
 %patch8 -p1
 cd ..
+cd %{pkgname}
+%patch4 -p2
+cd ..
 %endif
-sh %{nsource} --extract-only
 
-pushd %{pkgname}
-#patch5 -p2 -b .all3x~
-popd
+sh %{nsource} --extract-only
 
 rm -rf %{pkgname}/usr/src/nv/precompiled
 
