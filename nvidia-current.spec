@@ -315,12 +315,15 @@ cd ..
 cd nvidia-persistenced-%{version}
 %patch8 -p1
 cd ..
+%endif
+
+sh %{nsource} --extract-only
+
+%if !%simple
 cd %{pkgname}
 %patch4 -p2
 cd ..
 %endif
-
-sh %{nsource} --extract-only
 
 rm -rf %{pkgname}/usr/src/nv/precompiled
 
