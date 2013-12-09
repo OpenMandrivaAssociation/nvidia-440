@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version	331.20
-%define rel	1
+%define rel	3
 # the highest supported videodrv abi
 %define videodrv_abi	14
 %endif
@@ -134,6 +134,7 @@ Source100:	nvidia-current.rpmlintrc
 Patch1:		nvidia-settings-enable-dyntwinview-mdv.patch
 # include xf86vmproto for X_XF86VidModeGetGammaRampSize, fixes build on cooker
 Patch3:		nvidia-settings-include-xf86vmproto.patch
+Patch4:		nvidia-current-331.20-CONFIG_UIDGID_STRICT_TYPE_CHECKS-buildfix.patch
 #Patch5:		nvidia-current-313.18-dont-check-patchlevel-and-sublevel.patch
 Patch6:		nvidia-settings-319.12-fix-format_not_string.patch
 Patch7:		nvidia-xconfig-319.12-fix-format_not_string.patch
@@ -315,11 +316,14 @@ cd nvidia-persistenced-%{version}
 %patch8 -p1
 cd ..
 %endif
+
 sh %{nsource} --extract-only
 
-pushd %{pkgname}
-#patch5 -p2 -b .all3x~
-popd
+%if !%simple
+cd %{pkgname}
+%patch4 -p2
+cd ..
+%endif
 
 rm -rf %{pkgname}/usr/src/nv/precompiled
 
@@ -339,18 +343,17 @@ PACKAGE_VERSION="%{version}-%{release}"
 BUILT_MODULE_NAME[0]="nvidia"
 DEST_MODULE_LOCATION[0]="/kernel/drivers/gpu/drm"
 DEST_MODULE_NAME[0]="%{modulename}"
+BUILT_MODULE_NAME[1]="nvidia-uvm"
+BUILT_MODULE_LOCATION[1]="uvm/"
+DEST_MODULE_LOCATION[1]="/kernel/drivers/gpu/drm"
 MAKE[0]="make SYSSRC=\${kernel_source_dir} module"
-CLEAN="make clean"
+MAKE[0]+="; make SYSSRC=\${kernel_source_dir} -C uvm module KBUILD_EXTMOD=\${dkms_tree}/%{drivername}/%{version}-%{release}/build/uvm"
+CLEAN="make -f Makefile.kbuild clean"
+CLEAN+="; make -C uvm clean"
 AUTOINSTALL="yes"
-
-# WIP! make uvm build work
-#BUILT_MODULE_NAME[1]="nvidia-uvm"
-#BUILT_MODULE_LOCATION[1]="uvm/"
-#DEST_MODULE_LOCATION[1]="/kernel/drivers/gpu/drm"
-#MAKE[0]+="; make SYSSRC=\${kernel_source_dir} -C uvm module KBUILD_EXTMOD=/var/lib/dkms/%{drivername}/%{version}-%{release}/build/uvm"
-#CLEAN+="; make -C uvm clean"
-
 EOF
+
+
 
 cat > README.install.urpmi <<EOF
 This driver is for %cards.
