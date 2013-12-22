@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version	331.20
-%define rel	4
+%define rel	5
 # the highest supported videodrv abi
 %define videodrv_abi	14
 %endif
@@ -756,11 +756,8 @@ cat .manifest | tail -n +9 | while read line; do
 	INSTALLER_BINARY)
 		# not installed
 		;;
-	KERNEL_MODULE_SRC)
+	KERNEL_MODULE_SRC|UVM_MODULE_SRC)
 		install_file nvidia-dkms %{_usrsrc}/%{drivername}-%{version}-%{release}
-		;;
-    UVM_MODULE_SRC)
-    	install_file nvidia-dkms %{_usrsrc}/%{drivername}-%{version}-%{release}/uvm
         ;;
 	CUDA_ICD)
 		# in theory this should go to the cuda subpackage, but it goes into the main package
