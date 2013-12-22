@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version	331.20
-%define rel	3
+%define rel	4
 # the highest supported videodrv abi
 %define videodrv_abi	14
 %endif
@@ -341,11 +341,11 @@ cat > %{pkgname}/kernel/dkms.conf <<EOF
 PACKAGE_NAME="%{drivername}"
 PACKAGE_VERSION="%{version}-%{release}"
 BUILT_MODULE_NAME[0]="nvidia"
-DEST_MODULE_LOCATION[0]="/kernel/drivers/gpu/drm"
+DEST_MODULE_LOCATION[0]="/kernel/drivers/char/drm"
 DEST_MODULE_NAME[0]="%{modulename}"
 BUILT_MODULE_NAME[1]="nvidia-uvm"
 BUILT_MODULE_LOCATION[1]="uvm/"
-DEST_MODULE_LOCATION[1]="/kernel/drivers/gpu/drm"
+DEST_MODULE_LOCATION[1]="/kernel/drivers/char/drm"
 MAKE[0]="make SYSSRC=\${kernel_source_dir} module"
 MAKE[0]+="; make SYSSRC=\${kernel_source_dir} -C uvm module KBUILD_EXTMOD=\${dkms_tree}/%{drivername}/%{version}-%{release}/build/uvm"
 CLEAN="make -f Makefile.kbuild clean"
