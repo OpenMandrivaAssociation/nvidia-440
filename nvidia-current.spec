@@ -16,7 +16,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version	331.20
-%define rel	5
+%define rel	6
 # the highest supported videodrv abi
 %define videodrv_abi	14
 %endif
@@ -756,22 +756,25 @@ cat .manifest | tail -n +9 | while read line; do
 	INSTALLER_BINARY)
 		# not installed
 		;;
-	KERNEL_MODULE_SRC|UVM_MODULE_SRC)
+	KERNEL_MODULE_SRC)
 		install_file nvidia-dkms %{_usrsrc}/%{drivername}-%{version}-%{release}
-        ;;
+		;;
 	CUDA_ICD)
 		# in theory this should go to the cuda subpackage, but it goes into the main package
 		# as this avoids one broken symlink and it is small enough to not cause space issues
 		install_file nvidia %{_sysconfdir}/%{drivername}
 		;;
-    APPLICATION_PROFILE)
-    	parseparams subdir
-        # application profile filenames are versioned, we can use a common
-        # non-alternativesized directory
-        install_file nvidia %{_datadir}/nvidia/$subdir
-        ;;
+	APPLICATION_PROFILE)
+		parseparams subdir
+		# application profile filenames are versioned, we can use a common
+		# non-alternativesized directory
+		install_file nvidia %{_datadir}/nvidia/$subdir
+		;;
 	DOT_DESKTOP)
 		# we provide our own for now
+		;;
+	UVM_MODULE_SRC)
+		install_file nvidia-dkms %{_usrsrc}/%{drivername}-%{version}-%{release}/uvm
 		;;
 	*)
 		error_unhandled "file $(basename $file) of unknown type $type will be skipped"
