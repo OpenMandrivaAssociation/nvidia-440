@@ -15,7 +15,7 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version 331.38
+%define version 334.21
 %define rel	1
 # the highest supported videodrv abi
 %define videodrv_abi 15
@@ -134,7 +134,6 @@ Source100:	nvidia-current.rpmlintrc
 Patch1:		nvidia-settings-enable-dyntwinview-mdv.patch
 # include xf86vmproto for X_XF86VidModeGetGammaRampSize, fixes build on cooker
 Patch3:		nvidia-settings-include-xf86vmproto.patch
-Patch4:		nvidia-current-331.38-CONFIG_UIDGID_STRICT_TYPE_CHECKS-buildfix.patch
 #Patch5:		nvidia-current-313.18-dont-check-patchlevel-and-sublevel.patch
 Patch6:		nvidia-settings-319.12-fix-format_not_string.patch
 Patch7:		nvidia-xconfig-319.12-fix-format_not_string.patch
@@ -319,11 +318,10 @@ cd ..
 
 sh %{nsource} --extract-only
 
-%if !%simple
-cd %{pkgname}
-%patch4 -p2
-cd ..
-%endif
+#%if !%simple
+#cd %{pkgname}
+#cd ..
+#%endif
 
 rm -rf %{pkgname}/usr/src/nv/precompiled
 
@@ -572,6 +570,10 @@ cat .manifest | tail -n +9 | while read line; do
 		parseparams arch subdir dest
 		install_lib_symlink nvidia-cuda $nvidia_libdir/$subdir
 		;;
+    EXPLICIT_PATH)
+        parseparams dest
+        install_file nvidia %{_datadir}/nvidia
+        ;;
 	NVCUVID_LIB)
 		parseparams arch subdir
 		install_file nvidia-cuda $nvidia_libdir/$subdir
@@ -1071,6 +1073,8 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{_sysconfdir}/%{drivername}/nvidia.icd
 %dir %{_datadir}/nvidia
 %{_datadir}/nvidia/nvidia-application-profiles-%{version}-rc
+%{_datadir}/nvidia/monitoring.conf
+%{_datadir}/nvidia/pci.ids
 %endif
 
 %dir %{_sysconfdir}/OpenCL
@@ -1213,7 +1217,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 %dir %{nvidia_libdir32}/vdpau
 %{nvidia_libdir32}/libGL.so.%{version}
 %{nvidia_libdir32}/libEGL.so.%{version}
-%{nvidia_libdir32}/libGLESv*.%{version}
 %{nvidia_libdir32}/libnvidia-glcore.so.%{version}
 %{nvidia_libdir32}/libnvidia-eglcore.so.%{version}
 %{nvidia_libdir32}/libnvidia-glsi.so.%{version}
