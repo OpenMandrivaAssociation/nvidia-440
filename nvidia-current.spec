@@ -602,8 +602,8 @@ cat .manifest | tail -n +9 | while read line; do
 		install_file nvidia %{nvidia_libdir}
 		;;
 	UTILITY_LIB_SYMLINK)
-		parseparams dest
-		install_lib_symlink nvidia %{nvidia_libdir}
+		parseparams arch dest
+		install_lib_symlink nvidia $nvidia_libdir
 		;;
 	VDPAU_LIB|VDPAU_WRAPPER_LIB)
 		parseparams arch subdir
