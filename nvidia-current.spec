@@ -1224,6 +1224,7 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir32}/libnvidia-ml.so.1
 %{nvidia_libdir32}/libnvidia-ifr.so.%{version}
 %{nvidia_libdir32}/libnvidia-ifr.so.1
+%{nvidia_libdir32}/libnvidia-fbc.so.1
 %if %{mdkversion} <= 200810
 %{nvidia_libdir32}/vdpau/libvdpau_trace.so.%{version}
 %{nvidia_libdir32}/libvdpau.so.%{version}
@@ -1263,6 +1264,7 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir32}/libcuda.so
 %{nvidia_libdir32}/libOpenCL.so
 %{nvidia_libdir32}/libnvidia-ml.so
+%{nvidia_libdir32}/libnvidia-fbc.so
 %{nvidia_libdir32}/libnvidia-ifr.so
 %{nvidia_libdir32}/libnvcuvid.so
 %{nvidia_libdir32}/libnvidia-encode.so
