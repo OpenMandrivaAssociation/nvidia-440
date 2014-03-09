@@ -15,7 +15,7 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version 331.38
+%define version 334.21
 %define rel	1
 # the highest supported videodrv abi
 %define videodrv_abi 15
@@ -134,7 +134,6 @@ Source100:	nvidia-current.rpmlintrc
 Patch1:		nvidia-settings-enable-dyntwinview-mdv.patch
 # include xf86vmproto for X_XF86VidModeGetGammaRampSize, fixes build on cooker
 Patch3:		nvidia-settings-include-xf86vmproto.patch
-Patch4:		nvidia-current-331.38-CONFIG_UIDGID_STRICT_TYPE_CHECKS-buildfix.patch
 #Patch5:		nvidia-current-313.18-dont-check-patchlevel-and-sublevel.patch
 Patch6:		nvidia-settings-319.12-fix-format_not_string.patch
 Patch7:		nvidia-xconfig-319.12-fix-format_not_string.patch
@@ -319,11 +318,10 @@ cd ..
 
 sh %{nsource} --extract-only
 
-%if !%simple
-cd %{pkgname}
-%patch4 -p2
-cd ..
-%endif
+#%if !%simple
+#cd %{pkgname}
+#cd ..
+#%endif
 
 rm -rf %{pkgname}/usr/src/nv/precompiled
 
@@ -572,6 +570,10 @@ cat .manifest | tail -n +9 | while read line; do
 		parseparams arch subdir dest
 		install_lib_symlink nvidia-cuda $nvidia_libdir/$subdir
 		;;
+    EXPLICIT_PATH)
+        parseparams dest
+        install_file nvidia %{_datadir}/nvidia
+        ;;
 	NVCUVID_LIB)
 		parseparams arch subdir
 		install_file nvidia-cuda $nvidia_libdir/$subdir
@@ -600,8 +602,8 @@ cat .manifest | tail -n +9 | while read line; do
 		install_file nvidia %{nvidia_libdir}
 		;;
 	UTILITY_LIB_SYMLINK)
-		parseparams dest
-		install_lib_symlink nvidia %{nvidia_libdir}
+		parseparams arch dest
+		install_lib_symlink nvidia $nvidia_libdir
 		;;
 	VDPAU_LIB|VDPAU_WRAPPER_LIB)
 		parseparams arch subdir
@@ -1119,6 +1121,7 @@ rmmod nvidia > /dev/null 2>&1 || true
 %ghost %{_datadir}/applications/%{disttag}-nvidia-settings.desktop
 %dir %{_datadir}/%{drivername}
 %{_datadir}/%{drivername}/%{disttag}-nvidia-settings.desktop
+%{_datadir}/nvidia/nvidia-application-profiles-334.21-key-documentation
 
 %if !%simple
 %{_iconsdir}/hicolor/16x16/apps/%{drivername}-settings.png
@@ -1131,12 +1134,11 @@ rmmod nvidia > /dev/null 2>&1 || true
 %dir %{nvidia_libdir}/tls
 %dir %{nvidia_libdir}/vdpau
 %{nvidia_libdir}/libGL.so.%{version}
-%ifnarch %{biarches}
 %{nvidia_libdir}/libEGL.so.%{version}
 %{nvidia_libdir}/libGLESv*.%{version}
 %{nvidia_libdir}/libnvidia-eglcore.so.%{version}
 %{nvidia_libdir}/libnvidia-glsi.so.%{version}
-%endif
+
 %{nvidia_libdir}/libnvidia-glcore.so.%{version}
 %{nvidia_libdir}/libnvidia-cfg.so.%{version}
 %{nvidia_libdir}/libnvidia-fbc.so.%{version}
@@ -1149,11 +1151,9 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/libvdpau.so.%{version}
 %endif
 %{nvidia_libdir}/libGL.so.1
-%ifnarch %{biarches}
 %{nvidia_libdir}/libEGL.so.1
 %{nvidia_libdir}/libGLESv*.so.1
 %{nvidia_libdir}/libGLESv*.so.2
-%endif
 %{nvidia_libdir}/libnvidia-cfg.so.1
 %{nvidia_libdir}/libnvidia-fbc.so.1
 %{nvidia_libdir}/libnvidia-ifr.so.1
@@ -1224,6 +1224,7 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir32}/libnvidia-ml.so.1
 %{nvidia_libdir32}/libnvidia-ifr.so.%{version}
 %{nvidia_libdir32}/libnvidia-ifr.so.1
+%{nvidia_libdir32}/libnvidia-fbc.so.1
 %if %{mdkversion} <= 200810
 %{nvidia_libdir32}/vdpau/libvdpau_trace.so.%{version}
 %{nvidia_libdir32}/libvdpau.so.%{version}
@@ -1243,10 +1244,8 @@ rmmod nvidia > /dev/null 2>&1 || true
 %if !%simple
 %{_includedir}/%{drivername}
 %{nvidia_libdir}/libGL.so
-%ifnarch %{biarches}
 %{nvidia_libdir}/libEGL.so
 %{nvidia_libdir}/libGLESv*.so
-%endif
 %{nvidia_libdir}/libcuda.so
 %{nvidia_libdir}/libnvcuvid.so
 %{nvidia_libdir}/libnvidia-cfg.so
@@ -1265,6 +1264,7 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir32}/libcuda.so
 %{nvidia_libdir32}/libOpenCL.so
 %{nvidia_libdir32}/libnvidia-ml.so
+%{nvidia_libdir32}/libnvidia-fbc.so
 %{nvidia_libdir32}/libnvidia-ifr.so
 %{nvidia_libdir32}/libnvcuvid.so
 %{nvidia_libdir32}/libnvidia-encode.so
