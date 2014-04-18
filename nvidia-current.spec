@@ -15,7 +15,7 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version 334.21
+%define version 337.12
 %define rel	1
 # the highest supported videodrv abi
 %define videodrv_abi 15
@@ -382,7 +382,7 @@ installation in the file 'README.install.urpmi' in this directory.
 EOF
 
 %if !%simple
-rm nvidia-settings-%{version}/src/*/*.a
+rm nvidia-settings-%{version}/src/*/*.a ||:
 
 %build
 %if %mdkversion >= 201000
@@ -1121,7 +1121,7 @@ rmmod nvidia > /dev/null 2>&1 || true
 %ghost %{_datadir}/applications/%{disttag}-nvidia-settings.desktop
 %dir %{_datadir}/%{drivername}
 %{_datadir}/%{drivername}/%{disttag}-nvidia-settings.desktop
-%{_datadir}/nvidia/nvidia-application-profiles-334.21-key-documentation
+%{_datadir}/nvidia/nvidia-application-profiles-*-key-documentation
 
 %if !%simple
 %{_iconsdir}/hicolor/16x16/apps/%{drivername}-settings.png
