@@ -144,6 +144,7 @@ URL:		http://www.nvidia.com/object/unix.html
 Group: 		System/Kernel and hardware
 ExclusiveArch:	%{ix86} x86_64
 %if !%simple
+BuildRequires:	wget
 BuildRequires:	imagemagick
 BuildRequires:	pkgconfig(vdpau)
 BuildRequires:	pkgconfig(xrender)
