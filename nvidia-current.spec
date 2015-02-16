@@ -1151,7 +1151,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 %ghost %{_datadir}/applications/%{disttag}-nvidia-settings.desktop
 %dir %{_datadir}/%{drivername}
 %{_datadir}/%{drivername}/%{disttag}-nvidia-settings.desktop
-%{_datadir}/nvidia/nvidia-application-profiles-*-key-documentation
 
 %if !%simple
 %{_iconsdir}/hicolor/16x16/apps/%{drivername}-settings.png
