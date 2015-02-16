@@ -32,7 +32,7 @@
 %define driverpkgname		x11-driver-video-%{drivername}
 %define modulename		%{drivername}
 # for description and documentation
-%define cards			GeForce 8xxx and later cards
+%define cards			GeForce 420 and later cards
 %define xorg_extra_modules	%{_libdir}/xorg/extra-modules
 %define nvidia_driversdir	%{_libdir}/%{drivername}/xorg
 %define nvidia_extensionsdir	%{_libdir}/%{drivername}/xorg
@@ -389,6 +389,7 @@ EOF
 
 %if !%simple
 rm nvidia-settings-%{version}/src/*/*.a ||:
+%endif
 
 %build
 %if %mdkversion >= 201000
@@ -1100,6 +1101,9 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{_sysconfdir}/%{drivername}/nvidia.icd
 %dir %{_datadir}/nvidia
 %{_datadir}/nvidia/nvidia-application-profiles-%{version}-rc
+%{_datadir}/nvidia/nvidia-application-profiles-%{version}-key-documentation
+%{_datadir}/nvidia/monitoring.conf
+%{_datadir}/nvidia/pci.ids
 %endif
 
 %dir %{_sysconfdir}/OpenCL
