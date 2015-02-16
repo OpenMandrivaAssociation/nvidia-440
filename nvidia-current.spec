@@ -389,7 +389,6 @@ EOF
 
 %if !%simple
 rm nvidia-settings-%{version}/src/*/*.a ||:
-%endif
 
 %build
 %if %mdkversion >= 201000
