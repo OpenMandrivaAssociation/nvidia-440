@@ -100,14 +100,14 @@
 # Other packages should not require any NVIDIA libraries, and this package
 # should not be pulled in when libGL.so.1 is required
 %define __noautoprov 'libGL\\.so\\.1(.*)|devel\\(libGL(.*)|\\.so'
-%define common_requires_exceptions libGL\\.so\\|libGLcore\\.so\\|libnvidia.*\\.so
+%define common_requires_exceptions ^libGL\\.so\\|^libGLcore\\.so\\|^libnvidia.*\\.so
 
 %ifarch %{biarches}
 # (anssi) Allow installing of 64-bit package if the runtime dependencies
 # of 32-bit libraries are not satisfied. If a 32-bit package that requires
 # libGL.so.1 is installed, the 32-bit mesa libs are pulled in and that will
 # pull the dependencies of 32-bit nvidia libraries in as well.
-%define __noautoreq %common_requires_exceptions\\|lib.*so\\.[^(]\\+\\(([^)]\\+)\\)\\?$
+%define __noautoreq %common_requires_exceptions\\|^lib.*so\\.[^(]\\+\\(([^)]\\+)\\)\\?$
 %else
 %define __noautoreq %common_requires_exceptions
 %endif
@@ -341,13 +341,19 @@ PACKAGE_VERSION="%{version}-%{release}"
 BUILT_MODULE_NAME[0]="nvidia"
 DEST_MODULE_LOCATION[0]="/kernel/drivers/char/drm"
 DEST_MODULE_NAME[0]="%{modulename}"
+%ifarch x86_64
 BUILT_MODULE_NAME[1]="nvidia-uvm"
 BUILT_MODULE_LOCATION[1]="uvm/"
 DEST_MODULE_LOCATION[1]="/kernel/drivers/char/drm"
+%endif
 MAKE[0]="make SYSSRC=\${kernel_source_dir} module"
+%ifarch x86_64
 MAKE[0]+="; make SYSSRC=\${kernel_source_dir} -C uvm module KBUILD_EXTMOD=\${dkms_tree}/%{drivername}/%{version}-%{release}/build/uvm"
+%endif
 CLEAN="make -f Makefile.kbuild clean"
+%ifarch x86_64
 CLEAN+="; make -C uvm clean"
+%endif
 AUTOINSTALL="yes"
 EOF
 
@@ -1159,7 +1165,8 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/libGLESv*.%{version}
 %{nvidia_libdir}/libnvidia-eglcore.so.%{version}
 %{nvidia_libdir}/libnvidia-glsi.so.%{version}
-
+%{nvidia_libdir}/libnvidia-gtk2.so.%{version
+%{nvidia_libdir}/libnvidia-gtk3.so.%{version
 %{nvidia_libdir}/libnvidia-glcore.so.%{version}
 %{nvidia_libdir}/libnvidia-cfg.so.%{version}
 %{nvidia_libdir}/libnvidia-fbc.so.%{version}
@@ -1309,6 +1316,8 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/libOpenCL.so.1.0.0
 %{nvidia_libdir}/libOpenCL.so.1.0
 %{nvidia_libdir}/libOpenCL.so.1
+%{nvidia_libdir}/libnvcuvid.so.%{version}
+%{nvidia_libdir}/libnvcuvid.so.1
 %{nvidia_libdir}/libnvidia-compiler.so.%{version}
 %{nvidia_libdir}/libcuda.so.%{version}
 %{nvidia_libdir}/libcuda.so.1
@@ -1322,6 +1331,8 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir32}/libOpenCL.so.1.0.0
 %{nvidia_libdir32}/libOpenCL.so.1.0
 %{nvidia_libdir32}/libOpenCL.so.1
+%{nvidia_libdir32}/libnvcuvid.so.%{version}
+%{nvidia_libdir32}/libnvcuvid.so.1
 %{nvidia_libdir32}/libnvidia-compiler.so.%{version}
 %{nvidia_libdir32}/libnvidia-opencl.so.%{version}
 %{nvidia_libdir32}/libnvidia-opencl.so.1
