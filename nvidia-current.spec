@@ -100,14 +100,9 @@ Source4:	nvidia-mdvbuild-skel
 Source5:	ftp://download.nvidia.com/XFree86/nvidia-modprobe/nvidia-modprobe-%{version}.tar.bz2
 Source6:	ftp://download.nvidia.com/XFree86/nvidia-persistenced/nvidia-persistenced-%{version}.tar.bz2
 Source100:	nvidia-current.rpmlintrc
-# https://qa.mandriva.com/show_bug.cgi?id=39921
-Patch1:		nvidia-settings-enable-dyntwinview-mdv.patch
 Patch2:		NVIDIA-Linux-x86_64-346.35-kernel-3.18-fix.patch
 # include xf86vmproto for X_XF86VidModeGetGammaRampSize, fixes build on cooker
 Patch3:		nvidia-settings-include-xf86vmproto.patch
-#Patch5:	nvidia-current-313.18-dont-check-patchlevel-and-sublevel.patch
-Patch6:		nvidia-settings-319.12-fix-format_not_string.patch
-Patch7:		nvidia-xconfig-319.12-fix-format_not_string.patch
 Patch8:		nvidia-persistenced-319.17-add-missing-libtirpc-link.patch
 %endif
 License:	Freeware
@@ -259,12 +254,7 @@ HTML version of the README.txt file provided in package
 %else
 %setup -q -c -T -a 2 -a 3 -a 5 -a 6
 cd nvidia-settings-%{version}
-##%patch1 -p1
 %patch3 -p1
-#patch6 -p1
-cd ..
-cd nvidia-xconfig-%{version}
-#patch7 -p1
 cd ..
 cd nvidia-persistenced-%{version}
 %patch8 -p1
