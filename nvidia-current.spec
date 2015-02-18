@@ -15,10 +15,10 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version 337.25
+%define version 346.35
 %define rel	1
 # the highest supported videodrv abi
-%define videodrv_abi 18
+%define videodrv_abi 19
 %endif
 
 %define priority	9710
@@ -582,6 +582,22 @@ cat .manifest | tail -n +9 | while read line; do
 		parseparams arch dest
 		install_lib_symlink nvidia $nvidia_libdir
 		;;
+	OPENCL_LIB)
+		parseparams arch subdir
+		install_file nvidia-cuda $nvidia_libdir/$subdir
+		;;
+	OPENCL_LIB_SYMLINK)
+		parseparams arch subdir dest
+		install_lib_symlink nvidia-cuda $nvidia_libdir/$subdir
+		;;
+	OPENCL_WRAPPER_LIB)
+		parseparams arch subdir
+		install_file nvidia-cuda $nvidia_libdir/$subdir
+		;;
+	OPENCL_WRAPPER_SYMLINK)
+		parseparams arch subdir dest
+		install_lib_symlink nvidia-cuda $nvidia_libdir/$subdir
+		;;
 	OPENGL_LIB)
 		parseparams arch
 		install_file nvidia $nvidia_libdir
@@ -655,6 +671,10 @@ cat .manifest | tail -n +9 | while read line; do
 		parseparams subdir dest
 		install_symlink nvidia $(get_module_dir $subdir)
 		;;
+	XORG_OUTPUTCLASS_CONFIG)
+		# dont install xorg driver autoloader conf
+		continue
+        ;;
 	XMODULE_SYMLINK|GLX_MODULE_SYMLINK)
 		parseparams subdir dest
 		install_symlink nvidia $(get_module_dir $subdir)
@@ -1073,6 +1093,9 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{_sysconfdir}/%{drivername}/nvidia.icd
 %dir %{_datadir}/nvidia
 %{_datadir}/nvidia/nvidia-application-profiles-%{version}-rc
+%{_datadir}/nvidia/nvidia-application-profiles-%{version}-key-documentation
+%{_datadir}/nvidia/monitoring.conf
+%{_datadir}/nvidia/pci.ids
 %endif
 
 %dir %{_sysconfdir}/OpenCL
@@ -1121,7 +1144,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 %ghost %{_datadir}/applications/%{disttag}-nvidia-settings.desktop
 %dir %{_datadir}/%{drivername}
 %{_datadir}/%{drivername}/%{disttag}-nvidia-settings.desktop
-%{_datadir}/nvidia/nvidia-application-profiles-*-key-documentation
 
 %if !%simple
 %{_iconsdir}/hicolor/16x16/apps/%{drivername}-settings.png
