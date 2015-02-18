@@ -132,6 +132,7 @@ Source6:	ftp://download.nvidia.com/XFree86/nvidia-persistenced/nvidia-persistenc
 Source100:	nvidia-current.rpmlintrc
 # https://qa.mandriva.com/show_bug.cgi?id=39921
 Patch1:		nvidia-settings-enable-dyntwinview-mdv.patch
+Patch2:		NVIDIA-Linux-x86_64-346.35-kernel-3.18-fix.patch
 # include xf86vmproto for X_XF86VidModeGetGammaRampSize, fixes build on cooker
 Patch3:		nvidia-settings-include-xf86vmproto.patch
 #Patch5:		nvidia-current-313.18-dont-check-patchlevel-and-sublevel.patch
@@ -318,10 +319,11 @@ cd ..
 
 sh %{nsource} --extract-only
 
-#%if !%simple
-#cd %{pkgname}
-#cd ..
-#%endif
+%if !%simple
+cd %{pkgname}
+%patch2 -p1
+cd ..
+%endif
 
 rm -rf %{pkgname}/usr/src/nv/precompiled
 
