@@ -559,13 +559,19 @@ done
 
 # install files according to .manifest
 cat .manifest | tail -n +9 | while read line; do
+	arch=
+	style=
+	subdir=
+	dest=
+	nvidia_libdir=
+
 	rest=${line}
 	file=${rest%%%% *}
 	rest=${rest#* }
 	perms=${rest%%%% *}
 	rest=${rest#* }
 	type=${rest%%%% *}
-	rest=${rest#* }
+	[ "${rest#* }" = "$rest" ] && rest= || rest=${rest#* }
 
 	case "$type" in
 	CUDA_LIB)
@@ -621,9 +627,14 @@ cat .manifest | tail -n +9 | while read line; do
 		install_lib_symlink nvidia $nvidia_libdir/$subdir
 		;;
 	UTILITY_LIB)
-		install_file nvidia %{nvidia_libdir}
+		# backward-compatibility
+		[ -n "${rest}" ] || rest="NATIVE $rest"
+		parseparams arch subdir
+		install_file nvidia $nvidia_libdir/$subdir
 		;;
 	UTILITY_LIB_SYMLINK)
+		# backward-compatibility
+		[ "${rest#* }" != "$rest" ] || rest="NATIVE $rest"
 		parseparams arch dest
 		install_lib_symlink nvidia $nvidia_libdir
 		;;
@@ -698,7 +709,7 @@ cat .manifest | tail -n +9 | while read line; do
 		install_file_only nvidia-devel %{_includedir}/%{drivername}/$subdir
 		;;
 	ENCODEAPI_LIB|NVIFR_LIB)
-		parseparams arch subdir
+		parseparams arch dest
 		install_file nvidia $nvidia_libdir/$subdir
 		;;
 	ENCODEAPI_LIB_SYMLINK|NVIFR_LIB_SYMLINK)
