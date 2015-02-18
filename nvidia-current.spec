@@ -930,7 +930,7 @@ touch %{buildroot}%{_sysconfdir}/X11/xinit.d/nvidia-settings.xinit
 
 # install ldetect-lst pcitable files for backports
 # local version of merge2pcitable.pl:read_nvidia_readme:
-section=0
+section="nothingyet"
 set +x
 [ -e README.txt ] || cp -a usr/share/doc/README.txt .
 cat README.txt | while read line; do
@@ -947,9 +947,10 @@ cat README.txt | while read line; do
 		section="midspace"
 		continue
 	fi
+
 	echo "$line" | grep -Pq "^\s*-+[\s-]+$" && continue
-	id=$(echo "$line" | sed -nre 's,^\s*.+?\s\s+0x(....).*$,\1,p' | tr '[:upper:]' '[:lower:]')
-	id2=$(echo "$line" | sed -nre 's,^\s*.+?\s\s+0x(....)\s0x(....).*$,\2,p' | tr '[:upper:]' '[:lower:]')
+    id=$(echo "$line" | sed -nre 's,^\s*.+?\s\s+(0x)?([0-9a-fA-F]{4}).*$,\2,p' | tr '[:upper:]' '[:lower:]')
+	#id2=$(echo "$line" | sed -nre 's,^\s*.+?\s\s+0x(....)\s0x(....).*$,\2,p' | tr '[:upper:]' '[:lower:]')
 	subsysid=
 	# not useful as of 2013-05 -Anssi
 	#[ -n "$id2" ] && subsysid="	0x10de	0x$id2"
