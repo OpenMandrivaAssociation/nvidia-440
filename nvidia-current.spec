@@ -145,7 +145,7 @@ Group: 		System/Kernel and hardware
 ExclusiveArch:	%{ix86} x86_64
 %if !%simple
 BuildRequires:	imagemagick
-BuildRequires:	pkgconfig(vdpau)
+BuildRequires:	pkgconfig(vdpau) >= 0.9
 BuildRequires:	pkgconfig(xrender)
 BuildRequires:	pkgconfig(gtk+-2.0)
 BuildRequires:	pkgconfig(xv)
