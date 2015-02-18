@@ -1162,10 +1162,12 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/libnvidia-eglcore.so.%{version}
 %{nvidia_libdir}/libnvidia-glsi.so.%{version}
 
+%{nvidia_libdir}/libnvidia-gtk2.so.%{version}
+%{nvidia_libdir}/libnvidia-gtk3.so.%{version}
+
 %{nvidia_libdir}/libnvidia-glcore.so.%{version}
 %{nvidia_libdir}/libnvidia-cfg.so.%{version}
 %{nvidia_libdir}/libnvidia-fbc.so.%{version}
-%{nvidia_libdir}/libnvidia-ifr.so.%{version}
 %{nvidia_libdir}/libnvidia-ml.so.%{version}
 %{nvidia_libdir}/libnvidia-tls.so.%{version}
 %{nvidia_libdir}/vdpau/libvdpau_nvidia.so.%{version}
@@ -1318,7 +1320,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/libnvidia-opencl.so.1
 %{nvidia_libdir}/libnvidia-encode.so.%{version}
 %{nvidia_libdir}/libnvidia-encode.so.1
-%{nvidia_libdir}/libnvcuvid.so.%{version}
 %{nvidia_libdir}/libnvcuvid.so.1
 %ifarch %{biarches}
 %{nvidia_libdir32}/libOpenCL.so.1.0.0
