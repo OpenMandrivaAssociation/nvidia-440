@@ -1318,8 +1318,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/libOpenCL.so.1.0.0
 %{nvidia_libdir}/libOpenCL.so.1.0
 %{nvidia_libdir}/libOpenCL.so.1
-%{nvidia_libdir}/libnvcuvid.so.%{version}
-%{nvidia_libdir}/libnvcuvid.so.1
 %{nvidia_libdir}/libnvidia-compiler.so.%{version}
 %{nvidia_libdir}/libcuda.so.%{version}
 %{nvidia_libdir}/libcuda.so.1
@@ -1333,8 +1331,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir32}/libOpenCL.so.1.0.0
 %{nvidia_libdir32}/libOpenCL.so.1.0
 %{nvidia_libdir32}/libOpenCL.so.1
-%{nvidia_libdir32}/libnvcuvid.so.%{version}
-%{nvidia_libdir32}/libnvcuvid.so.1
 %{nvidia_libdir32}/libnvidia-compiler.so.%{version}
 %{nvidia_libdir32}/libnvidia-opencl.so.%{version}
 %{nvidia_libdir32}/libnvidia-opencl.so.1
