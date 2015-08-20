@@ -15,7 +15,7 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version 349.16
+%define version 352.30
 %define rel 1
 # the highest supported videodrv abi
 %define videodrv_abi 19
@@ -111,7 +111,7 @@ Group:		System/Kernel and hardware
 ExclusiveArch:	%{ix86} x86_64
 %if !%simple
 BuildRequires:	imagemagick
-BuildRequires:	pkgconfig(vdpau) >= 0.9
+BuildRequires:	pkgconfig(vdpau) >= 1.1
 BuildRequires:	pkgconfig(xrender)
 BuildRequires:	pkgconfig(gtk+-2.0)
 BuildRequires:	pkgconfig(xv)
@@ -985,8 +985,8 @@ rmmod nvidia > /dev/null 2>&1 || true
 %dir %{_datadir}/nvidia
 %{_datadir}/nvidia/nvidia-application-profiles-%{version}-rc
 %{_datadir}/nvidia/nvidia-application-profiles-%{version}-key-documentation
-%{_datadir}/nvidia/monitoring.conf
-%{_datadir}/nvidia/pci.ids
+#{_datadir}/nvidia/monitoring.conf
+#{_datadir}/nvidia/pci.ids
 %endif
 
 %dir %{_sysconfdir}/OpenCL
