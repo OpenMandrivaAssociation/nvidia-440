@@ -16,7 +16,7 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version 367.35
+%define version 367.44
 %define rel 1
 # the highest supported videodrv abi
 %define videodrv_abi 19
@@ -71,7 +71,7 @@
 # Other packages should not require any NVIDIA libraries, and this package
 # should not be pulled in when libGL.so.1 is required
 %define __noautoprov 'libGL\\.so\\.1(.*)|devel\\(libGL(.*)|\\.so'
-%define common_requires_exceptions ^libGL\\.so\\|^libGLcore\\.so\\|^libnvidia.*\\.so
+%define common_requires_exceptions ^libGL\\.so\\|^libGLcore\\.so\\|^libGLdispatch\\.so|^libnvidia.*\\.so
 
 %ifarch %{biarches}
 # (anssi) Allow installing of 64-bit package if the runtime dependencies
@@ -103,8 +103,6 @@ Source6:	ftp://download.nvidia.com/XFree86/nvidia-persistenced/nvidia-persistenc
 Source100:	nvidia-current.rpmlintrc
 # include xf86vmproto for X_XF86VidModeGetGammaRampSize, fixes build on cooker
 Patch3:		nvidia-settings-include-xf86vmproto.patch
-Patch4:		NVIDIA-Linux-x86_64-367.27-uvm-radix_tree_empty-redefine.patch
-Patch5:		NVIDIA-Linux-x86_64-367.27-drm_gem_object_lookup-fix.patch
 Patch8:		nvidia-persistenced-319.17-add-missing-libtirpc-link.patch
 %endif
 License:	Freeware
@@ -267,10 +265,6 @@ sh %{nsource} --extract-only
 
 %if !%simple
 cd %{pkgname}
-%ifarch x86_64
-%patch4 -p1
-%endif
-%patch5 -p1
 cd ..
 %endif
 
@@ -852,8 +846,6 @@ echo "%{nvidia_libdir}" > %{buildroot}%{_sysconfdir}/%{drivername}/ld.so.conf
 %ifarch %{biarches}
 echo "%{nvidia_libdir32}" >> %{buildroot}%{_sysconfdir}/%{drivername}/ld.so.conf
 %endif
-install -d -m755 %{buildroot}%{_sysconfdir}/ld.so.conf.d
-touch %{buildroot}%{_sysconfdir}/ld.so.conf.d/GL.conf
 
 # modprobe.conf
 install -d -m755 %{buildroot}%{_sysconfdir}/modprobe.d
@@ -1000,7 +992,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 %endif
 
 # ld.so.conf, modprobe.conf, xinit
-%ghost %{_sysconfdir}/ld.so.conf.d/GL.conf
 %ghost %{_sysconfdir}/X11/xinit.d/nvidia-settings.xinit
 %ghost %{_sysconfdir}/modprobe.d/display-driver.conf
 %dir %{_sysconfdir}/%{drivername}
