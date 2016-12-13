@@ -16,10 +16,10 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version 367.57
-%define rel 2
+%define version 375.20
+%define rel 1
 # the highest supported videodrv abi
-%define videodrv_abi 19
+%define videodrv_abi 23
 %endif
 
 %define priority 9710
@@ -103,6 +103,9 @@ Source6:	ftp://download.nvidia.com/XFree86/nvidia-persistenced/nvidia-persistenc
 Source100:	nvidia-current.rpmlintrc
 # include xf86vmproto for X_XF86VidModeGetGammaRampSize, fixes build on cooker
 Patch3:		nvidia-settings-include-xf86vmproto.patch
+# fix duplicated lines in .manifest on x86_64
+# (tmb) submitted upstream 2016-12-02
+Patch4:		NVIDIA-Linux-x86_64-375.20-fix-duplicated-lines-in-manifest.patch
 Patch8:		nvidia-persistenced-319.17-add-missing-libtirpc-link.patch
 %endif
 License:	Freeware
@@ -265,6 +268,11 @@ sh %{nsource} --extract-only
 
 %if !%simple
 cd %{pkgname}
+%ifarch x86_64
+# extra patches here
+%patch4 -p1
+%endif
+# extra patches here
 cd ..
 %endif
 
@@ -524,6 +532,11 @@ cat .manifest | tail -n +9 | while read line; do
 		parseparams arch
 		install_file nvidia $nvidia_libdir
 		;;
+	GLVND_EGL_ICD_JSON)
+		# (tmb) skip for now
+		case $libtype in NON_GLVND);; *) continue; esac
+		install_file nvidia %{_sysconfdir}/%{drivername}
+		;;
 	GLVND_SYMLINK)
 		parseparams arch dest
 		install_lib_symlink nvidia $nvidia_libdir
@@ -656,6 +669,18 @@ cat .manifest | tail -n +9 | while read line; do
 	OPENGL_HEADER|CUDA_HEADER)
 		parseparams subdir
 		install_file_only nvidia-devel %{_includedir}/%{drivername}/$subdir
+		;;
+	EGL_CLIENT_LIB)
+		parseparams arch libtype
+		# (tmb) skip for now
+		case $libtype in NON_GLVND);; *) continue; esac
+		install_file nvidia $nvidia_libdir
+		;;
+	EGL_CLIENT_SYMLINK)
+		parseparams arch dest libtype
+		# (tmb) skip for now
+		case $libtype in NON_GLVND);; *) continue; esac
+		install_lib_symlink nvidia $nvidia_libdir
 		;;
 	ENCODEAPI_LIB|NVIFR_LIB)
 		parseparams arch dest
@@ -1086,6 +1111,7 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/libGL.so.1
 %{nvidia_libdir}/libGLdispatch.so.0
 %{nvidia_libdir}/libEGL.so.1
+%{nvidia_libdir}/libEGL.so.%{version}
 %{nvidia_libdir}/libEGL_nvidia.so.0
 %{nvidia_libdir}/libEGL_nvidia.so.%{version}
 %{nvidia_libdir}/libGLESv*.so.1
@@ -1155,6 +1181,7 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir32}/libGL.so.1
 %{nvidia_libdir32}/libGLdispatch.so.0
 %{nvidia_libdir32}/libEGL.so.1
+%{nvidia_libdir32}/libEGL.so.%{version}
 %{nvidia_libdir32}/libGLESv*.so.1
 %{nvidia_libdir32}/libGLESv*.so.2
 %{nvidia_libdir32}/libGLX_indirect.so.0
