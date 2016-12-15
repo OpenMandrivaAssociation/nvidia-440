@@ -16,7 +16,7 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version 375.20
+%define version 375.26
 %define rel 1
 # the highest supported videodrv abi
 %define videodrv_abi 23
@@ -103,9 +103,6 @@ Source6:	ftp://download.nvidia.com/XFree86/nvidia-persistenced/nvidia-persistenc
 Source100:	nvidia-current.rpmlintrc
 # include xf86vmproto for X_XF86VidModeGetGammaRampSize, fixes build on cooker
 Patch3:		nvidia-settings-include-xf86vmproto.patch
-# fix duplicated lines in .manifest on x86_64
-# (tmb) submitted upstream 2016-12-02
-Patch4:		NVIDIA-Linux-x86_64-375.20-fix-duplicated-lines-in-manifest.patch
 Patch8:		nvidia-persistenced-319.17-add-missing-libtirpc-link.patch
 %endif
 License:	Freeware
@@ -270,7 +267,6 @@ sh %{nsource} --extract-only
 cd %{pkgname}
 %ifarch x86_64
 # extra patches here
-%patch4 -p1
 %endif
 # extra patches here
 cd ..
