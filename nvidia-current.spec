@@ -16,7 +16,7 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version 375.26
+%define version 378.13
 %define rel 1
 # the highest supported videodrv abi
 %define videodrv_abi 23
@@ -104,6 +104,7 @@ Source100:	nvidia-current.rpmlintrc
 # include xf86vmproto for X_XF86VidModeGetGammaRampSize, fixes build on cooker
 Patch3:		nvidia-settings-include-xf86vmproto.patch
 Patch8:		nvidia-persistenced-319.17-add-missing-libtirpc-link.patch
+Patch9:		kernel_4.10.patch
 %endif
 License:	Freeware
 URL:		http://www.nvidia.com/object/unix.html
@@ -269,6 +270,7 @@ cd %{pkgname}
 # extra patches here
 %endif
 # extra patches here
+%patch9 -p1
 cd ..
 %endif
 
@@ -677,6 +679,9 @@ cat .manifest | tail -n +9 | while read line; do
 		# (tmb) skip for now
 		case $libtype in NON_GLVND);; *) continue; esac
 		install_lib_symlink nvidia $nvidia_libdir
+		;;
+	EGL_EXTERNAL_PLATFORM_JSON)
+		echo 
 		;;
 	ENCODEAPI_LIB|NVIFR_LIB)
 		parseparams arch dest
@@ -1091,7 +1096,7 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/libGL.so.%{version}
 %{nvidia_libdir}/libGLESv*.%{version}
 %{nvidia_libdir}/libnvidia-eglcore.so.%{version}
-%{nvidia_libdir}/libnvidia-egl-wayland.so.%{version}
+%{nvidia_libdir}/libnvidia-egl-wayland.so.*
 %{nvidia_libdir}/libnvidia-fatbinaryloader.so.%{version}
 %{nvidia_libdir}/libnvidia-glsi.so.%{version}
 %{nvidia_libdir}/libnvidia-gtk2.so.%{version}
