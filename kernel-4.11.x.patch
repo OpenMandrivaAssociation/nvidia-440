@@ -1,6 +1,6 @@
-diff -ur NVIDIA-Linux-x86_64-378.13/kernel/common/inc/nv-linux.h NVIDIA-Linux-x86_64-378.13.patched/kernel/common/inc/nv-linux.h
---- NVIDIA-Linux-x86_64-378.13/kernel/common/inc/nv-linux.h	2017-02-08 04:58:34.000000000 +0100
-+++ NVIDIA-Linux-x86_64-378.13.patched/kernel/common/inc/nv-linux.h	2017-02-15 04:14:46.304110124 +0100
+diff -ur NVIDIA-Linux-x86_64-378.13/kernel/common/inc/nv-linux.h patched-NVIDIA-Linux-x86_64-378.13/kernel/common/inc/nv-linux.h
+--- NVIDIA-Linux-x86_64-378.13/kernel/common/inc/nv-linux.h	2017-02-08 03:58:34.000000000 +0000
++++ patched-NVIDIA-Linux-x86_64-378.13/kernel/common/inc/nv-linux.h	2017-06-05 00:11:03.530512270 +0100
 @@ -294,7 +294,8 @@
  
  extern int nv_pat_mode;
@@ -11,9 +11,9 @@ diff -ur NVIDIA-Linux-x86_64-378.13/kernel/common/inc/nv-linux.h NVIDIA-Linux-x8
  #define NV_ENABLE_HOTPLUG_CPU
  #include <linux/cpu.h>              /* CPU hotplug support              */
  #include <linux/notifier.h>         /* struct notifier_block, etc       */
-diff -ur NVIDIA-Linux-x86_64-378.13/kernel/nvidia/nv-p2p.c NVIDIA-Linux-x86_64-378.13.patched/kernel/nvidia/nv-p2p.c
---- NVIDIA-Linux-x86_64-378.13/kernel/nvidia/nv-p2p.c	2017-02-08 04:58:34.000000000 +0100
-+++ NVIDIA-Linux-x86_64-378.13.patched/kernel/nvidia/nv-p2p.c	2017-02-15 04:14:46.304110124 +0100
+diff -ur NVIDIA-Linux-x86_64-378.13/kernel/nvidia/nv-p2p.c patched-NVIDIA-Linux-x86_64-378.13/kernel/nvidia/nv-p2p.c
+--- NVIDIA-Linux-x86_64-378.13/kernel/nvidia/nv-p2p.c	2017-02-08 03:58:34.000000000 +0000
++++ patched-NVIDIA-Linux-x86_64-378.13/kernel/nvidia/nv-p2p.c	2017-06-05 00:11:03.531512263 +0100
 @@ -146,7 +146,7 @@
  int nvidia_p2p_get_pages(
      uint64_t p2p_token,
@@ -59,9 +59,135 @@ diff -ur NVIDIA-Linux-x86_64-378.13/kernel/nvidia/nv-p2p.c NVIDIA-Linux-x86_64-3
              page_table->gpu_uuid, page_table);
      if (status == NV_OK)
          nvidia_p2p_free_page_table(page_table);
-diff -ur NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-fence.c NVIDIA-Linux-x86_64-378.13.patched/kernel/nvidia-drm/nvidia-drm-fence.c
---- NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-fence.c	2017-02-08 04:58:37.000000000 +0100
-+++ NVIDIA-Linux-x86_64-378.13.patched/kernel/nvidia-drm/nvidia-drm-fence.c	2017-02-15 04:14:46.304110124 +0100
+diff -ur NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-drv.c patched-NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-drv.c
+--- NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-drv.c	2017-02-08 03:58:37.000000000 +0000
++++ patched-NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-drv.c	2017-06-05 00:12:43.044854489 +0100
+@@ -48,6 +48,8 @@
+ #include <drm/drm_auth.h>
+ #endif
+ 
++#include <generated/uapi/linux/version.h>
++
+ static struct nvidia_drm_device *dev_list = NULL;
+ 
+ #if defined(NV_DRM_ATOMIC_MODESET_AVAILABLE)
+@@ -71,12 +73,17 @@
+ static struct drm_framebuffer *nvidia_drm_framebuffer_create(
+     struct drm_device *dev,
+     struct drm_file *file,
++#if LINUX_VERSION_CODE > KERNEL_VERSION(4, 10, 0)
++    const struct drm_mode_fb_cmd2 *cmd
++)
++#else
+     #if defined(NV_DRM_HELPER_MODE_FILL_FB_STRUCT_HAS_CONST_MODE_CMD_ARG)
+     const struct drm_mode_fb_cmd2 *cmd
+     #else
+     struct drm_mode_fb_cmd2 *cmd
+     #endif
+     )
++#endif
+ {
+     struct drm_mode_fb_cmd2 local_cmd;
+     struct drm_framebuffer *fb;
+@@ -88,14 +95,20 @@
+             file,
+             &local_cmd, 0, 0);
+ 
++#if LINUX_VERSION_CODE <= KERNEL_VERSION(4, 10, 0)
+     #if !defined(NV_DRM_HELPER_MODE_FILL_FB_STRUCT_HAS_CONST_MODE_CMD_ARG)
+     *cmd = local_cmd;
+     #endif
++#endif
+ 
+     return fb;
+ }
+ 
++#if LINUX_VERSION_CODE > KERNEL_VERSION(4, 10, 0)
++struct drm_mode_config_funcs nv_mode_config_funcs = {
++#else
+ static const struct drm_mode_config_funcs nv_mode_config_funcs = {
++#endif
+     .fb_create = nvidia_drm_framebuffer_create,
+ 
+ #if defined(NV_DRM_MODE_CONFIG_FUNCS_HAS_ATOMIC_STATE_ALLOC)
+@@ -398,7 +411,11 @@
+     return 0;
+ }
+ 
++#if LINUX_VERSION_CODE > KERNEL_VERSION(4, 10, 0)
++static void nvidia_drm_unload(struct drm_device *dev)
++#else
+ static int nvidia_drm_unload(struct drm_device *dev)
++#endif
+ {
+ #if defined(NV_DRM_ATOMIC_MODESET_AVAILABLE)
+     struct NvKmsKapiDevice *pDevice = NULL;
+@@ -412,7 +429,11 @@
+ 
+     if (!nvidia_drm_modeset_enabled(dev))
+     {
++#if LINUX_VERSION_CODE > KERNEL_VERSION(4, 10, 0)
++        return;
++#else
+         return 0;
++#endif
+     }
+ 
+     mutex_lock(&nv_dev->lock);
+@@ -445,7 +466,11 @@
+ 
+ #endif /* NV_DRM_ATOMIC_MODESET_AVAILABLE */
+ 
++#if LINUX_VERSION_CODE > KERNEL_VERSION(4, 10, 0)
++    return;
++#else
+     return 0;
++#endif
+ }
+ 
+ #if defined(NV_DRM_ATOMIC_MODESET_AVAILABLE)
+diff -ur NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-encoder.h patched-NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-encoder.h
+--- NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-encoder.h	2017-02-08 03:58:37.000000000 +0000
++++ patched-NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-encoder.h	2017-06-05 00:16:35.905382631 +0100
+@@ -29,7 +29,12 @@
+ 
+ #include "nvidia-drm-priv.h"
+ 
++#include <generated/uapi/linux/version.h>
++
+ #include <drm/drmP.h>
++#if LINUX_VERSION_CODE > KERNEL_VERSION(4, 10, 0)
++#include <drm/drm_encoder.h>
++#endif
+ #include "nvkms-kapi.h"
+ 
+ struct nvidia_drm_encoder
+diff -ur NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-fb.c patched-NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-fb.c
+--- NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-fb.c	2017-02-08 03:58:37.000000000 +0000
++++ patched-NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-fb.c	2017-06-05 00:12:43.044854489 +0100
+@@ -21,6 +21,7 @@
+  */
+ 
+ #include "conftest.h" /* NV_DRM_ATOMIC_MODESET_AVAILABLE */
++#include <generated/uapi/linux/version.h>
+ 
+ #if defined(NV_DRM_ATOMIC_MODESET_AVAILABLE)
+ 
+@@ -152,7 +153,11 @@
+ 
+     /* Fill out framebuffer metadata from the userspace fb creation request */
+ 
++#if LINUX_VERSION_CODE > KERNEL_VERSION(4, 10, 0)
++    drm_helper_mode_fill_fb_struct(dev, &nv_fb->base, cmd);
++#else
+     drm_helper_mode_fill_fb_struct(&nv_fb->base, cmd);
++#endif
+ 
+     /* Initialize the base framebuffer object and add it to drm subsystem */
+ 
+diff -ur NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-fence.c patched-NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-fence.c
+--- NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-fence.c	2017-02-08 03:58:37.000000000 +0000
++++ patched-NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-fence.c	2017-06-05 00:11:03.532512256 +0100
 @@ -31,7 +31,7 @@
  
  #if defined(NV_DRM_DRIVER_HAS_GEM_PRIME_RES_OBJ)
@@ -216,9 +342,53 @@ diff -ur NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-fence.c NVIDIA-
  
      ret = 0;
  
-diff -ur NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-gem.h NVIDIA-Linux-x86_64-378.13.patched/kernel/nvidia-drm/nvidia-drm-gem.h
---- NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-gem.h	2017-02-08 04:58:37.000000000 +0100
-+++ NVIDIA-Linux-x86_64-378.13.patched/kernel/nvidia-drm/nvidia-drm-gem.h	2017-02-15 04:14:46.304110124 +0100
+diff -ur NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-gem.c patched-NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-gem.c
+--- NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-gem.c	2017-02-08 03:58:37.000000000 +0000
++++ patched-NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-gem.c	2017-06-05 00:12:43.045854482 +0100
+@@ -22,6 +22,8 @@
+ 
+ #include "conftest.h" /* NV_DRM_ATOMIC_MODESET_AVAILABLE */
+ 
++#include <generated/uapi/linux/version.h>
++
+ #if defined(NV_DRM_AVAILABLE)
+ 
+ #include "nvidia-drm-priv.h"
+@@ -511,11 +513,19 @@
+  * Note that nvidia_drm_vma_fault() can be called for different or same
+  * ranges of the same drm_gem_object simultaneously.
+  */
++#if LINUX_VERSION_CODE > KERNEL_VERSION(4, 10, 0)
++static int nvidia_drm_vma_fault(struct vm_fault *vmf)
++#else
+ static int nvidia_drm_vma_fault(struct vm_area_struct *vma,
+                                 struct vm_fault *vmf)
++#endif
+ {
+     unsigned long address = nv_page_fault_va(vmf);
++#if LINUX_VERSION_CODE > KERNEL_VERSION(4, 10, 0)
++    struct drm_gem_object *gem = vmf->vma->vm_private_data;
++#else
+     struct drm_gem_object *gem = vma->vm_private_data;
++#endif
+     struct nvidia_drm_gem_object *nv_gem =
+                     DRM_GEM_OBJECT_TO_NV_GEM_OBJECT(gem);
+     unsigned long page_offset, pfn;
+@@ -526,7 +536,11 @@
+ 
+     page_offset = vmf->pgoff - drm_vma_node_start(&gem->vma_node);
+ 
++#if LINUX_VERSION_CODE > KERNEL_VERSION(4, 10, 0)
++    ret = vm_insert_pfn(vmf->vma, address, pfn + page_offset);
++#else
+     ret = vm_insert_pfn(vma, address, pfn + page_offset);
++#endif
+ 
+     switch (ret) {
+         case 0:
+diff -ur NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-gem.h patched-NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-gem.h
+--- NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-gem.h	2017-02-08 03:58:37.000000000 +0000
++++ patched-NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-gem.h	2017-06-05 00:11:03.532512256 +0100
 @@ -101,7 +101,7 @@
          /* Software signaling structures */
          struct NvKmsKapiChannelEvent *cb;
@@ -228,9 +398,34 @@ diff -ur NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-gem.h NVIDIA-Li
      } fenceContext;
  #endif
  };
-diff -ur NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-modeset.c NVIDIA-Linux-x86_64-378.13.patched/kernel/nvidia-drm/nvidia-drm-modeset.c
---- NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-modeset.c	2017-02-08 04:58:37.000000000 +0100
-+++ NVIDIA-Linux-x86_64-378.13.patched/kernel/nvidia-drm/nvidia-drm-modeset.c	2017-02-15 04:14:46.305110124 +0100
+diff -ur NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-linux.c patched-NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-linux.c
+--- NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-linux.c	2017-02-08 03:58:37.000000000 +0000
++++ patched-NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-linux.c	2017-06-05 00:12:43.045854482 +0100
+@@ -20,6 +20,8 @@
+  * DEALINGS IN THE SOFTWARE.
+  */
+ 
++#include <generated/uapi/linux/version.h>
++
+ #include <linux/module.h>
+ #include <linux/slab.h>
+ #include <linux/err.h>
+@@ -185,8 +187,12 @@
+ module_exit(nv_linux_drm_exit);
+ 
+ #if defined(MODULE_LICENSE)
++#if LINUX_VERSION_CODE > KERNEL_VERSION(4, 10, 0)
++  MODULE_LICENSE("Dual MIT/GPL");
++#else
+   MODULE_LICENSE("MIT");
+ #endif
++#endif
+ #if defined(MODULE_INFO)
+   MODULE_INFO(supported, "external");
+ #endif
+diff -ur NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-modeset.c patched-NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-modeset.c
+--- NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-modeset.c	2017-02-08 03:58:37.000000000 +0000
++++ patched-NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-modeset.c	2017-06-05 00:11:03.532512256 +0100
 @@ -78,8 +78,7 @@
  
  void nvidia_drm_atomic_state_free(struct drm_atomic_state *state)
@@ -241,9 +436,9 @@ diff -ur NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-modeset.c NVIDI
      drm_atomic_state_default_release(state);
      nvidia_drm_free(nv_state);
  }
-diff -ur NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-priv.h NVIDIA-Linux-x86_64-378.13.patched/kernel/nvidia-drm/nvidia-drm-priv.h
---- NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-priv.h	2017-02-08 04:58:37.000000000 +0100
-+++ NVIDIA-Linux-x86_64-378.13.patched/kernel/nvidia-drm/nvidia-drm-priv.h	2017-02-15 04:14:46.305110124 +0100
+diff -ur NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-priv.h patched-NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-priv.h
+--- NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-priv.h	2017-02-08 03:58:37.000000000 +0000
++++ patched-NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-priv.h	2017-06-05 00:11:03.533512250 +0100
 @@ -34,7 +34,7 @@
  #endif
  
@@ -253,9 +448,57 @@ diff -ur NVIDIA-Linux-x86_64-378.13/kernel/nvidia-drm/nvidia-drm-priv.h NVIDIA-L
  #include <linux/reservation.h>
  #endif
  
-diff -ur NVIDIA-Linux-x86_64-378.13/kernel/nvidia-uvm/uvm8_test.c NVIDIA-Linux-x86_64-378.13.patched/kernel/nvidia-uvm/uvm8_test.c
---- NVIDIA-Linux-x86_64-378.13/kernel/nvidia-uvm/uvm8_test.c	2017-02-08 04:58:36.000000000 +0100
-+++ NVIDIA-Linux-x86_64-378.13.patched/kernel/nvidia-uvm/uvm8_test.c	2017-02-15 04:14:46.305110124 +0100
+diff -ur NVIDIA-Linux-x86_64-378.13/kernel/nvidia-modeset/nvidia-modeset-linux.c patched-NVIDIA-Linux-x86_64-378.13/kernel/nvidia-modeset/nvidia-modeset-linux.c
+--- NVIDIA-Linux-x86_64-378.13/kernel/nvidia-modeset/nvidia-modeset-linux.c	2017-02-08 03:58:37.000000000 +0000
++++ patched-NVIDIA-Linux-x86_64-378.13/kernel/nvidia-modeset/nvidia-modeset-linux.c	2017-06-05 00:12:43.046854475 +0100
+@@ -23,6 +23,8 @@
+ #include <linux/file.h>
+ #include <linux/list.h>
+ 
++#include <generated/uapi/linux/version.h>
++
+ #include "nvstatus.h"
+ 
+ #include "nv-register-module.h"
+@@ -1285,8 +1287,12 @@
+ module_exit(nvkms_exit);
+ 
+ #if defined(MODULE_LICENSE)
++#if LINUX_VERSION_CODE > KERNEL_VERSION(4, 10, 0)
++  MODULE_LICENSE("GPL");
++#else
+   MODULE_LICENSE("NVIDIA");
+ #endif
++#endif
+ #if defined(MODULE_INFO)
+   MODULE_INFO(supported, "external");
+ #endif
+diff -ur NVIDIA-Linux-x86_64-378.13/kernel/nvidia-uvm/uvm8_gpu_isr.c patched-NVIDIA-Linux-x86_64-378.13/kernel/nvidia-uvm/uvm8_gpu_isr.c
+--- NVIDIA-Linux-x86_64-378.13/kernel/nvidia-uvm/uvm8_gpu_isr.c	2017-02-08 03:58:35.000000000 +0000
++++ patched-NVIDIA-Linux-x86_64-378.13/kernel/nvidia-uvm/uvm8_gpu_isr.c	2017-06-05 00:12:43.043854495 +0100
+@@ -25,6 +25,7 @@
+ #include "uvm8_gpu_isr.h"
+ #include "uvm8_hal.h"
+ #include "uvm8_next_decl.h"
++#include <generated/uapi/linux/version.h>
+ 
+ // For use by the nv_kthread_q that is servicing the replayable fault bottom
+ // half, only.
+@@ -270,7 +271,11 @@
+ 
+ void uvm_gpu_replayable_faults_isr_unlock(uvm_gpu_t *gpu)
+ {
++#if LINUX_VERSION_CODE > KERNEL_VERSION(4, 10, 0)
++    UVM_ASSERT(atomic_read(&(gpu->gpu_kref.refcount.refs)) > 0);
++#else
+     UVM_ASSERT(atomic_read(&gpu->gpu_kref.refcount) > 0);
++#endif
+ 
+     uvm_spin_lock_irqsave(&gpu->isr.replayable_faults.interrupts_lock);
+ 
+diff -ur NVIDIA-Linux-x86_64-378.13/kernel/nvidia-uvm/uvm8_test.c patched-NVIDIA-Linux-x86_64-378.13/kernel/nvidia-uvm/uvm8_test.c
+--- NVIDIA-Linux-x86_64-378.13/kernel/nvidia-uvm/uvm8_test.c	2017-02-08 03:58:36.000000000 +0000
++++ patched-NVIDIA-Linux-x86_64-378.13/kernel/nvidia-uvm/uvm8_test.c	2017-06-05 00:11:03.533512250 +0100
 @@ -103,7 +103,7 @@
      return NV_ERR_INVALID_STATE;
  }
@@ -274,3 +517,64 @@ diff -ur NVIDIA-Linux-x86_64-378.13/kernel/nvidia-uvm/uvm8_test.c NVIDIA-Linux-x
          UVM_ROUTE_CMD_STACK(UVM_TEST_PMA_ALLOC_FREE,                uvm8_test_pma_alloc_free);
          UVM_ROUTE_CMD_STACK(UVM_TEST_PMM_ALLOC_FREE_ROOT,           uvm8_test_pmm_alloc_free_root);
          UVM_ROUTE_CMD_STACK(UVM_TEST_PMM_INJECT_PMA_EVICT_ERROR,    uvm8_test_pmm_inject_pma_evict_error);
+diff -ur NVIDIA-Linux-x86_64-378.13/kernel/nvidia-uvm/uvm_common.c patched-NVIDIA-Linux-x86_64-378.13/kernel/nvidia-uvm/uvm_common.c
+--- NVIDIA-Linux-x86_64-378.13/kernel/nvidia-uvm/uvm_common.c	2017-02-08 03:58:35.000000000 +0000
++++ patched-NVIDIA-Linux-x86_64-378.13/kernel/nvidia-uvm/uvm_common.c	2017-06-05 00:12:43.045854482 +0100
+@@ -26,6 +26,8 @@
+  * kernel module.
+  */
+ 
++#include <generated/uapi/linux/version.h>
++
+ #include "uvm_common.h"
+ #include "uvm_linux.h"
+ 
+@@ -388,5 +390,9 @@
+ MODULE_PARM_DESC(uvm_enable_builtin_tests,
+                  "Enable the UVM built-in tests. (This is a security risk)");
+ 
++#if LINUX_VERSION_CODE > KERNEL_VERSION(4, 10, 0)
++MODULE_LICENSE("Dual MIT/GPL");
++#else
+ MODULE_LICENSE("MIT");
++#endif
+ MODULE_INFO(supported, "external");
+diff -ur NVIDIA-Linux-x86_64-378.13/kernel/nvidia-uvm/uvm_linux.h patched-NVIDIA-Linux-x86_64-378.13/kernel/nvidia-uvm/uvm_linux.h
+--- NVIDIA-Linux-x86_64-378.13/kernel/nvidia-uvm/uvm_linux.h	2017-02-08 03:58:35.000000000 +0000
++++ patched-NVIDIA-Linux-x86_64-378.13/kernel/nvidia-uvm/uvm_linux.h	2017-06-05 00:12:43.043854495 +0100
+@@ -32,6 +32,8 @@
+ #ifndef _UVM_LINUX_H
+ #define _UVM_LINUX_H
+ 
++#include <generated/uapi/linux/version.h>
++
+ #include "nv-misc.h"
+ #include "nvtypes.h"
+ 
+@@ -66,6 +68,10 @@
+ #include <linux/ratelimit.h>
+ #endif
+ 
++#if LINUX_VERSION_CODE > KERNEL_VERSION(4, 10, 0)
++#include <linux/sched/signal.h>
++#endif
++
+ // TODO: Bug 1772628: remove the "defined(NV_BUILD_SUPPORTS_HMM)" part,
+ // once the HMM (Heterogeneous Memory Management Linux kernel feature) patch
+ // gets submitted to the Linux kernel.
+@@ -206,6 +212,7 @@
+     void address_space_init_once(struct address_space *mapping);
+ #endif
+ 
++#if LINUX_VERSION_CODE <= KERNEL_VERSION(4, 10, 0)
+ #if !defined(NV_FATAL_SIGNAL_PENDING_PRESENT)
+     static inline int __fatal_signal_pending(struct task_struct *p)
+     {
+@@ -217,6 +224,7 @@
+         return signal_pending(p) && __fatal_signal_pending(p);
+     }
+ #endif
++#endif
+ 
+ // Develop builds define DEBUG but enable optimization
+ #if defined(DEBUG) && !defined(NVIDIA_UVM_DEVELOP)
