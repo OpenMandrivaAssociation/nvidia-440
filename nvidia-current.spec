@@ -16,8 +16,8 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version 378.13
-%define rel 3
+%define version 381.22
+%define rel 1
 # the highest supported videodrv abi
 %define videodrv_abi 23
 %endif
@@ -104,7 +104,8 @@ Source100:	nvidia-current.rpmlintrc
 # include xf86vmproto for X_XF86VidModeGetGammaRampSize, fixes build on cooker
 Patch3:		nvidia-settings-include-xf86vmproto.patch
 Patch8:		nvidia-persistenced-319.17-add-missing-libtirpc-link.patch
-Patch9:		kernel-4.11.x.patch
+#Patch9:		kernel-4.11.x.patch
+#Patch9:		nvidia-drivers-381.09-v3.patch
 %endif
 License:	Freeware
 URL:		http://www.nvidia.com/object/unix.html
@@ -270,7 +271,7 @@ cd %{pkgname}
 # extra patches here
 %endif
 # extra patches here
-%patch9 -p1
+#%%patch9 -p1
 cd ..
 %endif
 
@@ -498,7 +499,10 @@ for file in nvidia.files nvidia-devel.files nvidia-cuda.files nvidia-dkms.files 
 done
 
 # install files according to .manifest
-cat .manifest | tail -n +9 | while read line; do
+#cat .manifest | tail -n +9 | while read line; do
+set +x
+cat .manifest | sed 's/INHERIT_PATH_DEPTH:[0-9]//;s/MODULE:.*//'| tail -n +9 |  while read line; do
+
 	arch=
 	style=
 	subdir=
