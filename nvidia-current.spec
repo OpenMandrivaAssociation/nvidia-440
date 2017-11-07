@@ -16,7 +16,7 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version 381.22
+%define version 384.98
 %define rel 1
 # the highest supported videodrv abi
 %define videodrv_abi 23
@@ -1031,7 +1031,7 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{_sysconfdir}/%{drivername}/modprobe.conf
 %{_sysconfdir}/%{drivername}/ld.so.conf
 %{_sysconfdir}/%{drivername}/nvidia-settings.xinit
-%{_sysconfdir}/vulkan/icd.d/nvidia_icd.json
+%{_sysconfdir}/vulkan/icd.d/nvidia_icd.json.template
 %if !%simple
 %{_sysconfdir}/%{drivername}/nvidia.icd
 %dir %{_datadir}/nvidia
@@ -1132,6 +1132,8 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/libnvidia-ml.so.1
 %{nvidia_libdir}/libvdpau_nvidia.so
 %{nvidia_libdir}/tls/libnvidia-tls.so.%{version}
+%{nvidia_libdir}/libnvidia-ptxjitcompiler.so
+%{nvidia_libdir}/libnvidia-ptxjitcompiler.so.1
 # %simple
 %endif
 
@@ -1195,6 +1197,8 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir32}/libGLX_nvidia.so.%{version}
 %{nvidia_libdir32}/libOpenGL.so.0
 %{nvidia_libdir32}/tls/libnvidia-tls.so.%{version}
+%{nvidia_libdir32}/libnvidia-ptxjitcompiler.so
+%{nvidia_libdir32}/libnvidia-ptxjitcompiler.so.1
 %endif
 
 %files -n %{drivername}-devel -f %pkgname/nvidia-devel.files
