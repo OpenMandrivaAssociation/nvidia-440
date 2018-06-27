@@ -16,7 +16,7 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version 384.111
+%define version 390.67
 %define rel 1
 # the highest supported videodrv abi
 %define videodrv_abi 23
@@ -334,6 +334,7 @@ EOF
 rm nvidia-settings-%{version}/src/*/*.a ||:
 
 %build
+#export CC=gcc CXX=g++
 %setup_compile_flags
 
 # (tpg) needed for patch 6
@@ -1096,7 +1097,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 %dir %{nvidia_libdir}/tls
 %dir %{nvidia_libdir}/vdpau
 %{nvidia_libdir}/libGL.so.%{version}
-%{nvidia_libdir}/libGLESv*.%{version}
 %{nvidia_libdir}/libnvidia-eglcore.so.%{version}
 %{nvidia_libdir}/libnvidia-egl-wayland.so.*
 %{nvidia_libdir}/libnvidia-fatbinaryloader.so.%{version}
@@ -1117,8 +1117,10 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/libEGL.so.%{version}
 %{nvidia_libdir}/libEGL_nvidia.so.0
 %{nvidia_libdir}/libEGL_nvidia.so.%{version}
-%{nvidia_libdir}/libGLESv*.so.1
-%{nvidia_libdir}/libGLESv*.so.2
+%{nvidia_libdir}/libGLESv*.%{version}*
+%{nvidia_libdir}/libGLESv*.so.1*
+%{nvidia_libdir}/libGLESv*.so.2*
+#%%{nvidia_libdir}/libGLESv*.so
 %{nvidia_libdir}/libGLX_indirect.so.0
 %{nvidia_libdir}/libGLX_nvidia.so.0
 %{nvidia_libdir}/libGLX_nvidia.so.%{version}
@@ -1168,7 +1170,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir32}/libGL.so.%{version}
 %{nvidia_libdir32}/libEGL_nvidia.so.0
 %{nvidia_libdir32}/libEGL_nvidia.so.%{version}
-%{nvidia_libdir32}/libGLESv*.%{version}
 %{nvidia_libdir32}/libnvidia-glcore.so.%{version}
 %{nvidia_libdir32}/libnvidia-eglcore.so.%{version}
 %{nvidia_libdir32}/libnvidia-fatbinaryloader.so.%{version}
@@ -1187,8 +1188,10 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir32}/libGLdispatch.so.0
 %{nvidia_libdir32}/libEGL.so.1
 %{nvidia_libdir32}/libEGL.so.%{version}
-%{nvidia_libdir32}/libGLESv*.so.1
-%{nvidia_libdir32}/libGLESv*.so.2
+%{nvidia_libdir32}/libGLESv*.%{version}*
+%{nvidia_libdir32}/libGLESv*.so.1*
+%{nvidia_libdir32}/libGLESv*.so.2*
+#%%{nvidia_libdir32}/libGLESv*.so
 %{nvidia_libdir32}/libGLX_indirect.so.0
 %{nvidia_libdir32}/libGLX_nvidia.so.0
 %{nvidia_libdir32}/libGLX_nvidia.so.%{version}
