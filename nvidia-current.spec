@@ -16,7 +16,7 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version 390.67
+%define version 396.24
 %define rel 1
 # the highest supported videodrv abi
 %define videodrv_abi 23
@@ -91,7 +91,7 @@ Name:		%{name}
 Version:	%{version}
 Release:	%{rel}
 %if !%simple
-Source0:	https://download.nvidia.com/XFree86/Linux-x86/%{version}/%{pkgname32}.run
+#Source0:	https://download.nvidia.com/XFree86/Linux-x86/%{version}/%{pkgname32}.run
 Source1:	https://download.nvidia.com/XFree86/Linux-x86_64/%{version}/%{pkgname64}.run
 # GPLv2 source code; see also http://cgit.freedesktop.org/~aplattner/
 Source2:	https://download.nvidia.com/XFree86/nvidia-settings/nvidia-settings-%{version}.tar.bz2
@@ -499,7 +499,7 @@ done
 
 # install files according to .manifest
 #cat .manifest | tail -n +9 | while read line; do
-set +x
+#set +x
 cat .manifest | sed 's/INHERIT_PATH_DEPTH:[0-9]//;s/MODULE:.*//'| tail -n +9 |  while read line; do
 
 	arch=
@@ -1120,7 +1120,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/libGLESv*.%{version}*
 %{nvidia_libdir}/libGLESv*.so.1*
 %{nvidia_libdir}/libGLESv*.so.2*
-#%%{nvidia_libdir}/libGLESv*.so
 %{nvidia_libdir}/libGLX_indirect.so.0
 %{nvidia_libdir}/libGLX_nvidia.so.0
 %{nvidia_libdir}/libGLX_nvidia.so.%{version}
@@ -1133,6 +1132,7 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/tls/libnvidia-tls.so.%{version}
 %{nvidia_libdir}/libnvidia-ptxjitcompiler.so
 %{nvidia_libdir}/libnvidia-ptxjitcompiler.so.1
+%{nvidia_libdir}/libnvidia-glvkspirv.so.%{version}
 # %simple
 %endif
 
@@ -1191,7 +1191,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir32}/libGLESv*.%{version}*
 %{nvidia_libdir32}/libGLESv*.so.1*
 %{nvidia_libdir32}/libGLESv*.so.2*
-#%%{nvidia_libdir32}/libGLESv*.so
 %{nvidia_libdir32}/libGLX_indirect.so.0
 %{nvidia_libdir32}/libGLX_nvidia.so.0
 %{nvidia_libdir32}/libGLX_nvidia.so.%{version}
@@ -1199,6 +1198,7 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir32}/tls/libnvidia-tls.so.%{version}
 %{nvidia_libdir32}/libnvidia-ptxjitcompiler.so
 %{nvidia_libdir32}/libnvidia-ptxjitcompiler.so.1
+%{nvidia_libdir32}/libnvidia-glvkspirv.so.%{version}
 %endif
 
 %files -n %{drivername}-devel -f %pkgname/nvidia-devel.files
