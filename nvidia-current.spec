@@ -16,10 +16,10 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version 390.25
+%define version 396.45
 %define rel 1
 # the highest supported videodrv abi
-%define videodrv_abi 23
+%define videodrv_abi 24
 %endif
 
 %define priority 9710
@@ -936,6 +936,10 @@ gzip -c pcitable.nvidia.lst > %{buildroot}%{_datadir}/ldetect-lst/pcitable.d/40%
 
 export EXCLUDE_FROM_STRIP="$(find %{buildroot} -type f \! -name nvidia-settings \! -name nvidia-xconfig \! -name nvidia-modprobe \! -name nvidia-persistenced)"
 
+# set up Vulkan ICD conf for non-glvnd driver
+sed -i 's/__NV_VK_ICD__/libGL.so.1/' %{buildroot}%{_sysconfdir}/vulkan/icd.d/nvidia_icd.json.template
+mv %{buildroot}%{_sysconfdir}/vulkan/icd.d/nvidia_icd.json.template %{buildroot}%{_sysconfdir}/vulkan/icd.d/nvidia_icd.json
+
 %post -n %{driverpkgname}
 # XFdrake used to generate an nvidia.conf file
 [ -L %{_sysconfdir}/modprobe.d/nvidia.conf ] || rm -f %{_sysconfdir}/modprobe.d/nvidia.conf
@@ -1028,7 +1032,7 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{_sysconfdir}/%{drivername}/modprobe.conf
 %{_sysconfdir}/%{drivername}/ld.so.conf
 %{_sysconfdir}/%{drivername}/nvidia-settings.xinit
-%{_sysconfdir}/vulkan/icd.d/nvidia_icd.json.template
+%{_sysconfdir}/vulkan/icd.d/nvidia_icd.json
 %if !%simple
 %{_sysconfdir}/%{drivername}/nvidia.icd
 %dir %{_datadir}/nvidia
