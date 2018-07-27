@@ -17,7 +17,7 @@
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
 %define version 396.45
-%define rel 1
+%define rel 2
 # the highest supported videodrv abi
 %define videodrv_abi 24
 %endif
@@ -132,6 +132,7 @@ Group:		System/Kernel and hardware
 Requires(post):	update-alternatives >= 1.9.0
 Requires(postun):	update-alternatives >= 1.9.0
 Requires:	x11-server-common
+Requires:	egl-wayland
 # Proprietary driver handling rework:
 Conflicts:	harddrake < 10.4.163
 Conflicts:	drakx-kbd-mouse-x11 < 0.21
