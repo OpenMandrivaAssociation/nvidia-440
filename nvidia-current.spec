@@ -91,7 +91,7 @@ Name:		%{name}
 Version:	%{version}
 Release:	%{rel}
 %if !%simple
-Source0:	https://download.nvidia.com/XFree86/Linux-x86/%{version}/%{pkgname32}.run
+#Source0:	https://download.nvidia.com/XFree86/Linux-x86/%{version}/%{pkgname32}.run
 Source1:	https://download.nvidia.com/XFree86/Linux-x86_64/%{version}/%{pkgname64}.run
 # GPLv2 source code; see also http://cgit.freedesktop.org/~aplattner/
 Source2:	https://download.nvidia.com/XFree86/nvidia-settings/nvidia-settings-%{version}.tar.bz2
@@ -334,6 +334,7 @@ EOF
 rm nvidia-settings-%{version}/src/*/*.a ||:
 
 %build
+#export CC=gcc CXX=g++
 %setup_compile_flags
 
 # (tpg) needed for patch 6
@@ -498,7 +499,7 @@ done
 
 # install files according to .manifest
 #cat .manifest | tail -n +9 | while read line; do
-set +x
+#set +x
 cat .manifest | sed 's/INHERIT_PATH_DEPTH:[0-9]//;s/MODULE:.*//'| tail -n +9 |  while read line; do
 
 	arch=
@@ -1100,7 +1101,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 %dir %{nvidia_libdir}/tls
 %dir %{nvidia_libdir}/vdpau
 %{nvidia_libdir}/libGL.so.%{version}
-%{nvidia_libdir}/libGLESv*.%{version}
 %{nvidia_libdir}/libnvidia-eglcore.so.%{version}
 %{nvidia_libdir}/libnvidia-egl-wayland.so.*
 %{nvidia_libdir}/libnvidia-fatbinaryloader.so.%{version}
@@ -1121,8 +1121,9 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/libEGL.so.%{version}
 %{nvidia_libdir}/libEGL_nvidia.so.0
 %{nvidia_libdir}/libEGL_nvidia.so.%{version}
-%{nvidia_libdir}/libGLESv*.so.1
-%{nvidia_libdir}/libGLESv*.so.2
+%{nvidia_libdir}/libGLESv*.%{version}*
+%{nvidia_libdir}/libGLESv*.so.1*
+%{nvidia_libdir}/libGLESv*.so.2*
 %{nvidia_libdir}/libGLX_indirect.so.0
 %{nvidia_libdir}/libGLX_nvidia.so.0
 %{nvidia_libdir}/libGLX_nvidia.so.%{version}
@@ -1135,6 +1136,7 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/tls/libnvidia-tls.so.%{version}
 %{nvidia_libdir}/libnvidia-ptxjitcompiler.so
 %{nvidia_libdir}/libnvidia-ptxjitcompiler.so.1
+%{nvidia_libdir}/libnvidia-glvkspirv.so.%{version}
 # %simple
 %endif
 
@@ -1172,7 +1174,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir32}/libGL.so.%{version}
 %{nvidia_libdir32}/libEGL_nvidia.so.0
 %{nvidia_libdir32}/libEGL_nvidia.so.%{version}
-%{nvidia_libdir32}/libGLESv*.%{version}
 %{nvidia_libdir32}/libnvidia-glcore.so.%{version}
 %{nvidia_libdir32}/libnvidia-eglcore.so.%{version}
 %{nvidia_libdir32}/libnvidia-fatbinaryloader.so.%{version}
@@ -1191,8 +1192,9 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir32}/libGLdispatch.so.0
 %{nvidia_libdir32}/libEGL.so.1
 %{nvidia_libdir32}/libEGL.so.%{version}
-%{nvidia_libdir32}/libGLESv*.so.1
-%{nvidia_libdir32}/libGLESv*.so.2
+%{nvidia_libdir32}/libGLESv*.%{version}*
+%{nvidia_libdir32}/libGLESv*.so.1*
+%{nvidia_libdir32}/libGLESv*.so.2*
 %{nvidia_libdir32}/libGLX_indirect.so.0
 %{nvidia_libdir32}/libGLX_nvidia.so.0
 %{nvidia_libdir32}/libGLX_nvidia.so.%{version}
@@ -1200,6 +1202,7 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir32}/tls/libnvidia-tls.so.%{version}
 %{nvidia_libdir32}/libnvidia-ptxjitcompiler.so
 %{nvidia_libdir32}/libnvidia-ptxjitcompiler.so.1
+%{nvidia_libdir32}/libnvidia-glvkspirv.so.%{version}
 %endif
 
 %files -n %{drivername}-devel -f %pkgname/nvidia-devel.files
