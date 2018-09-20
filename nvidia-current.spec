@@ -70,7 +70,7 @@
 
 # Other packages should not require any NVIDIA libraries, and this package
 # should not be pulled in when libGL.so.1 is required
-%define __noautoprov 'libGL\\.so\\.1(.*)|devel\\(libGL(.*)|\\.so'
+%global __provides_exclude 'libGL\\.so\\.1(.*)|devel\\(libGL(.*)|\\.so'
 %define common_requires_exceptions ^libGL\\.so\\|^libGLcore\\.so\\|^libGLdispatch\\.so|^libnvidia.*\\.so
 
 %ifarch %{biarches}
@@ -78,13 +78,13 @@
 # of 32-bit libraries are not satisfied. If a 32-bit package that requires
 # libGL.so.1 is installed, the 32-bit mesa libs are pulled in and that will
 # pull the dependencies of 32-bit nvidia libraries in as well.
-%define __noautoreq %common_requires_exceptions\\|^lib.*so\\.[^(]\\+\\(([^)]\\+)\\)\\?$
+%global __requires_exclude %common_requires_exceptions\\|^lib.*so\\.[^(]\\+\\(([^)]\\+)\\)\\?$
 %else
-%define __noautoreq %common_requires_exceptions
+%global __requires_exclude %common_requires_exceptions
 %endif
 
 # https://devtalk.nvidia.com/default/topic/523762/libnvidia-encode-so-310-19-has-dependency-on-missing-library/
-%define __noautoreqfiles libnvidia-encode.so.%{version}
+%define __requires_exclude_from libnvidia-encode.so.%{version}
 
 Summary:	NVIDIA proprietary X.org driver and libraries, current driver series
 Name:		%{name}
