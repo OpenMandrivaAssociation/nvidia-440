@@ -108,7 +108,7 @@ Patch8:		nvidia-persistenced-319.17-add-missing-libtirpc-link.patch
 License:	Freeware
 URL:		http://www.nvidia.com/object/unix.html
 Group:		System/Kernel and hardware
-ExclusiveArch:	%{ix86} x86_64
+ExclusiveArch:	x86_64
 %if !%simple
 BuildRequires:	imagemagick
 BuildRequires:	pkgconfig(vdpau) >= 1.1
