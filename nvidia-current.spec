@@ -16,10 +16,10 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version 396.45
+%define version 415.18
 %define rel 1
 # the highest supported videodrv abi
-%define videodrv_abi 23
+%define videodrv_abi 24
 %endif
 
 %define priority 9710
@@ -1094,7 +1094,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 
 %if !%simple
 %dir %{nvidia_libdir}
-%dir %{nvidia_libdir}/tls
 %dir %{nvidia_libdir}/vdpau
 %{nvidia_libdir}/libGL.so.%{version}
 %{nvidia_libdir}/libnvidia-eglcore.so.%{version}
@@ -1124,14 +1123,17 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/libGLX_nvidia.so.0
 %{nvidia_libdir}/libGLX_nvidia.so.%{version}
 %{nvidia_libdir}/libOpenGL.so.0
+%{nvidia_libdir}/libnvidia-cbl.so.%{version}
 %{nvidia_libdir}/libnvidia-cfg.so.1
 %{nvidia_libdir}/libnvidia-fbc.so.1
 %{nvidia_libdir}/libnvidia-ifr.so.1
 %{nvidia_libdir}/libnvidia-ml.so.1
 %{nvidia_libdir}/libvdpau_nvidia.so
-%{nvidia_libdir}/tls/libnvidia-tls.so.%{version}
 %{nvidia_libdir}/libnvidia-ptxjitcompiler.so
 %{nvidia_libdir}/libnvidia-ptxjitcompiler.so.1
+%{nvidia_libdir}/libnvidia-rtcore.so.%{version}
+%{nvidia_libdir}/libnvoptix.so.1
+%{nvidia_libdir}/libnvoptix.so.%{version}
 %{nvidia_libdir}/libnvidia-glvkspirv.so.%{version}
 # %simple
 %endif
@@ -1154,8 +1156,8 @@ rmmod nvidia > /dev/null 2>&1 || true
 %endif
 
 %if !%simple
-%{nvidia_extensionsdir}/libglx.so.%{version}
-%{nvidia_extensionsdir}/libglx.so
+%{nvidia_extensionsdir}/libglxserver_nvidia.so.%{version}
+%{nvidia_extensionsdir}/libglxserver_nvidia.so
 %endif
 
 %if !%simple
@@ -1165,7 +1167,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 %ifarch %{biarches}
 %files -n %{driverpkgname}-32bit
 %dir %{nvidia_libdir32}
-%dir %{nvidia_libdir32}/tls
 %dir %{nvidia_libdir32}/vdpau
 %{nvidia_libdir32}/libGL.so.%{version}
 %{nvidia_libdir32}/libEGL_nvidia.so.0
@@ -1174,8 +1175,8 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir32}/libnvidia-eglcore.so.%{version}
 %{nvidia_libdir32}/libnvidia-fatbinaryloader.so.%{version}
 %{nvidia_libdir32}/libnvidia-glsi.so.%{version}
-%{nvidia_libdir32}/libnvidia-tls.so.%{version}
 %{nvidia_libdir32}/libnvidia-ptxjitcompiler.so.%{version}
+%{nvidia_libdir32}/libnvidia-tls.so.%{version}
 %{nvidia_libdir32}/libvdpau_nvidia.so
 %{nvidia_libdir32}/vdpau/libvdpau_nvidia.so.%{version}
 %{nvidia_libdir32}/libnvidia-ml.so.%{version}
@@ -1195,7 +1196,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir32}/libGLX_nvidia.so.0
 %{nvidia_libdir32}/libGLX_nvidia.so.%{version}
 %{nvidia_libdir32}/libOpenGL.so.0
-%{nvidia_libdir32}/tls/libnvidia-tls.so.%{version}
 %{nvidia_libdir32}/libnvidia-ptxjitcompiler.so
 %{nvidia_libdir32}/libnvidia-ptxjitcompiler.so.1
 %{nvidia_libdir32}/libnvidia-glvkspirv.so.%{version}
@@ -1204,7 +1204,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 %files -n %{drivername}-devel -f %pkgname/nvidia-devel.files
 %defattr(-,root,root)
 %if !%simple
-%{_includedir}/%{drivername}
 %{nvidia_libdir}/libGL.so
 %{nvidia_libdir}/libEGL.so
 %{nvidia_libdir}/libGLESv*.so

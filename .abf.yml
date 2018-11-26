@@ -1,6 +1,11 @@
-sources:
-  a: 1
+removed_sources:
   nvidia-modprobe-390.67.tar.bz2: 2fab0b59ba212467e8401783a87ed78960dd2618
   nvidia-persistenced-390.67.tar.bz2: 0216ede9e74af8704121ffcd80e0f184d56bebef
   nvidia-settings-390.67.tar.bz2: 1671125b154c18c370aaa95061ab875b185208bf
   nvidia-xconfig-390.67.tar.bz2: 1d164122a1a5dfe873dea386665c2288a7110268
+sources:
+  a: 1
+  nvidia-modprobe-415.18.tar.bz2: f684ed72aedd534e6a6aa94bd5f019a809d39b41
+  nvidia-persistenced-415.18.tar.bz2: 109971e547ce5d0f72e826c4f73f641a1cbd8363
+  nvidia-settings-415.18.tar.bz2: 00e35e95f4fa6f0b2d3cbadbcd1efacda37dc588
+  nvidia-xconfig-415.18.tar.bz2: 850c0dba28d26f8ff6ba33a5c14694616e499246
