@@ -1,0 +1,6 @@
+sources:
+  nvidia-modprobe-430.14.tar.bz2: 0bef18d9e655337b20c1bde17fce7abdc43239ed
+  nvidia-persistenced-430.14.tar.bz2: 87303215ec022570e177a7eabe9f5ac94f67b8e9
+  nvidia-settings-430.14.tar.bz2: 34ef3788a7119e2edf0ff96ef3f6b2081d77f7be
+  nvidia-xconfig-430.14.tar.bz2: d244f3fb5b1ed4f336455cb2d1faa56d05cd4f17
+  ./NVIDIA-Linux-x86_64-430.14.run: c7ac6043d66c30111d194f66f2665f461ec52574
