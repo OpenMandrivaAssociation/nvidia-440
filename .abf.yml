@@ -1,4 +1,5 @@
 sources:
+  NVIDIA-Linux-x86_64-435.21.run: ba6f9a59ef599a682048b5799dd2add4f2af6ec2
   nvidia-modprobe-435.21.tar.bz2: 4ab6c92f71eb801a7912d49458f76f5191addcb0
   nvidia-persistenced-435.21.tar.bz2: 839522e519b38bfefe81caf6c61c920b10016ef2
   nvidia-settings-435.21.tar.bz2: 59a47b97a789d4d7f7ca0d11a6dd665fd5334858
