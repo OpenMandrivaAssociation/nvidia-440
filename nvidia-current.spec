@@ -1,5 +1,4 @@
 ## I love OpenSource :-(
-#5%global _missing_build_ids_terminate_build %{nil}
 %define debug_package %{nil}
 ## NOTE: When modifying this .spec, you do not necessarily need to care about
 ##       the %simple stuff. It is fine to break them, I'll fix it when I need them :)
@@ -55,7 +54,7 @@
 %define ldetect_cards_name NVIDIA GeForce 420 series and later
 %endif
 
-%define biarches x86_64
+%define biarches x86_64 znver1
 
 %if !%simple
 %ifarch %{ix86}
@@ -63,6 +62,10 @@
 %define pkgname %{pkgname32}
 %endif
 %ifarch x86_64
+%define nsource %{SOURCE1}
+%define pkgname %{pkgname64}
+%endif
+%ifarch znver1
 %define nsource %{SOURCE1}
 %define pkgname %{pkgname64}
 %endif
@@ -108,7 +111,7 @@ Patch8:		nvidia-persistenced-319.17-add-missing-libtirpc-link.patch
 License:	Freeware
 URL:		http://www.nvidia.com/object/unix.html
 Group:		System/Kernel and hardware
-ExclusiveArch:	%{ix86} x86_64
+ExclusiveArch:	%{ix86} x86_64 znver1
 %if !%simple
 BuildRequires:	imagemagick
 BuildRequires:	pkgconfig(vdpau) >= 1.1
@@ -119,6 +122,7 @@ BuildRequires:	pkgconfig(libtirpc)
 BuildRequires:	pkgconfig(gl)
 BuildRequires:	pkgconfig(xxf86vm)
 BuildRequires:	pkgconfig(dbus-1)
+BuildRequires:	pkgconfig(xrandr)
 %endif
 BuildRequires:	rpm-build >= 1:5.3.12
 
@@ -355,8 +359,6 @@ export CFLAGS="%{optflags} -Wno-error=format-security"
 %make_build -C nvidia-xconfig-%{version} NV_KEEP_UNSTRIPPED_BINARIES=false
 %make_build -C nvidia-modprobe-%{version} NV_KEEP_UNSTRIPPED_BINARIES=false
 %make_build -C nvidia-persistenced-%{version} NV_KEEP_UNSTRIPPED_BINARIES=false
-
-# %simple
 %endif
 
 %install
@@ -514,9 +516,6 @@ done
 
 # install files according to .manifest
 cat .manifest | tail -n +9 | while read line; do
-#set +x
-#cat .manifest | sed 's/INHERIT_PATH_DEPTH:[0-9]//;s/MODULE:.*//'| tail -n +9 |  while read line; do
-
 	arch=
 	style=
 	subdir=
@@ -538,7 +537,8 @@ cat .manifest | tail -n +9 | while read line; do
 		;;
 	CUDA_SYMLINK)
 		parseparams arch subdir dest
-		install_lib_symlink nvidia-cuda $nvidia_libdir/$subdir
+#		install_lib_symlink nvidia-cuda $nvidia_libdir/$subdir
+		continue
 		;;
 	EXPLICIT_PATH)
 		parseparams dest
@@ -1114,7 +1114,7 @@ rmmod nvidia > /dev/null 2>&1 || true
 
 %if !%simple
 %dir %{nvidia_libdir}
-#%%dir %{nvidia_libdir}/tls
+#%dir %{nvidia_libdir}/tls
 %dir %{nvidia_libdir}/vdpau
 %{nvidia_libdir}/libnvidia-cbl.so.435.21
 %{nvidia_libdir}/libnvidia-eglcore.so.%{version}
@@ -1126,11 +1126,9 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/libnvidia-cfg.so.%{version}
 %{nvidia_libdir}/libnvidia-fbc.so.%{version}
 %{nvidia_libdir}/libnvidia-ifr.so.%{version}
-%{nvidia_libdir}/libnvidia-ml.so.%{version}
 %{nvidia_libdir}/libnvidia-ptxjitcompiler.so.%{version}
-#%{nvidia_libdir}/libnvidia-tls.so.%{version}
+%{nvidia_libdir}/libnvidia-ml.so.%{version}
 %{nvidia_libdir}/vdpau/libvdpau_nvidia.so.%{version}
-#%%{nvidia_libdir}/libGL.so.1
 %{nvidia_libdir}/libGLdispatch.so.0
 %{nvidia_libdir}/libnvidia-opticalflow.so
 %{nvidia_libdir}/libnvidia-opticalflow.so.1
@@ -1147,15 +1145,19 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/libnvidia-cfg.so.1
 %{nvidia_libdir}/libnvidia-fbc.so.1
 %{nvidia_libdir}/libnvidia-ifr.so.1
-%{nvidia_libdir}/libnvidia-ml.so.1
-%{nvidia_libdir}/libvdpau_nvidia.so
 %{nvidia_libdir}/libnvidia-tls.so.%{version}
-%{nvidia_libdir}/libnvidia-ptxjitcompiler.so
-%{nvidia_libdir}/libnvidia-ptxjitcompiler.so.1
 %{nvidia_libdir}/libnvidia-rtcore.so.%{version}
 %{nvidia_libdir}/libnvidia-glvkspirv.so.%{version}
 %{nvidia_libdir}/libnvoptix.so.1
 %{nvidia_libdir}/libnvoptix.so.%{version}
+%{nvidia_libdir}/xorg/libglxserver_nvidia.so
+%{nvidia_libdir}/xorg/libglxserver_nvidia.so.%{version}
+%{nvidia_libdir}/libnvidia-opticalflow.so.1
+%{nvidia_libdir}/libnvidia-opticalflow.so.%{version}
+%{nvidia_libdir}/libnvidia-rtcore.so.%{version}
+%{nvidia_libdir}/libnvoptix.so.1
+%{nvidia_libdir}/libnvoptix.so.%{version}
+%{nvidia_libdir}/libvdpau_nvidia.so
 %{nvidia_libdir}/xorg/libglxserver_nvidia.so
 %{nvidia_libdir}/xorg/libglxserver_nvidia.so.%{version}
 # %simple
@@ -1190,21 +1192,17 @@ rmmod nvidia > /dev/null 2>&1 || true
 %ifarch %{biarches}
 %files -n %{driverpkgname}-32bit
 %dir %{nvidia_libdir32}
-#%dir %{nvidia_libdir32}/tls
 %dir %{nvidia_libdir32}/vdpau
-#%{nvidia_libdir32}/libGL.so.%{version}
 %{nvidia_libdir32}/libEGL_nvidia.so.0
 %{nvidia_libdir32}/libEGL_nvidia.so.%{version}
 %{nvidia_libdir32}/libnvidia-glcore.so.%{version}
 %{nvidia_libdir32}/libnvidia-eglcore.so.%{version}
-%{nvidia_libdir32}/libnvidia-fatbinaryloader.so.%{version}
 %{nvidia_libdir32}/libnvidia-glsi.so.%{version}
 %{nvidia_libdir32}/libnvidia-tls.so.%{version}
 %{nvidia_libdir32}/libnvidia-ptxjitcompiler.so.%{version}
 %{nvidia_libdir32}/libvdpau_nvidia.so
 %{nvidia_libdir32}/vdpau/libvdpau_nvidia.so.%{version}
 %{nvidia_libdir32}/libnvidia-ml.so.%{version}
-%{nvidia_libdir32}/libnvidia-ml.so.1
 %{nvidia_libdir32}/libnvidia-ifr.so.%{version}
 %{nvidia_libdir32}/libnvidia-ifr.so.1
 %{nvidia_libdir32}/libnvidia-fbc.so.%{version}
@@ -1213,10 +1211,7 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir32}/libnvidia-opticalflow.so
 %{nvidia_libdir32}/libnvidia-opticalflow.so.1
 %{nvidia_libdir32}/libnvidia-opticalflow.so.%{version}
-#%{nvidia_libdir32}/libGL.so.1
 %{nvidia_libdir32}/libGLdispatch.so.0
-#%{nvidia_libdir32}/libEGL.so.1
-#%{nvidia_libdir32}/libEGL.so.%{version}
 %{nvidia_libdir32}/libGLESv*.%{version}*
 %{nvidia_libdir32}/libGLESv*.so.1*
 %{nvidia_libdir32}/libGLESv*.so.2*
@@ -1224,37 +1219,24 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir32}/libGLX_nvidia.so.0
 %{nvidia_libdir32}/libGLX_nvidia.so.%{version}
 %{nvidia_libdir32}/libOpenGL.so.0
-#%{nvidia_libdir32}/tls/libnvidia-tls.so.%{version}
-%{nvidia_libdir32}/libnvidia-ptxjitcompiler.so
-%{nvidia_libdir32}/libnvidia-ptxjitcompiler.so.1
 %{nvidia_libdir32}/libnvidia-glvkspirv.so.%{version}
 %endif
 
-#%files -n %{drivername}-devel -f %pkgname/nvidia-devel.files
 %files -n %{drivername}-devel
 %defattr(-,root,root)
 %if !%simple
-#%{_includedir}/%{drivername}
-#%%{nvidia_libdir}/libGL.so
-#%%{nvidia_libdir}/libEGL.so
 %{nvidia_libdir}/libGLESv*.so
-%{nvidia_libdir}/libcuda.so
 %{nvidia_libdir}/libnvcuvid.so
 %{nvidia_libdir}/libnvidia-cfg.so
 %{nvidia_libdir}/libnvidia-fbc.so
 %{nvidia_libdir}/libnvidia-ifr.so
-%{nvidia_libdir}/libnvidia-ml.so
 %{nvidia_libdir}/libOpenCL.so
 %{nvidia_libdir}/libOpenGL.so
 %{nvidia_libdir}/libnvidia-encode.so
 %ifarch %{biarches}
-#%%{nvidia_libdir32}/libGL.so
-#%%{nvidia_libdir32}/libEGL.so
 %{nvidia_libdir32}/libGLESv*.so
-%{nvidia_libdir32}/libcuda.so
 %{nvidia_libdir32}/libOpenCL.so
 %{nvidia_libdir32}/libOpenGL.so
-%{nvidia_libdir32}/libnvidia-ml.so
 %{nvidia_libdir32}/libnvidia-fbc.so
 %{nvidia_libdir32}/libnvidia-ifr.so
 %{nvidia_libdir32}/libnvcuvid.so
@@ -1279,7 +1261,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/libOpenCL.so.1
 %{nvidia_libdir}/libnvidia-compiler.so.%{version}
 %{nvidia_libdir}/libcuda.so.%{version}
-%{nvidia_libdir}/libcuda.so.1
 %{nvidia_libdir}/libnvidia-opencl.so.%{version}
 %{nvidia_libdir}/libnvidia-opencl.so.1
 %{nvidia_libdir}/libnvidia-encode.so.%{version}
@@ -1292,14 +1273,15 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir32}/libOpenCL.so.1.0
 %{nvidia_libdir32}/libOpenCL.so.1
 %{nvidia_libdir32}/libnvidia-compiler.so.%{version}
+%{nvidia_libdir32}/libcuda.so.%{version}
 %{nvidia_libdir32}/libnvidia-opencl.so.%{version}
 %{nvidia_libdir32}/libnvidia-opencl.so.1
 %{nvidia_libdir32}/libnvidia-encode.so.%{version}
 %{nvidia_libdir32}/libnvidia-encode.so.1
 %{nvidia_libdir32}/libnvcuvid.so.%{version}
 %{nvidia_libdir32}/libnvcuvid.so.1
-%{nvidia_libdir32}/libcuda.so.%{version}
-%{nvidia_libdir32}/libcuda.so.1
+%{nvidia_libdir32}/libnvidia-opticalflow.so
+%{nvidia_libdir32}/libnvidia-opticalflow.so.1
 %{nvidia_libdir32}/libnvidia-fatbinaryloader.so.%{version}
 %endif
 %endif
