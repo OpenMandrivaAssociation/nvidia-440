@@ -11,7 +11,7 @@
 %{?_without_simple: %global simple 0}
 %{?_with_simple: %global simple 1}
 
-%define name nvidia-current
+%define name nvidia-440
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
@@ -28,7 +28,7 @@
 
 # For now, backportability is kept for 2008.0 forwards.
 
-%define drivername nvidia-current
+%define drivername nvidia-440
 %define driverpkgname x11-driver-video-%{drivername}
 %define modulename %{drivername}
 # for description and documentation
@@ -89,7 +89,7 @@
 # https://devtalk.nvidia.com/default/topic/523762/libnvidia-encode-so-310-19-has-dependency-on-missing-library/
 %define __requires_exclude_from libnvidia-encode.so.%{version}
 
-Summary:	NVIDIA proprietary X.org driver and libraries, current driver series
+Summary:	NVIDIA proprietary X.org driver and libraries, 440.x driver series
 Name:		%{name}
 Version:	%{version}
 Release:	%{rel}
@@ -103,7 +103,7 @@ Source3:	https://download.nvidia.com/XFree86/nvidia-xconfig/nvidia-xconfig-%{ver
 Source4:	nvidia-mdvbuild-skel
 Source5:	https://download.nvidia.com/XFree86/nvidia-modprobe/nvidia-modprobe-%{version}.tar.bz2
 Source6:	https://download.nvidia.com/XFree86/nvidia-persistenced/nvidia-persistenced-%{version}.tar.bz2
-Source100:	nvidia-current.rpmlintrc
+Source100:	nvidia-440.rpmlintrc
 # include xf86vmproto for X_XF86VidModeGetGammaRampSize, fixes build on cooker
 Patch3:		nvidia-settings-include-xf86vmproto.patch
 Patch8:		nvidia-persistenced-319.17-add-missing-libtirpc-link.patch
@@ -127,8 +127,8 @@ BuildRequires:	pkgconfig(xrandr)
 BuildRequires:	rpm-build >= 1:5.3.12
 
 %description
-Source package of the current NVIDIA proprietary driver. Binary
-packages are named x11-driver-video-nvidia-current.
+Source package of the 440.x series NVIDIA proprietary driver. Binary
+packages are named x11-driver-video-nvidia-440.
 
 %package -n %{driverpkgname}
 Summary:	NVIDIA proprietary X.org driver and libraries for %cards
