@@ -15,7 +15,7 @@
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
-%define version 435.21
+%define version 440.44
 %define rel 1
 # the highest supported videodrv abi
 %define videodrv_abi 24
@@ -1116,7 +1116,7 @@ rmmod nvidia > /dev/null 2>&1 || true
 %dir %{nvidia_libdir}
 #%dir %{nvidia_libdir}/tls
 %dir %{nvidia_libdir}/vdpau
-%{nvidia_libdir}/libnvidia-cbl.so.435.21
+%{nvidia_libdir}/libnvidia-cbl.so.%{version}
 %{nvidia_libdir}/libnvidia-eglcore.so.%{version}
 %{nvidia_libdir}/libnvidia-egl-wayland.so.*
 %{nvidia_libdir}/libnvidia-glsi.so.%{version}
@@ -1152,14 +1152,14 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir}/libnvoptix.so.%{version}
 %{nvidia_libdir}/xorg/libglxserver_nvidia.so
 %{nvidia_libdir}/xorg/libglxserver_nvidia.so.%{version}
-%{nvidia_libdir}/libnvidia-opticalflow.so.1
-%{nvidia_libdir}/libnvidia-opticalflow.so.%{version}
-%{nvidia_libdir}/libnvidia-rtcore.so.%{version}
-%{nvidia_libdir}/libnvoptix.so.1
-%{nvidia_libdir}/libnvoptix.so.%{version}
+%{nvidia_libdir}/libnvidia-allocator.so.%{version}
+%{nvidia_libdir}/libnvidia-allocator.so
+%{nvidia_libdir}/libnvidia-allocator.so.1
+#%%{nvidia_libdir}/libnvoptix.so.1
+#%%{nvidia_libdir}/libnvoptix.so.%{version}
 %{nvidia_libdir}/libvdpau_nvidia.so
-%{nvidia_libdir}/xorg/libglxserver_nvidia.so
-%{nvidia_libdir}/xorg/libglxserver_nvidia.so.%{version}
+#%%{nvidia_libdir}/xorg/libglxserver_nvidia.so
+#%%{nvidia_libdir}/xorg/libglxserver_nvidia.so.%{version}
 # %simple
 %endif
 
@@ -1211,7 +1211,6 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir32}/libnvidia-opticalflow.so
 %{nvidia_libdir32}/libnvidia-opticalflow.so.1
 %{nvidia_libdir32}/libnvidia-opticalflow.so.%{version}
-%{nvidia_libdir32}/libGLdispatch.so.0
 %{nvidia_libdir32}/libGLESv*.%{version}*
 %{nvidia_libdir32}/libGLESv*.so.1*
 %{nvidia_libdir32}/libGLESv*.so.2*
@@ -1220,6 +1219,9 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{nvidia_libdir32}/libGLX_nvidia.so.%{version}
 %{nvidia_libdir32}/libOpenGL.so.0
 %{nvidia_libdir32}/libnvidia-glvkspirv.so.%{version}
+%{nvidia_libdir32}/libnvidia-allocator.so.%{version}
+%{nvidia_libdir32}/libnvidia-allocator.so
+%{nvidia_libdir32}/libnvidia-allocator.so.1
 %endif
 
 %files -n %{drivername}-devel
