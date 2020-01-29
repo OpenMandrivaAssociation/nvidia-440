@@ -57,10 +57,10 @@
 %define biarches x86_64 znver1
 
 %if !%simple
-%ifarch %{ix86}
-%define nsource %{SOURCE0}
-%define pkgname %{pkgname32}
-%endif
+#%%ifarch %{ix86}
+#%%define nsource %{SOURCE0}
+#%%define pkgname %{pkgname32}
+#%%endif
 %ifarch x86_64
 %define nsource %{SOURCE1}
 %define pkgname %{pkgname64}
@@ -111,7 +111,7 @@ Patch8:		nvidia-persistenced-319.17-add-missing-libtirpc-link.patch
 License:	Freeware
 URL:		http://www.nvidia.com/object/unix.html
 Group:		System/Kernel and hardware
-ExclusiveArch:	%{ix86} x86_64 znver1
+ExclusiveArch:	x86_64 znver1
 %if !%simple
 BuildRequires:	imagemagick
 BuildRequires:	pkgconfig(vdpau) >= 1.1
