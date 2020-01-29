@@ -1,6 +1,6 @@
 sources:
-  nvidia-modprobe-435.21.tar.bz2: 4ab6c92f71eb801a7912d49458f76f5191addcb0
-  nvidia-persistenced-435.21.tar.bz2: 839522e519b38bfefe81caf6c61c920b10016ef2
-  nvidia-settings-435.21.tar.bz2: 59a47b97a789d4d7f7ca0d11a6dd665fd5334858
-  nvidia-xconfig-435.21.tar.bz2: acd317cf6bd751598b59715c774a78188ef3887f
-  NVIDIA-Linux-x86_64-435.21.run: ba6f9a59ef599a682048b5799dd2add4f2af6ec2
+  nvidia-modprobe-440.44.tar.bz2: 53b6a4412079630027133828f9c901918847acd3
+  nvidia-persistenced-440.44.tar.bz2: 6ef17f6b933e171103ffcabe50ab1ad242398b2e
+  nvidia-settings-440.44.tar.bz2: fd43ba613292f7dd9d730cb8cf4894d42876bacc
+  nvidia-xconfig-440.44.tar.bz2: 38338fae9d60108f754166e315f45b19aa7d660c
+  NVIDIA-Linux-x86_64-440.44.run: fb412c254b9a9f42b7837691368aa883df7c23f1
