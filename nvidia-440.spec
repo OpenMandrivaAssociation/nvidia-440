@@ -1,4 +1,5 @@
 ## I love OpenSource :-(
+%global ldflags %{ldflags} -fuse-ld=bfd
 %define debug_package %{nil}
 ## NOTE: When modifying this .spec, you do not necessarily need to care about
 ##       the %simple stuff. It is fine to break them, I'll fix it when I need them :)
@@ -57,10 +58,10 @@
 %define biarches x86_64 znver1
 
 %if !%simple
-#%%ifarch %{ix86}
-#%%define nsource %{SOURCE0}
-#%%define pkgname %{pkgname32}
-#%%endif
+%ifarch %{ix86}
+%define nsource %{SOURCE0}
+%define pkgname %{pkgname32}
+%endif
 %ifarch x86_64
 %define nsource %{SOURCE1}
 %define pkgname %{pkgname64}
@@ -107,6 +108,7 @@ Source100:	nvidia-440.rpmlintrc
 # include xf86vmproto for X_XF86VidModeGetGammaRampSize, fixes build on cooker
 Patch3:		nvidia-settings-include-xf86vmproto.patch
 Patch8:		nvidia-persistenced-319.17-add-missing-libtirpc-link.patch
+Patch10:	kernel-5.5.patch
 %endif
 License:	Freeware
 URL:		http://www.nvidia.com/object/unix.html
@@ -145,7 +147,7 @@ Suggests:	%{drivername}-doc-html = %{version}
 # for missing libwfb.so
 Conflicts:	x11-server-common < 1.4
 # Proper support for versioned kmod() was added in 2008.1:
-Requires:	kmod(%{modulename}) = %{version}
+Requires:	dkms-nvidioa-390 = %{version}
 # At least mplayer dlopens libvdpau.so.1, so the software will not pull in
 # the vdpau library package. We ensure its installation here.
 # (vdpau package exists in main on 2009.0+)
@@ -226,7 +228,7 @@ Summary:	CUDA and OpenCL libraries for NVIDIA proprietary driver
 Group:		System/Kernel and hardware
 Provides:	%{drivername}-cuda = %{version}-%{release}
 # Proper support for versioned kmod() was added in 2008.1:
-Requires:	kmod(%{modulename}) = %{version}
+Requires:	dkms-nvidia-440 = %{version}
 Conflicts:	nvidia < 1:195.36.15-4
 %if "%_lib" == "lib64"
 Provides:	libnvcuvid.so.1()(64bit)
@@ -273,6 +275,7 @@ sh %{nsource} --extract-only
 cd %{pkgname}
 %ifarch x86_64
 # extra patches here
+%patch10 -p1
 %endif
 # extra patches here
 cd ..
@@ -303,22 +306,11 @@ DEST_MODULE_LOCATION[2]="/kernel/drivers/char/drm"
 %endif
 BUILT_MODULE_NAME[3]="nvidia-drm"
 DEST_MODULE_LOCATION[3]="/kernel/drivers/char/drm"
+DEST_MODULE_NAME[3]="nvidia-drm"
 MAKE[0]="'make' CC=gcc CXX=g++ SYSSRC=\${kernel_source_dir} modules"
 AUTOINSTALL="yes"
 EOF
 
-cat > README.install.urpmi <<EOF
-This driver is for %cards.
-
-Use XFdrake to configure X to use the correct NVIDIA driver. Any needed
-packages will be automatically installed if not already present.
-1. Run XFdrake as root.
-2. Go to the Graphics Card list.
-3. Select your card (it is usually already autoselected).
-4. Answer any questions asked and then quit.
-
-If you do not want to use XFdrake, see README.manual-setup.
-EOF
 
 cat > README.manual-setup <<EOF
 This file describes the procedure for the manual installation of this NVIDIA
@@ -339,7 +331,7 @@ EOF
 rm nvidia-settings-%{version}/src/*/*.a ||:
 
 %build
-export CC=gcc  CXX=g++
+#export CC=gcc  CXX=g++
 export LD=ld.bfd
 %setup_compile_flags
 
@@ -366,7 +358,17 @@ cd %{pkgname}
 
 # dkms
 install -d -m755 %{buildroot}%{_usrsrc}/%{drivername}-%{version}-%{release}
+cat > nvllbuild << EOF
+#!/bin/sh
+set -e
+export "CC=gcc" LDFLAGS="$LDFLAGS --build-id=none"
+ln -s Module.symvers nvidia-drm/Module.symvers 
+ln -s Module.symvers nvidia-modeset/Module.symvers 
+ln -s Module.symvers nvidia-uvm/Module.symvers 
+make  KERN_DIR=\$1 modules
 
+EOF
+install -m 0755 nvllbuild %{buildroot}%{_usr}/src/%{name}-%{version}-%{release}
 # menu entry
 install -d -m755 %{buildroot}%{_datadir}/%{drivername}
 cat > %{buildroot}%{_datadir}/%{drivername}/%{disttag}-nvidia-settings.desktop <<EOF
@@ -378,6 +380,22 @@ Icon=%{drivername}-settings
 Terminal=false
 Type=Application
 Categories=GTK;Settings;HardwareSettings;
+EOF
+
+#Make sure the nvidia xorg driver actually gets loaded.
+install -d -m755 %{buildroot}%{_sysconfdir}/X11/xorg.conf.d/
+cat > %{buildroot}%{_sysconfdir}/X11/xorg.conf.d/20-nvidia.conf <<EOF
+Section "Device"
+        Identifier "My GPU"
+        Driver "nvidia"
+EndSection
+EOF
+
+#Blacklist the nouveau driver
+install -d -m755 %{buildroot}%{_sysconfdir}/modprobe.d/
+cat > %{buildroot}%{_sysconfdir}/modprobe.d/blacklist-nouveau.conf <<EOF
+blacklist nouveau
+
 EOF
 
 install -d -m755 %{buildroot}%{_datadir}/applications
@@ -915,40 +933,6 @@ chmod 0755 %{buildroot}%{_sysconfdir}/%{drivername}/nvidia-settings.xinit
 install -d -m755 %{buildroot}%{_sysconfdir}/X11/xinit.d
 touch %{buildroot}%{_sysconfdir}/X11/xinit.d/nvidia-settings.xinit
 
-# install ldetect-lst pcitable files for backports
-# local version of merge2pcitable.pl:read_nvidia_readme:
-section="nothingyet"
-set +x
-[ -e README.txt ] || cp -a usr/share/doc/README.txt .
-cat README.txt | while read line; do
-	if [ "$section" = "nothingyet" ] || [ "$section" = "midspace" ]; then
-		if echo "$line" | grep -Pq "^\s*NVIDIA GPU product\s+Device PCI ID"; then
-			section="data"
-		elif [ "$section" = "midspace" ] && echo "$line" | grep -Pq "legacy"; then
-			break
-		fi
-		continue
-	fi
-
-	if [ "$section" = "data" ] && echo "$line" | grep -Pq "^\s*$"; then
-		section="midspace"
-		continue
-	fi
-
-	echo "$line" | grep -Pq "^\s*-+[\s-]+$" && continue
-	id=$(echo "$line" | sed -nre 's,^\s*.+?\s\s+(0x)?([0-9a-fA-F]{4}).*$,\2,p' | tr '[:upper:]' '[:lower:]')
-	#id2=$(echo "$line" | sed -nre 's,^\s*.+?\s\s+0x(....)\s0x(....).*$,\2,p' | tr '[:upper:]' '[:lower:]')
-	subsysid=
-	# not useful as of 2013-05 -Anssi
-	#[ -n "$id2" ] && subsysid="	0x10de	0x$id2"
-	echo "0x10de	0x$id$subsysid	\"Card:%{ldetect_cards_name}\""
-done | sort -u > pcitable.nvidia.lst
-set -x
-[ $(wc -l pcitable.nvidia.lst | cut -f1 -d" ") -gt 200 ]
-%if "%{ldetect_cards_name}" != ""
-install -d -m755 %{buildroot}%{_datadir}/ldetect-lst/pcitable.d
-gzip -c pcitable.nvidia.lst > %{buildroot}%{_datadir}/ldetect-lst/pcitable.d/40%{drivername}.lst.gz
-%endif
 
 export EXCLUDE_FROM_STRIP="$(find %{buildroot} -type f \! -name nvidia-settings \! -name nvidia-xconfig \! -name nvidia-modprobe \! -name nvidia-persistenced)"
 
@@ -958,7 +942,7 @@ export EXCLUDE_FROM_STRIP="$(find %{buildroot} -type f \! -name nvidia-settings 
 
 %post -n %{driverpkgname}
 # XFdrake used to generate an nvidia.conf file
-[ -L %{_sysconfdir}/modprobe.d/nvidia.conf ] || rm -f %{_sysconfdir}/modprobe.d/nvidia.conf
+#[ -L %{_sysconfdir}/modprobe.d/nvidia.conf ] || rm -f %{_sysconfdir}/modprobe.d/nvidia.conf
 
 current_glconf="$(readlink -e %{_sysconfdir}/ld.so.conf.d/GL.conf)"
 
@@ -984,13 +968,15 @@ mkdir -p %{_libdir}/vdpau
 	--slave %{_bindir}/nvidia-persistenced nvidia-persistenced %{nvidia_bindir}/nvidia-persistenced \
 	--slave %{_sysconfdir}/X11/xinit.d/nvidia-settings.xinit nvidia-settings.xinit %{_sysconfdir}/%{drivername}/nvidia-settings.xinit \
 	--slave %{_libdir}/vdpau/libvdpau_nvidia.so.1 %{_lib}vdpau_nvidia.so.1 %{nvidia_libdir}/vdpau/libvdpau_nvidia.so.%{version} \
-	--slave %{_sysconfdir}/modprobe.d/display-driver.conf display-driver.conf %{_sysconfdir}/%{drivername}/modprobe.conf \
 	--slave %{_sysconfdir}/OpenCL/vendors/nvidia.icd nvidia.icd %{_sysconfdir}/%{drivername}/nvidia.icd \
 %ifarch %{biarches}
 	--slave %{_prefix}/lib/vdpau/libvdpau_nvidia.so.1 libvdpau_nvidia.so.1 %{nvidia_libdir32}/vdpau/libvdpau_nvidia.so.%{version} \
 %endif
 	--slave %{xorg_extra_modules} xorg_extra_modules %{nvidia_extensionsdir} \
 
+#Line below breaks module loading	
+#	--slave %{_sysconfdir}/modprobe.d/display-driver.conf display-driver.conf %{_sysconfdir}/%{drivername}/modprobe.conf \
+	
 if [ "${current_glconf}" = "%{_sysconfdir}/nvidia97xx/ld.so.conf" ]; then
 	# Adapt for the renaming of the driver. X.org config still has the old ModulePaths
 	# but they do not matter as we are using alternatives for libglx.so now.
@@ -1009,6 +995,7 @@ if [ ! -f %{_sysconfdir}/%{drivername}/ld.so.conf ]; then
 fi
 # explicit /sbin/ldconfig due to alternatives
 /sbin/ldconfig -X
+/bin/rm -f %{_sysconfdir}/X11/xorg.conf.d/20-nvidia.conf
 
 %if "%{ldetect_cards_name}" != ""
 [ -x %{_sbindir}/update-ldetect-lst ] && %{_sbindir}/update-ldetect-lst || :
@@ -1025,6 +1012,8 @@ fi
 
 # rmmod any old driver if present and not in use (e.g. by X)
 rmmod nvidia > /dev/null 2>&1 || true
+sed -i '/GRUB_CMDLINE_LINUX_DEFAULT/ s/\"$/ rd.driver.blacklist=nouveau nvidia-drm.modeset=1\"/' /etc/default/grub
+/usr/sbin/grub2-mkconfig -o /boot/grub2/grub.cfg
 
 %preun -n dkms-%{drivername}
 /usr/sbin/dkms --rpm_safe_upgrade remove -m %{drivername} -v %{version}-%{release} --all
@@ -1032,10 +1021,14 @@ rmmod nvidia > /dev/null 2>&1 || true
 # rmmod any old driver if present and not in use (e.g. by X)
 rmmod nvidia > /dev/null 2>&1 || true
 
+%postun -n dkms-%{drivername}
+sed -i 's/ rd.driver.blacklist=nouveau nvidia-drm.modeset=1//' /etc/default/grub
+/usr/sbin/grub2-mkconfig -o /boot/grub2/grub.cfg
+
 %files -n %{driverpkgname} -f %{pkgname}/nvidia.files
 %defattr(-,root,root)
 # other documentation files are listed in nvidia.files
-%doc README.install.urpmi README.manual-setup
+%doc README.manual-setup
 
 %if "%{ldetect_cards_name}" != ""
 %{_datadir}/ldetect-lst/pcitable.d/40%{drivername}.lst.gz
@@ -1050,6 +1043,8 @@ rmmod nvidia > /dev/null 2>&1 || true
 %{_sysconfdir}/%{drivername}/nvidia-settings.xinit
 %{_sysconfdir}/vulkan/icd.d/nvidia_icd.json
 %{_sysconfdir}/vulkan/icd.d/nvidia_layers.json
+%{_sysconfdir}/X11/xorg.conf.d/20-nvidia.conf
+
 %if !%simple
 %{_sysconfdir}/%{drivername}/nvidia.icd
 %dir %{_datadir}/nvidia
@@ -1115,6 +1110,7 @@ rmmod nvidia > /dev/null 2>&1 || true
 %if !%simple
 %dir %{nvidia_libdir}
 #%dir %{nvidia_libdir}/tls
+#%dir %{nvidia_libdir}/tls
 %dir %{nvidia_libdir}/vdpau
 %{nvidia_libdir}/libnvidia-cbl.so.%{version}
 %{nvidia_libdir}/libnvidia-eglcore.so.%{version}
@@ -1170,20 +1166,20 @@ rmmod nvidia > /dev/null 2>&1 || true
 %ghost %{_prefix}/lib/vdpau/libvdpau_nvidia.so.1
 %endif
 
-#%if !%simple
+%if !%simple
 # 2009.1+ (/usr/lib/drivername/xorg)
-#%dir %{nvidia_modulesdir}
+%dir %{nvidia_modulesdir}
 #%{nvidia_modulesdir}/libnvidia-wfb.so.1
-#%endif
+%endif
 
-#%if !%simple
+%if !%simple
 #%{nvidia_modulesdir}/libnvidia-wfb.so.%{version}
-#%endif
+%endif
 
-#%if !%simple
-#%{nvidia_extensionsdir}/libglx.so.%{version}
+%if !%simple
+#%{nvidia_extensionsdir}/libglx.so.%%{version}
 #%{nvidia_extensionsdir}/libglx.so
-#%endif
+%endif
 
 %if !%simple
 %{nvidia_driversdir}/nvidia_drv.so
@@ -1250,6 +1246,7 @@ rmmod nvidia > /dev/null 2>&1 || true
 %defattr(-,root,root)
 %doc %{pkgname}/LICENSE
 %{_usrsrc}/%{drivername}-%{version}-%{release}
+%{_sysconfdir}/modprobe.d/blacklist-nouveau.conf
 
 %files -n %{drivername}-doc-html -f %pkgname/nvidia-html.files
 %defattr(-,root,root)
