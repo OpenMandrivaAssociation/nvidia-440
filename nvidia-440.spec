@@ -147,7 +147,7 @@ Suggests:	%{drivername}-doc-html = %{version}
 # for missing libwfb.so
 Conflicts:	x11-server-common < 1.4
 # Proper support for versioned kmod() was added in 2008.1:
-Requires:	dkms-nvidioa-390 = %{version}
+Requires:	dkms-nvidia-440 = %{version}
 # At least mplayer dlopens libvdpau.so.1, so the software will not pull in
 # the vdpau library package. We ensure its installation here.
 # (vdpau package exists in main on 2009.0+)
