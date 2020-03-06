@@ -307,7 +307,7 @@ DEST_MODULE_LOCATION[2]="/kernel/drivers/char/drm"
 BUILT_MODULE_NAME[3]="nvidia-drm"
 DEST_MODULE_LOCATION[3]="/kernel/drivers/char/drm"
 DEST_MODULE_NAME[3]="nvidia-drm"
-MAKE[0]="'make' CC=gcc CXX=g++ SYSSRC=\${kernel_source_dir} modules"
+MAKE[0]="'make' CC=clang CXX=clang++ SYSSRC=\${kernel_source_dir} modules"
 AUTOINSTALL="yes"
 EOF
 
@@ -346,8 +346,8 @@ popd
 # (tpg) need to provide a patch to fix format error
 export CFLAGS="%{optflags} -Wno-error=format-security"
 
-%make_build -C nvidia-settings-%{version}/src/libXNVCtrl CC=gcc
-%make_build -C nvidia-settings-%{version} NV_KEEP_UNSTRIPPED_BINARIES=false CC=gcc
+%make_build -C nvidia-settings-%{version}/src/libXNVCtrl CC=clang
+%make_build -C nvidia-settings-%{version} NV_KEEP_UNSTRIPPED_BINARIES=false CC=clang
 %make_build -C nvidia-xconfig-%{version} NV_KEEP_UNSTRIPPED_BINARIES=false
 %make_build -C nvidia-modprobe-%{version} NV_KEEP_UNSTRIPPED_BINARIES=false
 %make_build -C nvidia-persistenced-%{version} NV_KEEP_UNSTRIPPED_BINARIES=false
@@ -361,7 +361,7 @@ install -d -m755 %{buildroot}%{_usrsrc}/%{drivername}-%{version}-%{release}
 cat > nvllbuild << EOF
 #!/bin/sh
 set -e
-export "CC=gcc" LDFLAGS="$LDFLAGS --build-id=none"
+export "CC=clang" LDFLAGS="$LDFLAGS --build-id=none"
 ln -s Module.symvers nvidia-drm/Module.symvers 
 ln -s Module.symvers nvidia-modeset/Module.symvers 
 ln -s Module.symvers nvidia-uvm/Module.symvers 
