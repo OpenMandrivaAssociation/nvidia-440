@@ -13,6 +13,7 @@
 %{?_with_simple: %global simple 1}
 
 %define name nvidia-440
+%define kname nvidia
 
 %if !%simple
 # When updating, please add new ids to ldetect-lst (merge2pcitable.pl)
@@ -297,7 +298,7 @@ PACKAGE_NAME="%{drivername}"
 PACKAGE_VERSION="%{version}-%{release}"
 BUILT_MODULE_NAME[0]="nvidia"
 DEST_MODULE_LOCATION[0]="/kernel/drivers/char/drm"
-DEST_MODULE_NAME[0]="%{modulename}"
+DEST_MODULE_NAME[0]="nvidia"
 BUILT_MODULE_NAME[1]="nvidia-modeset"
 DEST_MODULE_LOCATION[1]="/kernel/drivers/char/drm"
 %ifarch x86_64
