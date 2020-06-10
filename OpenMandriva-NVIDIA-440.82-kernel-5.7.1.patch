@@ -1,0 +1,21 @@
+diff -uraN NVIDIA-Linux-x86_64-440.82/kernel/conftest.sh omv-NVIDIA-Linux-x86_64-440.82/kernel/conftest.sh
+--- NVIDIA-Linux-x86_64-440.82/kernel/conftest.sh	2020-03-29 04:19:08.000000000 +0200
++++ omv-NVIDIA-Linux-x86_64-440.82/kernel/conftest.sh	2020-06-10 13:49:15.295025148 +0200
+@@ -143,6 +143,7 @@
+     FILES="$FILES video/nv_internal.h"
+     FILES="$FILES asm/book3s/64/hash-64k.h"
+     FILES="$FILES asm/set_memory.h"
++    FILES="$FILES asm/pgtable.h"
+     FILES="$FILES asm/prom.h"
+     FILES="$FILES asm/powernv.h"
+     FILES="$FILES asm/tlbflush.h"
+@@ -448,6 +449,9 @@
+             # It does not exist on all architectures.
+             #
+             CODE="
++            #if defined(NV_ASM_PGTABLE_H_PRESENT)
++            #include <asm/pgtable.h>
++            #endif
+             #if defined(NV_ASM_SET_MEMORY_H_PRESENT)
+             #include <asm/set_memory.h>
+             #else
