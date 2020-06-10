@@ -6,7 +6,7 @@ Version:	440.82
 Release:	1
 ExclusiveArch:	%{x86_64} %{znver1}
 Url:		http://www.nvidia.com/object/unix.html
-Source0:	http://us.download.nvidia.com/XFree86/Linux-x86_64/%{version}/NVIDIA-Linux-x86_64-%{version}.run
+Source0:	http://download.nvidia.com/XFree86/Linux-x86_64/%{version}/NVIDIA-Linux-x86_64-%{version}.run
 Source1:	https://gitweb.frugalware.org/frugalware-current/raw/master/source/x11-extra/nvidia/xorg-nvidia.conf	
 Source2:	https://gitweb.frugalware.org/frugalware-current/raw/master/source/x11-extra/nvidia/modprobe-nvidia.conf	
 Patch0:		kernel-5.7.patch
