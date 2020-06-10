@@ -1,0 +1,39 @@
+diff --git a/NVIDIA-Linux-x86_64-440.82/kernel/conftest.sh b/NVIDIA-Linux-x86_64-440.82/kernel/conftest.sh
+index 8f807a1..c8a45df 100755
+--- a/NVIDIA-Linux-x86_64-440.82/kernel/conftest.sh
++++ b/NVIDIA-Linux-x86_64-440.82/kernel/conftest.sh
+@@ -143,6 +143,7 @@ test_headers() {
+     FILES="$FILES video/nv_internal.h"
+     FILES="$FILES asm/book3s/64/hash-64k.h"
+     FILES="$FILES asm/set_memory.h"
++    FILES="$FILES asm/pgtable.h"
+     FILES="$FILES asm/prom.h"
+     FILES="$FILES asm/powernv.h"
+     FILES="$FILES asm/tlbflush.h"
+@@ -448,6 +449,8 @@ compile_test() {
+             # It does not exist on all architectures.
+             #
+             CODE="
++            #include <asm/page.h>
++            #include <asm/pgtable.h>
+             #if defined(NV_ASM_SET_MEMORY_H_PRESENT)
+             #include <asm/set_memory.h>
+             #else
+@@ -466,6 +469,8 @@ compile_test() {
+             # It does not exist on all architectures.
+             #
+             CODE="
++            #include <asm/page.h>
++            #include <asm/pgtable.h>
+             #if defined(NV_ASM_SET_MEMORY_H_PRESENT)
+             #include <asm/set_memory.h>
+             #else
+@@ -519,6 +524,8 @@ compile_test() {
+             # It does not exist on all architectures.
+             #
+             CODE="
++            #include <asm/page.h>
++            #include <asm/pgtable.h>
+             #if defined(NV_ASM_SET_MEMORY_H_PRESENT)
+             #include <asm/set_memory.h>
+             #else

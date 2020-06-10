@@ -9,6 +9,7 @@ Url:		http://www.nvidia.com/object/unix.html
 Source0:	http://us.download.nvidia.com/XFree86/Linux-x86_64/%{version}/NVIDIA-Linux-x86_64-%{version}.run
 Source1:	https://gitweb.frugalware.org/frugalware-current/raw/master/source/x11-extra/nvidia/xorg-nvidia.conf	
 Source2:	https://gitweb.frugalware.org/frugalware-current/raw/master/source/x11-extra/nvidia/modprobe-nvidia.conf	
+Patch0:		kernel-5.7.patch
 Group:		Hardware
 License:	distributable
 # Just to be on the safe side, it may not be wise
@@ -120,6 +121,7 @@ Kernel modules needed by the binary-only nvidia driver
 %prep
 %setup -T -c %{name}-%{version}
 sh %{S:0} --extract-only
+%patch0 -p1
 
 %build
 cd NVIDIA-Linux-x86_64-%{version}
