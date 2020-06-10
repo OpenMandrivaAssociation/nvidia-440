@@ -121,7 +121,7 @@ Kernel modules needed by the binary-only nvidia driver
 %prep
 %setup -T -c %{name}-%{version}
 sh %{S:0} --extract-only
-%autopatch -p1
+%patch -p1 -i
 
 %build
 cd NVIDIA-Linux-x86_64-%{version}
