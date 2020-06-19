@@ -3,7 +3,7 @@
 Summary:	Binary-only driver for nvidia graphics chips
 Name:		nvidia-440
 Version:	440.82
-Release:	2
+Release:	3
 ExclusiveArch:	%{x86_64} %{znver1}
 Url:		http://www.nvidia.com/object/unix.html
 Source0:	http://download.nvidia.com/XFree86/Linux-x86_64/%{version}/NVIDIA-Linux-x86_64-%{version}.run
