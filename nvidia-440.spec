@@ -217,7 +217,7 @@ sl nvidia-ml 1
 instx %{_libdir}/libnvidia-ptxjitcompiler.so.%{version}
 sl nvidia-ptxjitcompiler 1
 
-instx %{_libdir}/libnvidia-fatbinaryloader.so.%{version}
+#instx %{_libdir}/libnvidia-fatbinaryloader.so.%{version}
 
 # nvidia-tls library
 instx %{_libdir}/libnvidia-tls.so.%{version}
