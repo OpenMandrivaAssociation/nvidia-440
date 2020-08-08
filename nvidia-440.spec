@@ -309,7 +309,7 @@ inst /lib/modules/%{skdir}/kernel/drivers/video/nvidia-uvm.ko
 %{_libdir}/libnvcuvid.so*
 %{_libdir}/libnvidia-ml.so*
 %{_libdir}/libnvidia-ptxjitcompiler.so*
-%{_libdir}/libnvidia-fatbinaryloader.so*
+#{_libdir}/libnvidia-fatbinaryloader.so*
 %{_libdir}/libnvidia-tls.so*
 %{_sysconfdir}/OpenCL/vendors/nvidia.icd
 %{_libdir}/libnvidia-cfg.so*
@@ -345,7 +345,7 @@ inst /lib/modules/%{skdir}/kernel/drivers/video/nvidia-uvm.ko
 %{_prefix}/lib/libnvcuvid.so*
 %{_prefix}/lib/libnvidia-ml.so*
 %{_prefix}/lib/libnvidia-ptxjitcompiler.so*
-%{_prefix}/lib/libnvidia-fatbinaryloader.so*
+#{_prefix}/lib/libnvidia-fatbinaryloader.so*
 %{_prefix}/lib/libnvidia-tls.so*
 %{_prefix}/lib/libnvidia-compiler.so*
 %{_prefix}/lib/libnvidia-opencl.so*
