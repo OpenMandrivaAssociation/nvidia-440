@@ -324,8 +324,8 @@ inst /lib/modules/%{skdir}/kernel/drivers/video/nvidia-uvm.ko
 %{_bindir}/nvidia-bug-report.sh
 %{_bindir}/nvidia-smi
 %{_mandir}/man1/nvidia-smi.1*
-instx %{_bindir}/nvidia-settings
-inst %{_mandir}/man1/nvidia-settings.1*
+%{_bindir}/nvidia-settings
+%{_mandir}/man1/nvidia-settings.1*
 %{_libdir}/libnvidia-glvkspirv.so*
 %{_datadir}/nvidia/nvidia-application-profiles-%{version}-rc
 %{_datadir}/nvidia/nvidia-application-profiles-%{version}-key-documentation
