@@ -3,7 +3,7 @@
 Summary:	Binary-only driver for nvidia graphics chips
 Name:		nvidia-440
 Version:	440.64
-Release:	2
+Release:	3
 ExclusiveArch:	%{x86_64} %{znver1}
 Url:		http://www.nvidia.com/object/unix.html
 Source0:	http://us.download.nvidia.com/XFree86/Linux-x86_64/%{version}/NVIDIA-Linux-x86_64-%{version}.run
@@ -264,6 +264,8 @@ done
 instx %{_bindir}/nvidia-bug-report.sh
 instx %{_bindir}/nvidia-smi
 inst %{_mandir}/man1/nvidia-smi.1
+instx %{_bindir}/nvidia-settings       
+inst %{_mandir}/man1/nvidia-settings.1
 
 # glvk
 instx %{_libdir}/libnvidia-glvkspirv.so.%{version}
@@ -322,6 +324,8 @@ inst /lib/modules/%{skdir}/kernel/drivers/video/nvidia-uvm.ko
 %{_bindir}/nvidia-bug-report.sh
 %{_bindir}/nvidia-smi
 %{_mandir}/man1/nvidia-smi.1*
+instx %{_bindir}/nvidia-settings
+inst %{_mandir}/man1/nvidia-settings.1*
 %{_libdir}/libnvidia-glvkspirv.so*
 %{_datadir}/nvidia/nvidia-application-profiles-%{version}-rc
 %{_datadir}/nvidia/nvidia-application-profiles-%{version}-key-documentation
