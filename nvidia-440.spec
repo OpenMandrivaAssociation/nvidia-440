@@ -59,6 +59,7 @@ Provides:	%{name}-kernel-modules = %{EVRD}
 Requires:	kernel-release-desktop = %{kversion}
 Conflicts:	kernel-release-desktop < %{kversion}
 Conflicts:	kernel-release-desktop > %{kversion}
+Conflicts:	%{name}-kernel-modules < %{kversion}
 Group:		Hardware
 Provides:	should-restart = system
 Requires(post,postun):	sed dracut grub2 kmod
@@ -75,6 +76,7 @@ Provides:	%{name}-kernel-modules = %{EVRD}
 Requires:	kernel-release-server = %{skversion}
 Conflicts:	kernel-release-server < %{skversion}
 Conflicts:	kernel-release-server > %{skversion}
+Conflicts:	%{name}-kernel-modules < %{skversion}
 Group:		Hardware
 Provides:	should-restart = system
 Requires(post,postun):	sed dracut grub2 kmod
