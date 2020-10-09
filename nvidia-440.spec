@@ -3,7 +3,7 @@
 Summary:	Binary-only driver for nvidia graphics chips
 Name:		nvidia-440
 Version:	440.64
-Release:	3
+Release:	4
 ExclusiveArch:	%{x86_64} %{znver1}
 Url:		http://www.nvidia.com/object/unix.html
 Source0:	http://us.download.nvidia.com/XFree86/Linux-x86_64/%{version}/NVIDIA-Linux-x86_64-%{version}.run
@@ -59,7 +59,7 @@ Provides:	%{name}-kernel-modules = %{EVRD}
 Requires:	kernel-release-desktop = %{kversion}
 Conflicts:	kernel-release-desktop < %{kversion}
 Conflicts:	kernel-release-desktop > %{kversion}
-Conflicts:	%{name}-kernel-modules < %{kversion}
+#Conflicts:	%%{name}-kernel-modules < %%{kversion}
 Group:		Hardware
 Provides:	should-restart = system
 Requires(post,postun):	sed dracut grub2 kmod
@@ -75,7 +75,7 @@ Summary:	Kernel modules needed by the binary-only nvidia driver
 Provides:	%{name}-kernel-modules = %{EVRD}
 Requires:	kernel-release-server = %{skversion}
 Conflicts:	kernel-release-server < %{skversion}
-Conflicts:	kernel-release-server > %{skversion}
+#Conflicts:	kernel-release-server > %%{skversion}
 Conflicts:	%{name}-kernel-modules < %{skversion}
 Group:		Hardware
 Provides:	should-restart = system
