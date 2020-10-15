@@ -57,7 +57,7 @@ This package should only be used as a last resort.
 Summary:	Kernel modules needed by the binary-only nvidia driver
 Provides:	%{name}-kernel-modules = %{EVRD}
 Requires:	kernel-release-desktop = %{kversion}
-Conflicts:	kernel-release-desktop < %{kversion}
+#Conflicts:	kernel-release-desktop < %%{kversion}
 Conflicts:	kernel-release-desktop > %{kversion}
 #Conflicts:	%%{name}-kernel-modules < %%{kversion}
 Group:		Hardware
